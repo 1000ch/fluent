@@ -5,10 +5,11 @@ About
 ------
 rambling to reconstruct architect of library.  
 to adopt grunt.js system for package build,  
-so this extends through "apply" or "supply" function.  
+so this extends through "extend" or "fill" function.  
 
 API
 ------
+    $([selector][, context])
 to be announced...
 
 License

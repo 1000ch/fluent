@@ -9,7 +9,7 @@ so this extends through "apply" or "supply" function.
 
 License
 ------
-Copyright 2012 1000ch.net
+Copyright 2012 [linkref]
 Released under the MIT license
 
 ramble.js
@@ -25,3 +25,5 @@ ramble.js
 ライセンスについて
 ------
 著作権は1000chに帰属します。
+
+[linkref]: http://1000ch.net/ "1000ch.net"

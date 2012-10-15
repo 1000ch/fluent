@@ -11,10 +11,26 @@ so this extends through "extend" or "fill" function.
 ####Constructor
     $([selector][, context])
 ####each
-    $().each(function(element, index) {
+    [RambleObject].each(function(element, index) {
     	//any process
     })
-to be announced...
+###Manipulation
+####html
+    [RambleObject].html(value);
+####text
+    [RambleObject].text(value);
+####val
+    [RambleObject].val(value);
+####css
+    [RambleObject].css(key, value);
+####addClass
+    [RambleObject].addClass(value);
+####removeClass
+    [RambleObject].removeClass(value);
+####toggleClass
+    [RambleObject].toggleClass(value);
+
+others are to be announced...
 
 ##License
 Copyright 2012 [1000ch.net]  

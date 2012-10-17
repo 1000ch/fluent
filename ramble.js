@@ -1,3 +1,9 @@
+/**
+ * ramble.js JavaScript Library ver0.1
+ *
+ * Copyright 2012~, 1000ch<http://1000ch.net/>
+ * licensed under the MIT license.
+ **/
 (function(window, undefined){
 "use strict";
 var 	doc = window.document;

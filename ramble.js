@@ -321,12 +321,20 @@ var _Event = {
 
 var _Traversing = {
 	/**
-	 * search elements with callback
+	 * get elements by search with callback
 	 * @param {Function} callback
 	 * @return {Ramble}
 	 */
 	filter: function(callback) {
 		return new Ramble(filter.call(this, callback));
+	},
+	/**
+	 * apply callback and get elements
+	 * @param {Function} callback
+	 * @return {Ramble}
+	 */
+	map: function(callback) {
+		return new Ramble(map.call(this, callback));
 	}
 };
 
@@ -402,6 +410,15 @@ var _Manipulation = {
 			list.forEach(function(name) {
 				element.classList.remove(name);
 			});
+		});
+	},
+	removeAllClass: function() {
+		var classList, len;
+		return this.each(function(element, index) {
+			classList = element.classList, len = classList.length;
+			while(len--) {
+				classList.remove(classList[len]);
+			}
 		});
 	},
 	/**

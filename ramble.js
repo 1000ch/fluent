@@ -1,7 +1,6 @@
 (function(window, undefined){
 "use strict";
-var 	win = window,
-		doc = window.document;
+var 	doc = window.document;
 
 var 	emptyArray = [],
 		emptyObject = {},
@@ -56,8 +55,8 @@ var isArray = Array.isArray || function(value) {
  @param {String} selector css selector
  @param {HTMLElement|Array|String} 
  */
-var qsaHook = function(selector, context) {
-	var con = isString(context) ? qsaHook(selector) : context;
+var _qsaHook = function(selector, context) {
+	var con = isString(context) ? _qsaHook(selector) : context;
 	var root = con ? con : doc;
 	var mergeBuffer = [];
 	var m = rxConciseSelector.exec(selector);
@@ -67,7 +66,7 @@ var qsaHook = function(selector, context) {
 		} else if (m[2]) {//if selector is "tagName"
 			if(root.length !== undefined) {
 				forEach.call(root, function(element) {
-					merge(mergeBuffer, element.getElementsByTagName(selector));
+					_merge(mergeBuffer, element.getElementsByTagName(selector));
 				});
 				return mergeBuffer;
 			} else {
@@ -76,7 +75,7 @@ var qsaHook = function(selector, context) {
 		} else if (m[3]) {//if selector is ".className"
 			if(root.length !== undefined) {
 				forEach.call(root, function(element) {
-					merge(mergeBuffer, element.getElementsByClassName(m[3]));
+					_merge(mergeBuffer, element.getElementsByClassName(m[3]));
 				});
 				return mergeBuffer;
 			} else {
@@ -86,7 +85,7 @@ var qsaHook = function(selector, context) {
 	}
 	if(root.length !== undefined) {
 		forEach.call(root, function(element) {
-			merge(mergeBuffer, element.getElementsByClassName(m[3]));
+			_merge(mergeBuffer, element.getElementsByClassName(m[3]));
 		});
 		return mergeBuffer;
 	} else {
@@ -99,7 +98,7 @@ var qsaHook = function(selector, context) {
  * @param {Array} srcList
  * @param {Array|* which has length property}
  */
-var merge = function(srcList, mergeList) {
+var _merge = function(srcList, mergeList) {
 	forEach.call(mergeList, function(mergeElement) {
 		if(indexOf.call(srcList, mergeElement) < 0) {
 			srcList[srcList.length] = mergeElement;
@@ -113,7 +112,7 @@ var merge = function(srcList, mergeList) {
  * @param {Object} obj
  * @param {Object}
  */
-var extend = function(obj) {
+var _extend = function(obj) {
 	var key, arg, args = slice.call(arguments, 1),
 		i = 0, len = args.length;
 	for(;i < len;i++) {
@@ -133,7 +132,7 @@ var extend = function(obj) {
  * @param {Object} obj
  * @param {Object}
  */
-var fill = function(obj) {
+var _fill = function(obj) {
 	var key, arg, args = slice.call(arguments, 1),
 		i = 0, len = args.length;
 	for(;i < len;i++) {
@@ -144,6 +143,25 @@ var fill = function(obj) {
 				obj[key] = arg[key];
 			}
 		}
+	}
+};
+
+var RambleFactory = {
+	/**
+	 * extend ramble object hardly
+	 * @description if same property exist, it will be overriden
+	 * @param {Object} obj
+	 */
+	extend: function(obj) {
+		_extend(Ramble.prototype, obj);
+	},
+	/**
+	 * extend ramble object softly
+	 * @description if same property exist, it will not be overriden
+	 * @param {Object} obj
+	 */
+	fill: function(obj) {
+		_fill(Ramble.prototype, obj);
 	}
 };
 
@@ -166,13 +184,13 @@ var StringExtender = {
 var Ramble = function(selector, context) {
 	var elementList = [], len;
 	if(selector.nodeType) {
-		elementList = slice.call(selector);
+		elementList = [selector];
 	} else if(isArray(selector)) {
 		elementList = selector.filter(function(item) {
 			return !!item.nodeType;
 		});
 	} else if(isString(selector)) {
-		elementList = qsaHook(selector, context);
+		elementList = _qsaHook(selector, context);
 	}
 	len = this.length = elementList.length;
 	while(len--) {
@@ -189,21 +207,31 @@ var _Prototype = {
 			callback(this[len], len);
 		}
 		return this;
+	},
+	slice: function() {
+		return slice.call(this);
 	}
+};
+var _CLOSURE_STORE = "CLOSURE_STORE";
+var _closure = function(selector, context, callback) {
+	return function(e) {
+		var found = _qsaHook(selector, context);
+		if(isArray(found)) {
+			found = slice.call(found);
+		}
+		var i, len = found.length, element;
+		for(i = 0;i < len;i++) {
+			element = found[i];
+			if(element == e.target) {
+				callback.call(element);
+				e.stopPropagation();
+				break;
+			}
+		}
+	};
 };
 
 var _Event = {
-	_eventRegist: function(type, context, selector, callback) {
-		var param = {
-			context: context,
-			param: {
-				type: type,
-				selector: selector,
-				callback: callback
-			}
-		};
-	},
-	_eventHolder: [],
 	ready: function(callback) {
 		if (rxReady.test(doc.readyState)) {
 			callback(this);
@@ -223,12 +251,56 @@ var _Event = {
 			element.removeEventListener(type, callback);
 		});
 	},
-	live: function(type, selector, callback) {
-		return this._eventRegist(document, type, function() {});
+	delegate: function(type, selector, callback) {
+		var context = this.slice();
+		var store, element, len = context.length;
+		var closure = _closure(selector, context, callback);
+		while(len--) {
+			element = context[len];
+			store = element[_CLOSURE_STORE] || (element[_CLOSURE_STORE] = {
+				closure: {}, selector: {}, listener: {}
+			});
+
+			store.closure[type] || (store.closure[type] = []);
+			store.selector[type] || (store.selector[type] = []);
+			store.listener[type] || (store.listener[type] = []);
+
+			store.closure[type].push(closure);
+			store.selector[type].push(selector);
+			store.listener[type].push(callback);
+
+			element.addEventListener(type, closure, true);
+		}
 	},
-	die: function(type, selector, callback) {},
-	delegate: function(type, selector, callback) {},
-	undelegate: function(type, selector, callback) {}
+	undelegate: function(type, selector, callback) {
+		var context = this.slice();
+		var store, closures, selectors, listeners, element, len = context.length;
+		while(len--) {
+			element = context[len];
+			store = element[_CLOSURE_STORE];
+			if(!store) {
+				continue;
+			}
+
+			closures = store.closure ? store.closure[type] : undefined;
+			selectors = store.selector ? store.selector[type] : undefined;
+			listeners = store.listener ? store.listener[type] : undefined;
+			if(!closures || !selectors || !listeners) {
+				continue;
+			}
+
+			var i, length = listeners.length;
+			for(i = 0;i < length;i++) {
+				if(listeners[i] == callback) {
+					element.removeEventListener(type, closures[i], true);
+					closures.splice(i, 1);
+					selectors.splice(i, 1);
+					listeners.splice(i, 1);
+					break;
+				}
+			}
+		}
+	}
 };
 
 var _Manipulation = {
@@ -288,15 +360,20 @@ var _Manipulation = {
 };
 
 //extend Ramble prototype
-extend(Ramble.prototype, _Prototype);
-extend(Ramble.prototype, _Event);
-extend(Ramble.prototype, _Manipulation);
+_extend(Ramble.prototype, _Prototype);
+_extend(Ramble.prototype, _Event);
+_extend(Ramble.prototype, _Manipulation);
+
+window.RambleFactory = RambleFactory;
+window.Ramble = Ramble;
 
 if(typeof define === "function" && define.amd) {
-	define();
+	define("Ramble", [], function() {
+		return window.Ramble;
+	});
 }
 
-win.$ = function(selector, context) {
+window.$ = function(selector, context) {
 	return new Ramble(selector, context);
 };
 

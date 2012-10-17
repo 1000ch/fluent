@@ -9,9 +9,7 @@ var 	emptyArray = [],
 var 	slice = emptyArray.slice,
 		forEach = emptyArray.forEach,
 		indexOf = emptyArray.indexOf,
-		filter = emptyArray.filter,
-		every = emptyArray.every,
-		some = emptyArray.some;
+		filter = emptyArray.filter;
 var 	rxConciseSelector = /^(?:#([\w\-]+)|(\w+)|\.([\w\-]+))$/,//filter #id, tagName, .className
 		rxReady = /complete|loaded|interactive/,//dom ready state
 		rxWhitespace = /\s+/g,
@@ -58,8 +56,7 @@ var isArray = Array.isArray || function(value) {
 var _qsaHook = function(selector, context) {
 	var con = isString(context) ? _qsaHook(selector) : context;
 	var root = con ? con : doc;
-	var mergeBuffer = [];
-	var m = rxConciseSelector.exec(selector);
+	var mergeBuffer = [], m = rxConciseSelector.exec(selector);
 	if (m) {//regex result is not undefined
 		if (m[1]) {//if selector is "#id"
 			return doc.getElementById(m[1]);
@@ -198,9 +195,17 @@ var Ramble = function(selector, context) {
 	}
 };
 
+/**
+ * base prototype
+ */
 var _Prototype = {
 	constructor: Ramble,
 	length: 0, 
+	/**
+	 * execute function to all element
+	 * @param {Function} callback
+	 * @return {Ramble}
+	 */
 	each: function(callback) {
 		var len = this.length;
 		while(len--) {
@@ -208,6 +213,11 @@ var _Prototype = {
 		}
 		return this;
 	},
+	/**
+	 * get all element
+	 * @description not return Ramble object
+	 * @return {Array<HTMLElement>}
+	 */
 	slice: function() {
 		return slice.call(this);
 	}
@@ -303,10 +313,23 @@ var _Event = {
 	}
 };
 
-var _Manipulation = {
+var _Traversing = {
+	/**
+	 * search elements with callback
+	 * @param {Function} callback
+	 * @return {Ramble}
+	 */
 	filter: function(callback) {
 		return new Ramble(filter.call(this, callback));
-	},
+	}
+};
+
+var _Manipulation = {
+	/**
+	 * set innerHTML property of element
+	 * @param {String} value
+	 * @return {Ramble}
+	 */
 	html: function(value) {
 		return this.each(function(element, index) {
 			if(element.innerHTML !== undefined) {
@@ -314,6 +337,11 @@ var _Manipulation = {
 			}
 		});
 	},
+	/**
+	 * set textContent property of element
+	 * @param {String} value
+	 * @return {Ramble}
+	 */
 	text: function(value) {
 		return this.each(function(element, index) {
 			if(element.textContent !== undefined) {
@@ -321,6 +349,11 @@ var _Manipulation = {
 			}
 		});
 	},
+	/**
+	 * set value property of element
+	 * @param {String} value
+	 * @return {Ramble}
+	 */
 	val: function(value) {
 		return this.each(function(element, index) {
 			if(element.value !== undefined) {
@@ -328,11 +361,22 @@ var _Manipulation = {
 			}
 		});
 	},
+	/**
+	 * set style of element
+	 * @param {String} key
+	 * @param {String} value
+	 * @return {Ramble}
+	 */
 	css: function(key, value) {
 		return this.each(function(element, index) {
 			element.style[key] = value;
 		});
 	},
+	/**
+	 * add class to element
+	 * @param {String} className
+	 * @return {Ramble}
+	 */
 	addClass: function(className) {
 		var list = className.split(rxWhitespace);
 		return this.each(function(element, index) {
@@ -341,6 +385,11 @@ var _Manipulation = {
 			});
 		});
 	},
+	/**
+	 * remove class from element
+	 * @param {String} className
+	 * @return {Ramble}
+	 */
 	removeClass: function(className) {
 		var list = className.split(rxWhitespace);
 		return this.each(function(element, index) {
@@ -349,6 +398,11 @@ var _Manipulation = {
 			});
 		});
 	},
+	/**
+	 * toggle class of element
+	 * @param {String} className
+	 * @return {Ramble}
+	 */
 	toggleClass: function(className) {
 		var list = className.split(rxWhitespace);
 		return this.each(function(element, index) {
@@ -362,6 +416,7 @@ var _Manipulation = {
 //extend Ramble prototype
 _extend(Ramble.prototype, _Prototype);
 _extend(Ramble.prototype, _Event);
+_extend(Ramble.prototype, _Traversing);
 _extend(Ramble.prototype, _Manipulation);
 
 window.RambleFactory = RambleFactory;

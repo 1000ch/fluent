@@ -6,20 +6,20 @@
  **/
 (function(window, undefined){
 "use strict";
-var 	doc = window.document;
+var doc = window.document;
 
-var 	emptyArray = [],
-		emptyObject = {},
-		emptyFunction = function() {};
+var emptyArray = [],
+	emptyObject = {},
+	emptyFunction = function() {};
 
-var 	slice = emptyArray.slice,
-		forEach = emptyArray.forEach,
-		indexOf = emptyArray.indexOf,
-		filter = emptyArray.filter;
-var 	rxConciseSelector = /^(?:#([\w\-]+)|(\w+)|\.([\w\-]+))$/,//filter #id, tagName, .className
-		rxReady = /complete|loaded|interactive/,//dom ready state
-		rxWhitespace = /\s+/g,
-		rxStringFormat = /\{(.+?)\}/g;
+var slice = emptyArray.slice,
+	forEach = emptyArray.forEach,
+	indexOf = emptyArray.indexOf,
+	filter = emptyArray.filter;
+var rxConciseSelector = /^(?:#([\w\-]+)|(\w+)|\.([\w\-]+))$/,//filter #id, tagName, .className
+	rxReady = /complete|loaded|interactive/,//dom ready state
+	rxWhitespace = /\s+/g,
+	rxStringFormat = /\{(.+?)\}/g;
 
 /**
  * argument is string or not
@@ -43,7 +43,15 @@ var isFunction = function(value) {
  * @return {Boolean}
  */
 var isArray = Array.isArray || function(value) {
-	return !!value && value.length;
+	return value instanceof Array;
+};
+/**
+ * argument is like an array or not
+ * @param {Object} value
+ * @return {Boolean}
+ */
+var likeArray = function(value) {
+	return typeof value.length == "number";
 };
 
 /*
@@ -186,14 +194,18 @@ var StringExtender = {
  */
 var Ramble = function(selector, context) {
 	var elementList = [], len;
-	if(selector.nodeType) {
+	if(isString(selector)) {
+		//if selector is string
+		elementList = _qsaHook(selector, context);
+	} else if(selector.nodeType) {
+		//if selector is single dom element
 		elementList = [selector];
-	} else if(isArray(selector)) {
-		elementList = selector.filter(function(item) {
+	} else if(likeArray(selector)) {
+		//if selector is array,
+		//select only dom element
+		elementList = filter.call(selector, function(item) {
 			return !!item.nodeType;
 		});
-	} else if(isString(selector)) {
-		elementList = _qsaHook(selector, context);
 	}
 	len = this.length = elementList.length;
 	while(len--) {
@@ -229,10 +241,16 @@ var _Prototype = {
 	}
 };
 var _CLOSURE_STORE = "CLOSURE_STORE";
+/**
+ * create closure of event delegate
+ * @param {Function}
+ * @param {String|Array<HTMLElement>|HTMLElement}
+ * @param {Function} callback
+ */
 var _closure = function(selector, context, callback) {
 	return function(e) {
 		var found = _qsaHook(selector, context);
-		if(isArray(found)) {
+		if(likeArray(found)) {
 			found = slice.call(found);
 		}
 		var i, len = found.length, element;
@@ -248,6 +266,10 @@ var _closure = function(selector, context, callback) {
 };
 
 var _Event = {
+	/**
+	 * execute callback when dom content loaded
+	 * @param {Function} callback
+	 */
 	ready: function(callback) {
 		if (rxReady.test(doc.readyState)) {
 			callback(this);
@@ -257,16 +279,31 @@ var _Event = {
 			}, false);
 		}
 	},
+	/**
+	 * bind event
+	 * @param {String} type
+	 * @param {Function} callback
+	 */
 	bind: function(type, callback) {
 		return this.each(function(element, index) {
 			element.addEventListener(type, callback);
 		});
 	},
+	/**
+	 * unbind event
+	 * @param {String} type
+	 * @param {Function} callback
+	 */
 	unbind: function(type, callback) {
 		return this.each(function(element, index) {
 			element.removeEventListener(type, callback);
 		});
 	},
+	/**
+	 * begin propagation event
+	 * @param {String} type
+	 * @param {Function} callback
+	 */
 	delegate: function(type, selector, callback) {
 		var context = this.slice();
 		var store, element, len = context.length;
@@ -288,6 +325,11 @@ var _Event = {
 			element.addEventListener(type, closure, true);
 		}
 	},
+	/**
+	 * finish propagation event
+	 * @param {String} type
+	 * @param {Function} callback
+	 */
 	undelegate: function(type, selector, callback) {
 		var context = this.slice();
 		var store, closures, selectors, listeners, element, len = context.length;
@@ -412,6 +454,10 @@ var _Manipulation = {
 			});
 		});
 	},
+	/**
+	 * remove all class from element
+	 * @return {Ramble}
+	 */
 	removeAllClass: function() {
 		var classList, len;
 		return this.each(function(element, index) {

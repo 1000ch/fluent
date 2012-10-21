@@ -54,6 +54,15 @@ var likeArray = function(value) {
 	return typeof value.length == "number";
 };
 
+String.prototype.format = function(replacement) {
+	if (typeof replacement != "object") {
+		replacement = slice.call(arguments);
+	}
+	return this.replace(/\{(.+?)\}/g, function(m, c) {
+		return (replacement[c] != null) ? replacement[c] : m;
+	});
+}
+
 /*
  extend and hook querySelectorAll
 
@@ -77,7 +86,7 @@ var _qsaHook = function(selector, context) {
 		} else if (m[2]) {//if selector is "tagName"
 			if(root.length !== undefined) {
 				forEach.call(root, function(element) {
-					_merge(mergeBuffer, element.getElementsByTagName(selector));
+					_mergeArray(mergeBuffer, element.getElementsByTagName(selector));
 				});
 				return mergeBuffer;
 			} else {
@@ -86,7 +95,7 @@ var _qsaHook = function(selector, context) {
 		} else if (m[3]) {//if selector is ".className"
 			if(root.length !== undefined) {
 				forEach.call(root, function(element) {
-					_merge(mergeBuffer, element.getElementsByClassName(m[3]));
+					_mergeArray(mergeBuffer, element.getElementsByClassName(m[3]));
 				});
 				return mergeBuffer;
 			} else {
@@ -96,7 +105,7 @@ var _qsaHook = function(selector, context) {
 	}
 	if(root.length !== undefined) {
 		forEach.call(root, function(element) {
-			_merge(mergeBuffer, element.getElementsByClassName(m[3]));
+			_mergeArray(mergeBuffer, element.getElementsByClassName(m[3]));
 		});
 		return mergeBuffer;
 	} else {
@@ -109,7 +118,7 @@ var _qsaHook = function(selector, context) {
  * @param {Array} srcList
  * @param {Array|* which has length property}
  */
-var _merge = function(srcList, mergeList) {
+var _mergeArray = function(srcList, mergeList) {
 	forEach.call(mergeList, function(mergeElement) {
 		if(indexOf.call(srcList, mergeElement) < 0) {
 			srcList[srcList.length] = mergeElement;
@@ -121,7 +130,7 @@ var _merge = function(srcList, mergeList) {
  * extend object hardly
  * @description if same property exist, it will be overriden
  * @param {Object} obj
- * @param {Object}
+ * @return {Object} obj
  */
 var _extend = function(obj) {
 	var key, arg, args = slice.call(arguments, 1),
@@ -135,13 +144,14 @@ var _extend = function(obj) {
 			}
 		}
 	}
+	return obj;
 };
 
 /**
  * extend object softly
  * @description if same property exist, it will not be overriden
  * @param {Object} obj
- * @param {Object}
+ * @return {Object} obj
  */
 var _fill = function(obj) {
 	var key, arg, args = slice.call(arguments, 1),
@@ -155,6 +165,7 @@ var _fill = function(obj) {
 			}
 		}
 	}
+	return obj;
 };
 
 var RambleFactory = {
@@ -164,7 +175,7 @@ var RambleFactory = {
 	 * @param {Object} obj
 	 */
 	extend: function(obj) {
-		_extend(Ramble.prototype, obj);
+		return _extend(Ramble.prototype, obj);
 	},
 	/**
 	 * extend ramble object softly
@@ -172,18 +183,7 @@ var RambleFactory = {
 	 * @param {Object} obj
 	 */
 	fill: function(obj) {
-		_fill(Ramble.prototype, obj);
-	}
-};
-
-var StringExtender = {
-	format: function(replacement) {
-		if (typeof replacement != "object") {
-			replacement = slice.call(arguments);
-		}
-		return this.replace(/\{(.+?)\}/g, function(m, c) {
-			return (replacement[c] != null) ? replacement[c] : m;
-		});
+		return _fill(Ramble.prototype, obj);
 	}
 };
 
@@ -283,6 +283,7 @@ var _Event = {
 	 * bind event
 	 * @param {String} type
 	 * @param {Function} callback
+	 * @return {Ramble}
 	 */
 	bind: function(type, callback) {
 		return this.each(function(element, index) {
@@ -293,6 +294,7 @@ var _Event = {
 	 * unbind event
 	 * @param {String} type
 	 * @param {Function} callback
+	 * @return {Ramble}
 	 */
 	unbind: function(type, callback) {
 		return this.each(function(element, index) {
@@ -303,6 +305,7 @@ var _Event = {
 	 * begin propagation event
 	 * @param {String} type
 	 * @param {Function} callback
+	 * @return {Ramble}
 	 */
 	delegate: function(type, selector, callback) {
 		var context = this.slice();
@@ -329,6 +332,7 @@ var _Event = {
 	 * finish propagation event
 	 * @param {String} type
 	 * @param {Function} callback
+	 * @return {Ramble}
 	 */
 	undelegate: function(type, selector, callback) {
 		var context = this.slice();
@@ -482,11 +486,119 @@ var _Manipulation = {
 	}
 };
 
+var _Animation = {
+	_param: {},
+	_prefix: ["-webkit-", "-moz-", "-ms-", "-o-", ""],
+	_transform: {
+		key: "transform",
+		values: [],
+		add: function(value) {
+			if(this.values.indexOf(value) < 0) {
+				this.values.push(value);
+			}
+		}
+	},
+	_transitionProperties: {
+		key: "transition-properties",
+		values: [],
+		add: function(value) {
+			if(this.values.indexOf(value) < 0) {
+				this.values.push(value);
+			}
+		}
+	},
+	_delay: {
+		key: "transition-delay",
+		value: "0ms"
+	},
+	_duration: {
+		key: "transition-duration",
+		value: "1000ms"
+	},
+	_ease: {
+		key: "transition-timing-function",
+		value: "ease"
+	},
+	_setProperty: function(key, value) {
+		this._param[key] = value;
+	},
+	delay: function(value) {
+		this._delay.value = value;
+		return this;
+	},
+	duration: function(value) {
+		this._duration.value = value;
+		return this;
+	},
+	ease: function(value) {
+		this._ease.value = value;
+		return this;
+	},
+	skew: function(x, y) {
+		this._transform.add("skew({0}deg, {1}deg)".format(x, y));
+		return this;
+	},
+	skewX: function(x) {
+		this._transform.add("skewX({0}deg)".format(x));
+		return this;
+	},
+	skewY: function(y) {
+		this._transform.add("skewY({0}deg)".format(y));
+		return this;
+	},
+	translate: function(x, y) {
+		this._transform.add("translate({0}px, {1}px)".format(x, y));
+		return this;
+	},
+	translateX: function(x) {
+		this._transform.add("translateX({0}px)".format(x));
+		return this;
+	},
+	translateY: function(y) {
+		this._transform.add("translateY({0}px)".format(y));
+		return this;
+	},
+	scale: function(x, y) {
+		this._transform.add("scale({0}, {1})".format(x, y));
+		return this;
+	},
+	scaleX: function(x) {
+		this._transform.add("scaleX({0})".format(x));
+		return this;
+	},
+	scaleY: function(y) {
+		this._transform.add("scaleY({0})".format(y));
+		return this;
+	},
+	rotate: function(n) {
+		this._transform.add("rotate({0}deg)".format(n));
+		return this;
+	},
+	animate: function() {
+		var prefix, i, len = this._prefix.length;
+		for(i = 0;i < len;i ++) {
+			prefix = this._prefix[i];
+			this._setProperty(prefix + this._ease.key, this._ease.value);
+			this._setProperty(prefix + this._delay.key, this._delay.value);
+			this._setProperty(prefix + this._duration.key, this._duration.value);
+			this._setProperty(prefix + this._transform.key, this._transform.values.join(" "));
+			this._setProperty(prefix + this._transitionProperties.key, this._transitionProperties.values.join(", "));
+		}
+		var key, p = this._param;
+		for(key in p) {
+			this.each(function(element, index){
+				element.style[key] = p[key];
+			});
+		}
+	}
+};
+
 //extend Ramble prototype
 _extend(Ramble.prototype, _Prototype);
 _extend(Ramble.prototype, _Event);
 _extend(Ramble.prototype, _Traversing);
 _extend(Ramble.prototype, _Manipulation);
+_extend(Ramble.prototype, _Animation);
 
 window.RambleFactory = RambleFactory;
 window.Ramble = Ramble;

@@ -13,6 +13,7 @@ var emptyArray = [],
 	emptyFunction = function() {};
 
 var slice = emptyArray.slice,
+	splice = emptyArray.splice,
 	forEach = emptyArray.forEach,
 	indexOf = emptyArray.indexOf,
 	filter = emptyArray.filter;
@@ -165,6 +166,13 @@ var _fill = function(obj) {
 			}
 		}
 	}
+	return obj;
+};
+
+var _observeProperty = function(obj, prop, fn) {
+	Object.defineProperty(obj, prop, {
+		get: fn, set: fn,
+	});
 	return obj;
 };
 
@@ -522,54 +530,122 @@ var _Animation = {
 	_setProperty: function(key, value) {
 		this._param[key] = value;
 	},
+	/**
+	 * set delay
+	 * @param {String} value
+	 * @return {Ramble}
+	 */
 	delay: function(value) {
 		this._delay.value = value;
 		return this;
 	},
+	/**
+	 * set duration
+	 * @param {String} value
+	 * @return {Ramble}
+	 */
 	duration: function(value) {
 		this._duration.value = value;
 		return this;
 	},
+	/**
+	 * set ease
+	 * @param {String} value
+	 * @return {Ramble}
+	 */
 	ease: function(value) {
 		this._ease.value = value;
 		return this;
 	},
+	/**
+	 * set skew
+	 * @param {Number} x
+	 * @param {Number} y
+	 * @return {Ramble}
+	 */
 	skew: function(x, y) {
 		this._transform.add("skew({0}deg, {1}deg)".format(x, y));
 		return this;
 	},
+	/**
+	 * set skewX
+	 * @param {Number} x
+	 * @return {Ramble}
+	 */
 	skewX: function(x) {
 		this._transform.add("skewX({0}deg)".format(x));
 		return this;
 	},
+	/**
+	 * set skewY
+	 * @param {Number} x
+	 * @return {Ramble}
+	 */
 	skewY: function(y) {
 		this._transform.add("skewY({0}deg)".format(y));
 		return this;
 	},
+	/**
+	 * set translate
+	 * @param {Number} x
+	 * @param {Number} y
+	 * @return {Ramble}
+	 */
 	translate: function(x, y) {
 		this._transform.add("translate({0}px, {1}px)".format(x, y));
 		return this;
 	},
+	/**
+	 * set translateX
+	 * @param {Number} x
+	 * @return {Ramble}
+	 */
 	translateX: function(x) {
 		this._transform.add("translateX({0}px)".format(x));
 		return this;
 	},
+	/**
+	 * set translateY
+	 * @param {Number} y
+	 * @return {Ramble}
+	 */
 	translateY: function(y) {
 		this._transform.add("translateY({0}px)".format(y));
 		return this;
 	},
+	/**
+	 * set scale
+	 * @param {Number} x
+	 * @param {Number} y
+	 * @return {Ramble}
+	 */
 	scale: function(x, y) {
 		this._transform.add("scale({0}, {1})".format(x, y));
 		return this;
 	},
+	/**
+	 * set scaleX
+	 * @param {Number} x
+	 * @return {Ramble}
+	 */
 	scaleX: function(x) {
 		this._transform.add("scaleX({0})".format(x));
 		return this;
 	},
+	/**
+	 * set scaleY
+	 * @param {Number} y
+	 * @return {Ramble}
+	 */
 	scaleY: function(y) {
 		this._transform.add("scaleY({0})".format(y));
 		return this;
 	},
+	/**
+	 * set rotate
+	 * @param {Number} n
+	 * @return {Ramble}
+	 */
 	rotate: function(n) {
 		this._transform.add("rotate({0}deg)".format(n));
 		return this;

@@ -55,6 +55,11 @@ var likeArray = function(value) {
 	return typeof value.length == "number";
 };
 
+/**
+ * string format
+ * @param {Object} replacement
+ * @return {String}
+ */
 String.prototype.format = function(replacement) {
 	if (typeof replacement != "object") {
 		replacement = slice.call(arguments);
@@ -564,6 +569,9 @@ var _Animation = {
 	 * @return {Ramble}
 	 */
 	skew: function(x, y) {
+		if(x == undefined || y == undefined) {
+			return this;
+		}
 		this._transform.add("skew({0}deg, {1}deg)".format(x, y));
 		return this;
 	},
@@ -573,15 +581,21 @@ var _Animation = {
 	 * @return {Ramble}
 	 */
 	skewX: function(x) {
+		if(x == undefined) {
+			return this;
+		}
 		this._transform.add("skewX({0}deg)".format(x));
 		return this;
 	},
 	/**
 	 * set skewY
-	 * @param {Number} x
+	 * @param {Number} y
 	 * @return {Ramble}
 	 */
 	skewY: function(y) {
+		if(y == undefined) {
+			return this;
+		}
 		this._transform.add("skewY({0}deg)".format(y));
 		return this;
 	},
@@ -592,6 +606,9 @@ var _Animation = {
 	 * @return {Ramble}
 	 */
 	translate: function(x, y) {
+		if(x == undefined || y == undefined) {
+			return this;
+		}
 		this._transform.add("translate({0}px, {1}px)".format(x, y));
 		return this;
 	},
@@ -601,6 +618,9 @@ var _Animation = {
 	 * @return {Ramble}
 	 */
 	translateX: function(x) {
+		if(x == undefined) {
+			return this;
+		}
 		this._transform.add("translateX({0}px)".format(x));
 		return this;
 	},
@@ -610,6 +630,9 @@ var _Animation = {
 	 * @return {Ramble}
 	 */
 	translateY: function(y) {
+		if(y == undefined) {
+			return this;
+		}
 		this._transform.add("translateY({0}px)".format(y));
 		return this;
 	},
@@ -620,6 +643,9 @@ var _Animation = {
 	 * @return {Ramble}
 	 */
 	scale: function(x, y) {
+		if(x == undefined || y == undefined) {
+			return this;
+		}
 		this._transform.add("scale({0}, {1})".format(x, y));
 		return this;
 	},
@@ -629,6 +655,9 @@ var _Animation = {
 	 * @return {Ramble}
 	 */
 	scaleX: function(x) {
+		if(x == undefined) {
+			return this;
+		}
 		this._transform.add("scaleX({0})".format(x));
 		return this;
 	},
@@ -638,6 +667,9 @@ var _Animation = {
 	 * @return {Ramble}
 	 */
 	scaleY: function(y) {
+		if(y == undefined) {
+			return this;
+		}
 		this._transform.add("scaleY({0})".format(y));
 		return this;
 	},
@@ -647,6 +679,9 @@ var _Animation = {
 	 * @return {Ramble}
 	 */
 	rotate: function(n) {
+		if(n == undefined) {
+			return this;
+		}
 		this._transform.add("rotate({0}deg)".format(n));
 		return this;
 	},

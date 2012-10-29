@@ -70,17 +70,17 @@ String.prototype.format = function(replacement) {
 }
 
 /*
- extend and hook querySelectorAll
+ * extend and hook querySelectorAll
+ *
+ * selector branch for hook
+ * 	if selector is "#id", call getElementById
+ * 	if selector is ".className", call getElementsByClassName
+ * 	if selector is "tagName", call getElementsByTagName
 
- selector branch for hook
-     if selector is "#id", call getElementById
-     if selector is ".className", call getElementsByClassName
-     if selector is "tagName", call getElementsByTagName
-
- if context is given, search element with selector
- in context (or related condition).
- @param {String} selector css selector
- @param {HTMLElement|Array|String} 
+ * if context is given, search element with selector
+ * in context (or related condition).
+ * @param {String} selector css selector
+ * @param {HTMLElement|Array|String} 
  */
 var _qsaHook = function(selector, context) {
 	var con = isString(context) ? _qsaHook(selector) : context;

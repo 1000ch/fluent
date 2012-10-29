@@ -1,5 +1,5 @@
 /**
- * ramble.js JavaScript Library ver0.1
+ * ramble.js JavaScript Library ver0.2
  *
  * Copyright 2012~, 1000ch<http://1000ch.net/>
  * licensed under the MIT license.

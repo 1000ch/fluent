@@ -16,7 +16,9 @@ var slice = emptyArray.slice,
 	splice = emptyArray.splice,
 	forEach = emptyArray.forEach,
 	indexOf = emptyArray.indexOf,
-	filter = emptyArray.filter;
+	filter = emptyArray.filter,
+	map = emptyArray.map;
+
 var rxConciseSelector = /^(?:#([\w\-]+)|(\w+)|\.([\w\-]+))$/,//filter #id, tagName, .className
 	rxReady = /complete|loaded|interactive/,//dom ready state
 	rxWhitespace = /\s+/g,
@@ -64,10 +66,10 @@ String.prototype.format = function(replacement) {
 	if (typeof replacement != "object") {
 		replacement = slice.call(arguments);
 	}
-	return this.replace(/\{(.+?)\}/g, function(m, c) {
+	return this.replace(rxStringFormat, function(m, c) {
 		return (replacement[c] != null) ? replacement[c] : m;
 	});
-}
+};
 
 /*
  * extend and hook querySelectorAll
@@ -705,11 +707,11 @@ var _Animation = {
 };
 
 //extend Ramble prototype
-_extend(Ramble.prototype, _Prototype);
-_extend(Ramble.prototype, _Event);
-_extend(Ramble.prototype, _Traversing);
-_extend(Ramble.prototype, _Manipulation);
-_extend(Ramble.prototype, _Animation);
+RambleFactory.extend(_Prototype);
+RambleFactory.extend(_Event);
+RambleFactory.extend(_Traversing);
+RambleFactory.extend(_Manipulation);
+RambleFactory.extend(_Animation);
 
 window.RambleFactory = RambleFactory;
 window.Ramble = Ramble;

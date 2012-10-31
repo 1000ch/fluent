@@ -27,6 +27,8 @@ so this extends through "extend" or "fill" function.
     
     [RambleObject].delegate(type, selector, callback);
     //start to delegate event
+    //elements will be searched by selector and fired 
+    //in context which ramble object contains
     
     [RambleObject].undelegate(type, selector, callback);
     //end to delegate event
@@ -61,6 +63,48 @@ so this extends through "extend" or "fill" function.
     
     [RambleObject].toggleClass(value);
     //toggle class of elements
+###Animation
+    [RambleObject].delay(value);
+    //set delay of animation
+    
+    [RambleObject].duration(value);
+    //set duration of animation
+    
+    [RambleObject].ease(value);
+    //set ease type of animation
+    
+    [RambleObject].skew(x, y);
+    //add skew property for animation
+    
+    [RambleObject].skewX(x);
+    //add skewX property for animation
+    
+    [RambleObject].skewY(y);
+    //add skewY property for animation
+    
+    [RambleObject].translate(x, y);
+    //add translate property for animation
+    
+    [RambleObject].translateX(x);
+    //add translateX property for animation
+    
+    [RambleObject].translateY(y);
+    //add translateY property for animation
+    
+    [RambleObject].scale(x, y);
+    //add scale property for animation
+    
+    [RambleObject].scaleX(x);
+    //add scaleX property for animation
+    
+    [RambleObject].scaleY(y);
+    //add scaleY property for animation
+    
+    [RambleObject].rotate(n);
+    //add rotate property for animation
+    
+    [RambleObject].animate();
+    //execute animation basis of stacked properties
 others are to be announced...
 
 ##License

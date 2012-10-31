@@ -466,24 +466,20 @@ var _Manipulation = {
 	 * @return {Ramble}
 	 */
 	removeClass: function(className) {
+		if(!className){
+			var classList, len;
+			return this.each(function(element, index) {
+				classList = element.classList, len = classList.length;
+				while(len--) {
+					classList.remove(classList[len]);
+				}
+			});
+		}
 		var list = className.split(rxWhitespace);
 		return this.each(function(element, index) {
 			list.forEach(function(name) {
 				element.classList.remove(name);
 			});
-		});
-	},
-	/**
-	 * remove all class from element
-	 * @return {Ramble}
-	 */
-	removeAllClass: function() {
-		var classList, len;
-		return this.each(function(element, index) {
-			classList = element.classList, len = classList.length;
-			while(len--) {
-				classList.remove(classList[len]);
-			}
 		});
 	},
 	/**

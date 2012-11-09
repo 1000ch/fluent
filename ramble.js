@@ -73,8 +73,7 @@ String.prototype.format = function(replacement) {
 
 /*
  * extend and hook querySelectorAll
- *
- * selector branch for hook
+ * evaluate selector concisely
  * 	if selector is "#id", call getElementById
  * 	if selector is ".className", call getElementsByClassName
  * 	if selector is "tagName", call getElementsByTagName
@@ -82,7 +81,8 @@ String.prototype.format = function(replacement) {
  * if context is given, search element with selector
  * in context (or related condition).
  * @param {String} selector css selector
- * @param {HTMLElement|Array|String} 
+ * @param {HTMLElement|Array|String}
+ * @return {Array}
  */
 var _qsaHook = function(selector, context) {
 	var con = isString(context) ? _qsaHook(selector) : context;
@@ -90,7 +90,7 @@ var _qsaHook = function(selector, context) {
 	var mergeBuffer = [], m = rxConciseSelector.exec(selector);
 	if (m) {//regex result is not undefined
 		if (m[1]) {//if selector is "#id"
-			return doc.getElementById(m[1]);
+			return [doc.getElementById(m[1])];
 		} else if (m[2]) {//if selector is "tagName"
 			if(root.length !== undefined) {
 				forEach.call(root, function(element) {
@@ -98,7 +98,7 @@ var _qsaHook = function(selector, context) {
 				});
 				return mergeBuffer;
 			} else {
-				return root.getElementsByTagName(selector);
+				return slice.call(root.getElementsByTagName(selector));
 			}
 		} else if (m[3]) {//if selector is ".className"
 			if(root.length !== undefined) {
@@ -107,7 +107,7 @@ var _qsaHook = function(selector, context) {
 				});
 				return mergeBuffer;
 			} else {
-				return root.getElementsByClassName(m[3]);
+				return slice.call(root.getElementsByClassName(m[3]);
 			}
 		}
 	}
@@ -117,7 +117,7 @@ var _qsaHook = function(selector, context) {
 		});
 		return mergeBuffer;
 	} else {
-		return root.querySelectorAll(selector);
+		return slice.call(root.querySelectorAll(selector));
 	}
 };
 
@@ -233,7 +233,7 @@ var Ramble = function(selector, context) {
  */
 var _Prototype = {
 	constructor: Ramble,
-	length: 0, 
+	length: 0,
 	/**
 	 * execute function to all element
 	 * @param {Function} callback
@@ -265,9 +265,6 @@ var _CLOSURE_STORE = "CLOSURE_STORE";
 var _closure = function(selector, context, callback) {
 	return function(e) {
 		var found = _qsaHook(selector, context);
-		if(likeArray(found)) {
-			found = slice.call(found);
-		}
 		var i, len = found.length, element;
 		for(i = 0;i < len;i++) {
 			element = found[i];

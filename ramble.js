@@ -107,7 +107,7 @@ var _qsaHook = function(selector, context) {
 				});
 				return mergeBuffer;
 			} else {
-				return slice.call(root.getElementsByClassName(m[3]);
+				return slice.call(root.getElementsByClassName(m[3]));
 			}
 		}
 	}
@@ -183,6 +183,9 @@ var _observeProperty = function(obj, prop, fn) {
 	return obj;
 };
 
+/**
+ * namespace of Ramble Extender
+ */
 var RambleFactory = {
 	/**
 	 * extend ramble object hardly
@@ -696,6 +699,7 @@ var _Animation = {
 				element.style[key] = p[key];
 			});
 		}
+		this._param = {};
 	}
 };
 

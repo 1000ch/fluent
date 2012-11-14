@@ -176,6 +176,10 @@ var _fill = function(obj) {
 	return obj;
 };
 
+var _isUndefined = function(obj) {
+	return (obj === undefined);
+};
+
 var _observeProperty = function(obj, prop, fn) {
 	Object.defineProperty(obj, prop, {
 		get: fn, set: fn,
@@ -254,8 +258,16 @@ var _Prototype = {
 	 * @description not return Ramble object
 	 * @return {Array<HTMLElement>}
 	 */
-	slice: function() {
-		return slice.call(this);
+	slice: function(from, to) {
+		if(from) {
+			if(to) {
+				return slice.call(this, from, to);
+			} else {
+				return slice.call(this, from);
+			}
+		} else {
+			return slice.call(this);
+		}
 	}
 };
 var _CLOSURE_STORE = "CLOSURE_STORE";
@@ -434,6 +446,28 @@ var _Manipulation = {
 			if(element.value !== undefined) {
 				element.value = value;
 			}
+		});
+	},
+	/**
+	 * set or add attribute
+	 * @param {String} key
+	 * @param {String} value
+	 * @return {Ramble}
+	 */
+	attr: function(key, value) {
+		return this.each(function(element, index) {
+			element.setAttribute(key, value);
+		});
+	},
+	/**
+	 * set or add data-etc attribute
+	 * @param {String} key
+	 * @param {String} value
+	 * @return {Ramble}
+	 */
+	data: function(key, value) {
+		return this.each(function(element, index) {
+			element.setAttribute("data-" + key, value);
 		});
 	},
 	/**

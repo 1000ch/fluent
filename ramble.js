@@ -270,27 +270,6 @@ var _Prototype = {
 		}
 	}
 };
-var _CLOSURE_STORE = "CLOSURE_STORE";
-/**
- * create closure of event delegate
- * @param {Function}
- * @param {String|Array<HTMLElement>|HTMLElement}
- * @param {Function} callback
- */
-var _closure = function(selector, context, callback) {
-	return function(e) {
-		var found = _qsaHook(selector, context);
-		var i, len = found.length, element;
-		for(i = 0;i < len;i++) {
-			element = found[i];
-			if(element == e.target) {
-				callback.call(element);
-				e.stopPropagation();
-				break;
-			}
-		}
-	};
-};
 
 var _Event = {
 	/**
@@ -328,6 +307,21 @@ var _Event = {
 			element.removeEventListener(type, callback);
 		});
 	},
+	_delegateCache: "delegateCache",
+	_delegateClosure: function(selector, context, callback) {
+		return function(e) {
+			var found = _qsaHook(selector, context);
+			var i, len = found.length, element;
+			for(i = 0;i < len;i++) {
+				element = found[i];
+				if(element == e.target) {
+					callback.call(element);
+					e.stopPropagation();
+					break;
+				}
+			}
+		};
+	},
 	/**
 	 * begin propagation event
 	 * @param {String} type
@@ -340,7 +334,7 @@ var _Event = {
 		var closure = _closure(selector, context, callback);
 		while(len--) {
 			element = context[len];
-			store = element[_CLOSURE_STORE] || (element[_CLOSURE_STORE] = {
+			store = element[this._delegateCache] || (element[this._delegateCache] = {
 				closure: {}, selector: {}, listener: {}
 			});
 
@@ -366,7 +360,7 @@ var _Event = {
 		var store, closures, selectors, listeners, element, len = context.length;
 		while(len--) {
 			element = context[len];
-			store = element[_CLOSURE_STORE];
+			store = element[this._delegateCache];
 			if(!store) {
 				continue;
 			}

@@ -46,7 +46,7 @@ var isFunction = function(value) {
  * @return {Boolean}
  */
 var isArray = Array.isArray || function(value) {
-	return value instanceof Array;
+	return (String(value) === "array");
 };
 /**
  * argument is like an array or not
@@ -113,7 +113,7 @@ var _qsaHook = function(selector, context) {
 	}
 	if(root.length !== undefined) {
 		forEach.call(root, function(element) {
-			_mergeArray(mergeBuffer, element.getElementsByClassName(m[3]));
+			_mergeArray(mergeBuffer, element.querySelectorAll(selector));
 		});
 		return mergeBuffer;
 	} else {
@@ -753,6 +753,7 @@ if(typeof define === "function" && define.amd) {
 	});
 }
 
+//set $ as constructor alias to global
 window.$ = function(selector, context) {
 	return new Ramble(selector, context);
 };

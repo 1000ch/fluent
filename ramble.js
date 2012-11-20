@@ -85,9 +85,10 @@ String.prototype.format = function(replacement) {
  * @return {Array}
  */
 var _qsaHook = function(selector, context) {
-	var con = isString(context) ? _qsaHook(selector) : context;
+	var con = isString(context) ? _qsaHook(context) : context;
 	var root = con ? con : doc;
 	var mergeBuffer = [], m = rxConciseSelector.exec(selector);
+
 	if (m) {//regex result is not undefined
 		if (m[1]) {//if selector is "#id"
 			return [doc.getElementById(m[1])];

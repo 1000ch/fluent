@@ -17,7 +17,8 @@ var slice = emptyArray.slice,
 	forEach = emptyArray.forEach,
 	indexOf = emptyArray.indexOf,
 	filter = emptyArray.filter,
-	map = emptyArray.map;
+	map = emptyArray.map,
+	_isArray = Array.isArray;
 
 var rxConciseSelector = /^(?:#([\w\-]+)|(\w+)|\.([\w\-]+))$/,//filter #id, tagName, .className
 	rxReady = /complete|loaded|interactive/,//dom ready state
@@ -29,33 +30,41 @@ var rxConciseSelector = /^(?:#([\w\-]+)|(\w+)|\.([\w\-]+))$/,//filter #id, tagNa
  * @param {Object} value
  * @return {Boolean}
  */
-var isString = function(value) {
+function _isString(value) {
 	return (typeof value === "string");
-};
+}
 /**
  * argument is function or not
  * @param {Object} value
  * @return {Boolean}
  */
-var isFunction = function(value) {
+function _isFunction(value) {
 	return (typeof value === "function");
-};
-/**
- * argument is array or not
- * @param {Object} value
- * @return {Boolean}
- */
-var isArray = Array.isArray || function(value) {
-	return (String(value) === "array");
-};
+}
 /**
  * argument is like an array or not
  * @param {Object} value
  * @return {Boolean}
  */
-var likeArray = function(value) {
+function _isLikeArray(value) {
 	return typeof value.length == "number";
-};
+}
+/**
+ * argument is nodeList or not
+ * @param {Object} value
+ * @return {Boolean}
+ */
+function _isNodeList(value) {
+	return (String(value) === "[object NodeList]");
+}
+/**
+ * argument is undefined or not
+ * @param {Object} value
+ * @return {Boolean}
+ */
+function _isUndefined(value) {
+	return (value === undefined);
+}
 
 /**
  * string format
@@ -84,8 +93,8 @@ String.prototype.format = function(replacement) {
  * @param {HTMLElement|Array|String}
  * @return {Array}
  */
-var _qsaHook = function(selector, context) {
-	var con = isString(context) ? _qsaHook(context) : context;
+function _qsaHook(selector, context) {
+	var con = _isString(context) ? _qsaHook(context) : context;
 	var root = con ? con : doc;
 	var mergeBuffer = [], m = rxConciseSelector.exec(selector);
 
@@ -120,28 +129,26 @@ var _qsaHook = function(selector, context) {
 	} else {
 		return slice.call(root.querySelectorAll(selector));
 	}
-};
-
+}
 /**
  * merge array or object (like an array) into array
  * @param {Array} srcList
  * @param {Array|* which has length property}
  */
-var _mergeArray = function(srcList, mergeList) {
+function _mergeArray(srcList, mergeList) {
 	forEach.call(mergeList, function(mergeElement) {
 		if(indexOf.call(srcList, mergeElement) < 0) {
 			srcList[srcList.length] = mergeElement;
 		}
 	});
-};
-
+}
 /**
  * extend object hardly
  * @description if same property exist, it will be overriden
  * @param {Object} obj
  * @return {Object} obj
  */
-var _extend = function(obj) {
+function _extend(obj) {
 	var key, arg, args = slice.call(arguments, 1),
 		i = 0, len = args.length;
 	for(;i < len;i++) {
@@ -154,15 +161,14 @@ var _extend = function(obj) {
 		}
 	}
 	return obj;
-};
-
+}
 /**
  * extend object softly
  * @description if same property exist, it will not be overriden
  * @param {Object} obj
  * @return {Object} obj
  */
-var _fill = function(obj) {
+function _fill(obj) {
 	var key, arg, args = slice.call(arguments, 1),
 		i = 0, len = args.length;
 	for(;i < len;i++) {
@@ -175,12 +181,9 @@ var _fill = function(obj) {
 		}
 	}
 	return obj;
-};
+}
 
-var _isUndefined = function(obj) {
-	return (obj === undefined);
-};
-
+//TODO
 var _observeProperty = function(obj, prop, fn) {
 	Object.defineProperty(obj, prop, {
 		get: fn, set: fn,
@@ -217,13 +220,13 @@ var RambleFactory = {
  */
 var Ramble = function(selector, context) {
 	var elementList = [], len;
-	if(isString(selector)) {
+	if(_isString(selector)) {
 		//if selector is string
 		elementList = _qsaHook(selector, context);
 	} else if(selector.nodeType) {
 		//if selector is single dom element
 		elementList = [selector];
-	} else if(likeArray(selector)) {
+	} else if(_isLikeArray(selector)) {
 		//if selector is array,
 		//select only dom element
 		elementList = filter.call(selector, function(item) {
@@ -272,20 +275,30 @@ var _Prototype = {
 	}
 };
 
-var _Event = {
-	/**
-	 * execute callback when dom content loaded
-	 * @param {Function} callback
-	 */
-	ready: function(callback) {
-		if (rxReady.test(doc.readyState)) {
-			callback(this);
+/**
+ * execute callback when dom content loaded
+ * @param {Function} callback
+ */
+function onDocumentReady(callback) {
+	var args = slice.call(arguments.length - 1);
+	if (rxReady.test(doc.readyState)) {
+		if(!args) {
+			callback();
 		} else {
-			doc.addEventListener("DOMContentLoaded", function() {
-				callback(this);
-			}, false);
+			callback(args)
 		}
-	},
+	} else {
+		doc.addEventListener("DOMContentLoaded", function() {
+			if(!args) {
+			callback();
+		} else {
+			callback(args)
+		}
+		}, false);
+	}
+}
+
+var _Event = {
 	/**
 	 * bind event
 	 * @param {String} type
@@ -332,7 +345,7 @@ var _Event = {
 	delegate: function(type, selector, callback) {
 		var context = this.slice();
 		var store, element, len = context.length;
-		var closure = _closure(selector, context, callback);
+		var closure = this._delegateClosure(selector, context, callback);
 		while(len--) {
 			element = context[len];
 			store = element[this._delegateCache] || (element[this._delegateCache] = {
@@ -523,6 +536,25 @@ var _Manipulation = {
 				element.classList.toggle(name);
 			});
 		});
+	},
+	append: function(value) {
+		var nodeList = [];
+		if(value instanceof Ramble) {
+			nodeList = value.slice();
+		} else if(_isNodeList(value)) {
+			nodeList = value;
+		} else if(_isLikeArray(value)) {
+			var i, len = value.length;
+			for(i = 0;i < len;i++) {
+				if(value[i].nodeType) {
+					nodeList[nodeList.length] = value[i];
+				}
+			}
+		}
+		return this;
+	},
+	prepend: function(value) {
+		return this;
 	}
 };
 
@@ -752,5 +784,7 @@ if(typeof define === "function" && define.amd) {
 window.$ = function(selector, context) {
 	return new Ramble(selector, context);
 };
+
+window.$.ready = onDocumentReady;
 
 })(window);

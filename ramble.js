@@ -290,10 +290,10 @@ function onDocumentReady(callback) {
 	} else {
 		doc.addEventListener("DOMContentLoaded", function() {
 			if(!args) {
-			callback();
-		} else {
-			callback(args)
-		}
+				callback();
+			} else {
+				callback(args)
+			}
 		}, false);
 	}
 }
@@ -537,6 +537,11 @@ var _Manipulation = {
 			});
 		});
 	},
+	/**
+	 * append element
+	 * @param 
+	 * @return {Ramble}
+	 */
 	append: function(value) {
 		var nodeList = [];
 		if(value instanceof Ramble) {
@@ -553,6 +558,11 @@ var _Manipulation = {
 		}
 		return this;
 	},
+	/**
+	 * prepend element
+	 * @param
+	 * @return {Ramble}
+	 */
 	prepend: function(value) {
 		return this;
 	}

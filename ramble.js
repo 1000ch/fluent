@@ -17,8 +17,7 @@ var slice = emptyArray.slice,
 	forEach = emptyArray.forEach,
 	indexOf = emptyArray.indexOf,
 	filter = emptyArray.filter,
-	map = emptyArray.map,
-	_isArray = Array.isArray;
+	map = emptyArray.map;
 
 var rxConciseSelector = /^(?:#([\w\-]+)|(\w+)|\.([\w\-]+))$/,//filter #id, tagName, .className
 	rxReady = /complete|loaded|interactive/,//dom ready state
@@ -65,6 +64,8 @@ function _isNodeList(value) {
 function _isUndefined(value) {
 	return (value === undefined);
 }
+
+//public utilities
 
 /**
  * string format
@@ -142,6 +143,29 @@ function loadScript(path, callback, async, defer) {
 	};
 
 	doc.querySelector("head").appendChild(script);
+}
+
+/**
+ * execute callback when dom content loaded
+ * @param {Function} callback
+ */
+function onDocumentReady(callback) {
+	var args = slice.call(arguments.length - 1);
+	if (rxReady.test(doc.readyState)) {
+		if(!args) {
+			callback();
+		} else {
+			callback(args)
+		}
+	} else {
+		doc.addEventListener("DOMContentLoaded", function() {
+			if(!args) {
+				callback();
+			} else {
+				callback(args)
+			}
+		}, false);
+	}
 }
 
 /*
@@ -269,61 +293,44 @@ var _RamblePrototype = {
 	}
 };
 
-/**
- * execute callback when dom content loaded
- * @param {Function} callback
- */
-function onDocumentReady(callback) {
-	var args = slice.call(arguments.length - 1);
-	if (rxReady.test(doc.readyState)) {
-		if(!args) {
-			callback();
-		} else {
-			callback(args)
-		}
-	} else {
-		doc.addEventListener("DOMContentLoaded", function() {
-			if(!args) {
-				callback();
-			} else {
-				callback(args)
-			}
-		}, false);
-	}
-}
-
 var _RambleEvent = {
 	/**
 	 * bind event
 	 * @param {String} type
-	 * @param {Function} callback
+	 * @param {Function} eventHandler
+	 * @param {Boolean} useCapture 
 	 * @return {Ramble}
 	 */
-	bind: function(type, callback) {
-		return this.each(function(element, index) {
-			element.addEventListener(type, callback);
-		});
+	bind: function(type, eventHandler, useCapture) {
+		var i, len = this.length;
+		for(i = 0;i < len;i++) {
+			this[i].addEventListener(type, eventHandler, useCapture);
+		}
+		return this;
 	},
 	/**
 	 * unbind event
 	 * @param {String} type
-	 * @param {Function} callback
+	 * @param {Function} eventHandler
+	 * @param {Boolean} useCapture
 	 * @return {Ramble}
 	 */
-	unbind: function(type, callback) {
-		return this.each(function(element, index) {
-			element.removeEventListener(type, callback);
-		});
+	unbind: function(type, eventHandler, useCapture) {
+		var i, len = this.length;
+		for(i = 0;i < len;i++) {
+			this[i].removeEventListener(type, eventHandler, useCapture);
+		}
+		return this;
 	},
 	_delegateCache: "delegateCache",
-	_delegateClosure: function(selector, context, callback) {
+	_delegateClosure: function(selector, context, eventHandler) {
 		return function(e) {
 			var found = _qsaHook(selector, context);
 			var i, len = found.length, element;
 			for(i = 0;i < len;i++) {
 				element = found[i];
 				if(element == e.target) {
-					callback.call(element);
+					eventHandler.call(element);
 					e.stopPropagation();
 					break;
 				}
@@ -333,13 +340,13 @@ var _RambleEvent = {
 	/**
 	 * begin propagation event
 	 * @param {String} type
-	 * @param {Function} callback
+	 * @param {Function} eventHandler
 	 * @return {Ramble}
 	 */
-	delegate: function(type, selector, callback) {
+	delegate: function(type, selector, eventHandler) {
 		var context = this.slice();
 		var store, element, len = context.length;
-		var closure = this._delegateClosure(selector, context, callback);
+		var closure = this._delegateClosure(selector, context, eventHandler);
 		while(len--) {
 			element = context[len];
 			store = element[this._delegateCache] || (element[this._delegateCache] = {
@@ -360,10 +367,10 @@ var _RambleEvent = {
 	/**
 	 * finish propagation event
 	 * @param {String} type
-	 * @param {Function} callback
+	 * @param {Function} eventHandler
 	 * @return {Ramble}
 	 */
-	undelegate: function(type, selector, callback) {
+	undelegate: function(type, selector, eventHandler) {
 		var context = this.slice();
 		var store, closures, selectors, listeners, element, len = context.length;
 		while(len--) {
@@ -783,9 +790,10 @@ window.$ = function(selector, context) {
 };
 
 window.$.ready = onDocumentReady;
-String.prototype.format = stringFormat;
 window.$.loadScript = loadScript;
 window.$.extend = extend;
 window.$.fill = fill;
+
+String.prototype.format = stringFormat;
 
 })(window);

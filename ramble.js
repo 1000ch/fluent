@@ -1,5 +1,5 @@
 /**
- * ramble.js JavaScript Library ver0.2
+ * ramble.js JavaScript Library ver0.3
  *
  * Copyright 2012~, 1000ch<http://1000ch.net/>
  * licensed under the MIT license.
@@ -71,14 +71,78 @@ function _isUndefined(value) {
  * @param {Object} replacement
  * @return {String}
  */
-String.prototype.format = function(replacement) {
+function stringFormat(replacement) {
 	if (typeof replacement != "object") {
 		replacement = slice.call(arguments);
 	}
 	return this.replace(rxStringFormat, function(m, c) {
 		return (replacement[c] != null) ? replacement[c] : m;
 	});
-};
+}
+
+/**
+ * extend object hardly
+ * @description if same property exist, it will be overriden
+ * @param {Object} obj
+ * @return {Object} obj
+ */
+function extend(obj) {
+	var key, arg, args = slice.call(arguments, 1),
+		i = 0, len = args.length;
+	for(;i < len;i++) {
+		arg = args[i];
+		for(key in arg) {
+			//even if "key" property already exist, set into "key"
+			if(arg.hasOwnProperty(key)) {
+				obj[key] = arg[key];
+			}
+		}
+	}
+	return obj;
+}
+/**
+ * extend object softly
+ * @description if same property exist, it will not be overriden
+ * @param {Object} obj
+ * @return {Object} obj
+ */
+function fill(obj) {
+	var key, arg, args = slice.call(arguments, 1),
+		i = 0, len = args.length;
+	for(;i < len;i++) {
+		arg = args[i];
+		for(key in arg) {
+			//if "key" is not undefined, "key" will not be rewrite
+			if(arg.hasOwnProperty(key) && !(key in obj)) {
+				obj[key] = arg[key];
+			}
+		}
+	}
+	return obj;
+}
+
+/**
+ * load script immediately or asynchronously
+ * @param {String} path
+ * @param {Function} callback
+ * @param {String} async
+ * @param {String} defer
+ */
+function loadScript(path, callback, async, defer) {
+	var script = doc.createElement("script");
+
+	script.src = path;
+	script.charset = "utf-8";
+	script.async = (async === undefined ? false : async);
+	script.defer = (defer === undefined ? false : defer);
+
+	script.onload = script.onreadystatechange = function() {
+		script.onload = script.onreadystatechange = null;
+		callback && callback();
+	};
+
+	doc.querySelector("head").appendChild(script);
+}
 
 /*
  * extend and hook querySelectorAll
@@ -142,76 +206,6 @@ function _mergeArray(srcList, mergeList) {
 		}
 	});
 }
-/**
- * extend object hardly
- * @description if same property exist, it will be overriden
- * @param {Object} obj
- * @return {Object} obj
- */
-function _extend(obj) {
-	var key, arg, args = slice.call(arguments, 1),
-		i = 0, len = args.length;
-	for(;i < len;i++) {
-		arg = args[i];
-		for(key in arg) {
-			//even if "key" property already exist, set into "key"
-			if(arg.hasOwnProperty(key)) {
-				obj[key] = arg[key];
-			}
-		}
-	}
-	return obj;
-}
-/**
- * extend object softly
- * @description if same property exist, it will not be overriden
- * @param {Object} obj
- * @return {Object} obj
- */
-function _fill(obj) {
-	var key, arg, args = slice.call(arguments, 1),
-		i = 0, len = args.length;
-	for(;i < len;i++) {
-		arg = args[i];
-		for(key in arg) {
-			//if "key" is not undefined, "key" will not be rewrite
-			if(arg.hasOwnProperty(key) && !(key in obj)) {
-				obj[key] = arg[key];
-			}
-		}
-	}
-	return obj;
-}
-
-//TODO
-var _observeProperty = function(obj, prop, fn) {
-	Object.defineProperty(obj, prop, {
-		get: fn, set: fn,
-	});
-	return obj;
-};
-
-/**
- * namespace of Ramble Extender
- */
-var RambleFactory = {
-	/**
-	 * extend ramble object hardly
-	 * @description if same property exist, it will be overriden
-	 * @param {Object} obj
-	 */
-	extend: function(obj) {
-		return _extend(Ramble.prototype, obj);
-	},
-	/**
-	 * extend ramble object softly
-	 * @description if same property exist, it will not be overriden
-	 * @param {Object} obj
-	 */
-	fill: function(obj) {
-		return _fill(Ramble.prototype, obj);
-	}
-};
 
 /**
  * base class
@@ -242,7 +236,7 @@ var Ramble = function(selector, context) {
 /**
  * base prototype
  */
-var _Prototype = {
+var _RamblePrototype = {
 	constructor: Ramble,
 	length: 0,
 	/**
@@ -298,7 +292,7 @@ function onDocumentReady(callback) {
 	}
 }
 
-var _Event = {
+var _RambleEvent = {
 	/**
 	 * bind event
 	 * @param {String} type
@@ -400,7 +394,7 @@ var _Event = {
 	}
 };
 
-var _Traversing = {
+var _RambleTraversing = {
 	/**
 	 * get elements by search with callback
 	 * @param {Function} callback
@@ -419,7 +413,7 @@ var _Traversing = {
 	}
 };
 
-var _Manipulation = {
+var _RambleManipulation = {
 	/**
 	 * set innerHTML property of element
 	 * @param {String} value
@@ -568,7 +562,7 @@ var _Manipulation = {
 	}
 };
 
-var _Animation = {
+var _RambleAnimation = {
 	_param: {},
 	_prefix: ["-webkit-", "-moz-", "-ms-", "-o-", ""],
 	_transform: {
@@ -775,20 +769,13 @@ var _Animation = {
 };
 
 //extend Ramble prototype
-RambleFactory.extend(_Prototype);
-RambleFactory.extend(_Event);
-RambleFactory.extend(_Traversing);
-RambleFactory.extend(_Manipulation);
-RambleFactory.extend(_Animation);
+extend(Ramble.prototype, _RamblePrototype);
+extend(Ramble.prototype, _RambleEvent);
+extend(Ramble.prototype, _RambleTraversing);
+extend(Ramble.prototype, _RambleManipulation);
+extend(Ramble.prototype, _RambleAnimation);
 
-window.RambleFactory = RambleFactory;
 window.Ramble = Ramble;
-
-if(typeof define === "function" && define.amd) {
-	define("Ramble", [], function() {
-		return window.Ramble;
-	});
-}
 
 //set $ as constructor alias to global
 window.$ = function(selector, context) {
@@ -796,5 +783,9 @@ window.$ = function(selector, context) {
 };
 
 window.$.ready = onDocumentReady;
+String.prototype.format = stringFormat;
+window.$.loadScript = loadScript;
+window.$.extend = extend;
+window.$.fill = fill;
 
 })(window);

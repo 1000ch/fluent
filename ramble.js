@@ -24,6 +24,9 @@ var rxConciseSelector = /^(?:#([\w\-]+)|(\w+)|\.([\w\-]+))$/,//filter #id, tagNa
 	rxWhitespace = /\s+/g,
 	rxStringFormat = /\{(.+?)\}/g;
 
+var qs = "querySelector", 
+	qsa = "querySelectorAll";
+
 /**
  * argument is string or not
  * @param {Object} value
@@ -63,6 +66,21 @@ function _isNodeList(value) {
  */
 function _isUndefined(value) {
 	return (value === undefined);
+}
+
+/**
+ * get computed style of element
+ * @param {HTMLDomElement} element
+ * @param {String} key
+ * @return {String}
+ */
+function _compuredStyle(element, key) {
+	if(element.currentStyle) {
+		return element.currentStyle[key];
+	} else if(window.getComputedStyle) {
+		return window.getComputedStyle(element, null).getPropertyValue(key);
+	}
+	return null;
 }
 
 //public utilities
@@ -142,7 +160,7 @@ function loadScript(path, callback, async, defer) {
 		callback && callback();
 	};
 
-	doc.querySelector("head").appendChild(script);
+	doc[qs]("head").appendChild(script);
 }
 
 /**
@@ -211,11 +229,11 @@ function _qsaHook(selector, context) {
 	}
 	if(root.length !== undefined) {
 		forEach.call(root, function(element) {
-			_mergeArray(mergeBuffer, element.querySelectorAll(selector));
+			_mergeArray(mergeBuffer, element[qsa](selector));
 		});
 		return mergeBuffer;
 	} else {
-		return slice.call(root.querySelectorAll(selector));
+		return slice.call(root[qsa](selector));
 	}
 }
 /**
@@ -566,6 +584,22 @@ var _RambleManipulation = {
 	 */
 	prepend: function(value) {
 		return this;
+	},
+	/**
+	 * show all element as computed styles
+	 */
+	show: function() {
+		var i, len = this.length;
+		for(i = 0;i < len;i++) {
+			this[i].style.display = "";
+			(_computedStyle(element, "display") === "none") ? element.style.display = "block" : 0;
+		}
+	},
+	/**
+	 * hide all element
+	 */
+	hide: function() {
+		return this.css("display", "none");
 	}
 };
 

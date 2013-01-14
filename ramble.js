@@ -32,40 +32,24 @@ var qs = "querySelector",
  * @param {Object} value
  * @return {Boolean}
  */
-function _isString(value) {
+function isString(value) {
 	return (typeof value === "string");
-}
-/**
- * argument is function or not
- * @param {Object} value
- * @return {Boolean}
- */
-function _isFunction(value) {
-	return (typeof value === "function");
 }
 /**
  * argument is like an array or not
  * @param {Object} value
  * @return {Boolean}
  */
-function _isLikeArray(value) {
-	return typeof value.length == "number";
+function isLikeArray(value) {
+	return (typeof value.length == "number");
 }
 /**
  * argument is nodeList or not
  * @param {Object} value
  * @return {Boolean}
  */
-function _isNodeList(value) {
+function isNodeList(value) {
 	return (String(value) === "[object NodeList]");
-}
-/**
- * argument is undefined or not
- * @param {Object} value
- * @return {Boolean}
- */
-function _isUndefined(value) {
-	return (value === undefined);
 }
 
 /**
@@ -74,7 +58,7 @@ function _isUndefined(value) {
  * @param {String} key
  * @return {String}
  */
-function _compuredStyle(element, key) {
+function compuredStyle(element, key) {
 	if(element.currentStyle) {
 		return element.currentStyle[key];
 	} else if(window.getComputedStyle) {
@@ -200,7 +184,7 @@ function onDocumentReady(callback) {
  * @return {Array}
  */
 function _qsaHook(selector, context) {
-	var con = _isString(context) ? _qsaHook(context) : context;
+	var con = isString(context) ? _qsaHook(context) : context;
 	var root = con ? con : doc;
 	var mergeBuffer = [], m = rxConciseSelector.exec(selector);
 
@@ -256,13 +240,13 @@ function _mergeArray(srcList, mergeList) {
  */
 var Ramble = function(selector, context) {
 	var elementList = [], len;
-	if(_isString(selector)) {
+	if(isString(selector)) {
 		//if selector is string
 		elementList = _qsaHook(selector, context);
 	} else if(selector.nodeType) {
 		//if selector is single dom element
 		elementList = [selector];
-	} else if(_isLikeArray(selector)) {
+	} else if(isLikeArray(selector)) {
 		//if selector is array,
 		//select only dom element
 		elementList = filter.call(selector, function(item) {
@@ -377,7 +361,7 @@ var _RambleEvent = {
 
 			store.closure[type].push(closure);
 			store.selector[type].push(selector);
-			store.listener[type].push(callback);
+			store.listener[type].push(eventHandler);
 
 			element.addEventListener(type, closure, true);
 		}
@@ -565,9 +549,9 @@ var _RambleManipulation = {
 		var nodeList = [];
 		if(value instanceof Ramble) {
 			nodeList = value.slice();
-		} else if(_isNodeList(value)) {
+		} else if(isNodeList(value)) {
 			nodeList = value;
-		} else if(_isLikeArray(value)) {
+		} else if(isLikeArray(value)) {
 			var i, len = value.length;
 			for(i = 0;i < len;i++) {
 				if(value[i].nodeType) {
@@ -592,7 +576,7 @@ var _RambleManipulation = {
 		var i, len = this.length;
 		for(i = 0;i < len;i++) {
 			this[i].style.display = "";
-			(_computedStyle(element, "display") === "none") ? element.style.display = "block" : 0;
+			(compuredStyle(element, "display") === "none") ? element.style.display = "block" : 0;
 		}
 	},
 	/**

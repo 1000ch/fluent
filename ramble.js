@@ -439,7 +439,15 @@ var _RambleTraversing = {
 	 * @return {Ramble}
 	 */
 	map: function(callback) {
-		return new Ramble(map.call(this, callback));
+		var array = [], element;
+		var i, len = array.length;
+		for(i = 0;i < len;i++) {
+			data = callback(this[i], i);
+			if(element != null) {
+				array.push(element);
+			}
+		}
+		return new Ramble(array);
 	},
 	/**
 	 * get unique elements
@@ -450,6 +458,11 @@ var _RambleTraversing = {
 		return new Ramble(filter.call(array, function(item, index){
 			return array.indexOf(item) == index;
 		}));
+	},
+	children: function() {
+		return this.map(function() {
+
+		});
 	}
 };
 

@@ -502,14 +502,15 @@ var _RambleManipulation = {
 		});
 	},
 	/**
-	 * set or add data-etc attribute
+	 * set or add dataset
 	 * @param {String} key
 	 * @param {String} value
 	 * @return {Ramble}
 	 */
 	data: function(key, value) {
+		var datasetAttr = stringCamelize("data-" + key);
 		return this.each(function(element, index) {
-			element.setAttribute("data-" + key, value);
+			element.dataset[datasetAttr] = value;
 		});
 	},
 	/**

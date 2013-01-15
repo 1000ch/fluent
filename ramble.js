@@ -21,8 +21,7 @@ var slice = emptyArray.slice,
 
 var rxConciseSelector = /^(?:#([\w\-]+)|(\w+)|\.([\w\-]+))$/,//filter #id, tagName, .className
 	rxReady = /complete|loaded|interactive/,//dom ready state
-	rxWhitespace = /\s+/g,
-	rxStringFormat = /\{(.+?)\}/g;
+	rxWhitespace = /\s+/g;
 
 var qs = "querySelector", 
 	qsa = "querySelectorAll";
@@ -71,18 +70,40 @@ function compuredStyle(element, key) {
 
 /**
  * string format
+ * @param {String} str
  * @param {Object} replacement
  * @return {String}
  */
-function stringFormat(replacement) {
+function stringFormat(str, replacement) {
 	if (typeof replacement != "object") {
 		replacement = slice.call(arguments);
 	}
-	return this.replace(rxStringFormat, function(m, c) {
+	return str.replace(/\{(.+?)\}/g, function(m, c) {
 		return (replacement[c] != null) ? replacement[c] : m;
 	});
 }
-
+/**
+ * camelize
+ * @param {String} str
+ * @return {String}
+ */
+function stringCamelize(str) {
+	return str.replace(/-+(.)?/g, function(match, character){
+		return character ? character.toUpperCase() : "";
+	});
+}
+/**
+ * dasherize
+ * @param {String} str
+ * @return {String}
+ */
+function stringDasherize(str) {
+	return str.replace(/::/g, '/')
+		.replace(/([A-Z]+)([A-Z][a-z])/g, '$1_$2')
+		.replace(/([a-z\d])([A-Z])/g, '$1_$2')
+		.replace(/_/g, '-')
+		.toLowerCase();
+}
 /**
  * extend object hardly
  * @description if same property exist, it will be overriden
@@ -419,6 +440,16 @@ var _RambleTraversing = {
 	 */
 	map: function(callback) {
 		return new Ramble(map.call(this, callback));
+	},
+	/**
+	 * get unique elements
+	 * @return {Ramble}
+	 */
+	unique: function() {
+		var array = this.slice();
+		return new Ramble(filter.call(array, function(item, index){
+			return array.indexOf(item) == index;
+		}));
 	}
 };
 
@@ -660,7 +691,7 @@ var _RambleAnimation = {
 		if(x == undefined || y == undefined) {
 			return this;
 		}
-		this._transform.add("skew({0}deg, {1}deg)".format(x, y));
+		this._transform.add(stringFormat("skew({0}deg, {1}deg)", x, y));
 		return this;
 	},
 	/**
@@ -672,7 +703,7 @@ var _RambleAnimation = {
 		if(x == undefined) {
 			return this;
 		}
-		this._transform.add("skewX({0}deg)".format(x));
+		this._transform.add(stringFormat("skewX({0}deg)", x));
 		return this;
 	},
 	/**
@@ -684,7 +715,7 @@ var _RambleAnimation = {
 		if(y == undefined) {
 			return this;
 		}
-		this._transform.add("skewY({0}deg)".format(y));
+		this._transform.add(stringFormat("skewY({0}deg)", y));
 		return this;
 	},
 	/**
@@ -697,7 +728,7 @@ var _RambleAnimation = {
 		if(x == undefined || y == undefined) {
 			return this;
 		}
-		this._transform.add("translate({0}px, {1}px)".format(x, y));
+		this._transform.add(stringFormat("translate({0}px, {1}px)", x, y));
 		return this;
 	},
 	/**
@@ -709,7 +740,7 @@ var _RambleAnimation = {
 		if(x == undefined) {
 			return this;
 		}
-		this._transform.add("translateX({0}px)".format(x));
+		this._transform.add(stringFormat("translateX({0}px)", x));
 		return this;
 	},
 	/**
@@ -721,7 +752,7 @@ var _RambleAnimation = {
 		if(y == undefined) {
 			return this;
 		}
-		this._transform.add("translateY({0}px)".format(y));
+		this._transform.add(stringFormat("translateY({0}px)", y));
 		return this;
 	},
 	/**
@@ -734,7 +765,7 @@ var _RambleAnimation = {
 		if(x == undefined || y == undefined) {
 			return this;
 		}
-		this._transform.add("scale({0}, {1})".format(x, y));
+		this._transform.add(stringFormat("scale({0}, {1})", x, y));
 		return this;
 	},
 	/**
@@ -746,7 +777,7 @@ var _RambleAnimation = {
 		if(x == undefined) {
 			return this;
 		}
-		this._transform.add("scaleX({0})".format(x));
+		this._transform.add(stringFormat("scaleX({0})", x));
 		return this;
 	},
 	/**
@@ -758,7 +789,7 @@ var _RambleAnimation = {
 		if(y == undefined) {
 			return this;
 		}
-		this._transform.add("scaleY({0})".format(y));
+		this._transform.add(stringFormat("scaleY({0})", y));
 		return this;
 	},
 	/**
@@ -770,7 +801,7 @@ var _RambleAnimation = {
 		if(n == undefined) {
 			return this;
 		}
-		this._transform.add("rotate({0}deg)".format(n));
+		this._transform.add(stringFormat("rotate({0}deg)", n));
 		return this;
 	},
 	animate: function() {
@@ -811,7 +842,5 @@ window.$.ready = onDocumentReady;
 window.$.loadScript = loadScript;
 window.$.extend = extend;
 window.$.fill = fill;
-
-String.prototype.format = stringFormat;
 
 })(window);

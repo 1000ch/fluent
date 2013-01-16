@@ -12,12 +12,12 @@ var emptyArray = [],
 	emptyObject = {},
 	emptyFunction = function() {};
 
-var slice = emptyArray.slice,
-	splice = emptyArray.splice,
-	forEach = emptyArray.forEach,
-	indexOf = emptyArray.indexOf,
-	filter = emptyArray.filter,
-	map = emptyArray.map;
+var nativeSlice = emptyArray.slice,
+	nativeSplice = emptyArray.splice,
+	nativeForEach = emptyArray.forEach,
+	nativeIndexOf = emptyArray.indexOf,
+	nativeFilter = emptyArray.filter,
+	nativeMap = emptyArray.map;
 
 var rxConciseSelector = /^(?:#([\w\-]+)|(\w+)|\.([\w\-]+))$/,//filter #id, tagName, .className
 	rxIdSelector = /^#([\w-]+)$/,
@@ -80,7 +80,7 @@ function compuredStyle(element, key) {
  */
 function stringFormat(str, replacement) {
 	if (typeof replacement != "object") {
-		replacement = slice.call(arguments);
+		replacement = nativeSlice.call(arguments);
 	}
 	return str.replace(/\{(.+?)\}/g, function(m, c) {
 		return (replacement[c] != null) ? replacement[c] : m;
@@ -115,7 +115,7 @@ function stringDasherize(str) {
  * @return {Object} obj
  */
 function extend(obj) {
-	var key, arg, args = slice.call(arguments, 1),
+	var key, arg, args = nativeSlice.call(arguments, 1),
 		i = 0, len = args.length;
 	for(;i < len;i++) {
 		arg = args[i];
@@ -135,7 +135,7 @@ function extend(obj) {
  * @return {Object} obj
  */
 function fill(obj) {
-	var key, arg, args = slice.call(arguments, 1),
+	var key, arg, args = nativeSlice.call(arguments, 1),
 		i = 0, len = args.length;
 	for(;i < len;i++) {
 		arg = args[i];
@@ -178,7 +178,7 @@ function loadScript(path, callback, async, defer) {
  * @param {Function} callback
  */
 function onDocumentReady(callback) {
-	var args = slice.call(arguments, 1);
+	var args = nativeSlice.call(arguments, 1);
 	if (rxReady.test(doc.readyState)) {
 		if(!args) {
 			callback();
@@ -219,31 +219,31 @@ function _qsaHook(selector, context) {
 			return [doc.getElementById(m[1])];
 		} else if (m[2]) {//if selector is "tagName"
 			if(root.length !== undefined) {
-				forEach.call(root, function(element) {
+				nativeForEach.call(root, function(element) {
 					_mergeArray(mergeBuffer, element.getElementsByTagName(selector));
 				});
 				return mergeBuffer;
 			} else {
-				return slice.call(root.getElementsByTagName(selector));
+				return nativeSlice.call(root.getElementsByTagName(selector));
 			}
 		} else if (m[3]) {//if selector is ".className"
 			if(root.length !== undefined) {
-				forEach.call(root, function(element) {
+				nativeForEach.call(root, function(element) {
 					_mergeArray(mergeBuffer, element.getElementsByClassName(m[3]));
 				});
 				return mergeBuffer;
 			} else {
-				return slice.call(root.getElementsByClassName(m[3]));
+				return nativeSlice.call(root.getElementsByClassName(m[3]));
 			}
 		}
 	}
 	if(root.length !== undefined) {
-		forEach.call(root, function(element) {
+		nativeForEach.call(root, function(element) {
 			_mergeArray(mergeBuffer, element[qsa](selector));
 		});
 		return mergeBuffer;
 	} else {
-		return slice.call(root[qsa](selector));
+		return nativeSlice.call(root[qsa](selector));
 	}
 }
 /**
@@ -252,8 +252,8 @@ function _qsaHook(selector, context) {
  * @param {Array|* which has length property}
  */
 function _mergeArray(srcList, mergeList) {
-	forEach.call(mergeList, function(mergeElement) {
-		if(indexOf.call(srcList, mergeElement) < 0) {
+	nativeForEach.call(mergeList, function(mergeElement) {
+		if(nativeIndexOf.call(srcList, mergeElement) < 0) {
 			srcList[srcList.length] = mergeElement;
 		}
 	});
@@ -275,7 +275,7 @@ var Ramble = function(selector, context) {
 	} else if(isLikeArray(selector)) {
 		//if selector is array,
 		//select only dom element
-		elementList = filter.call(selector, function(item) {
+		elementList = nativeFilter.call(selector, function(item) {
 			return !!item.nodeType;
 		});
 	}
@@ -311,12 +311,12 @@ var _RamblePrototype = {
 	slice: function(from, to) {
 		if(from) {
 			if(to) {
-				return slice.call(this, from, to);
+				return nativeSlice.call(this, from, to);
 			} else {
-				return slice.call(this, from);
+				return nativeSlice.call(this, from);
 			}
 		} else {
-			return slice.call(this);
+			return nativeSlice.call(this);
 		}
 	}
 };
@@ -436,7 +436,7 @@ var _RambleTraversing = {
 	 * @return {Ramble}
 	 */
 	filter: function(callback) {
-		return new Ramble(filter.call(this, callback));
+		return new Ramble(nativeFilter.call(this, callback));
 	},
 	/**
 	 * apply callback and get elements
@@ -445,9 +445,9 @@ var _RambleTraversing = {
 	 */
 	map: function(callback) {
 		var array = [], element;
-		var i, len = array.length;
+		var i, len = this.length;
 		for(i = 0;i < len;i++) {
-			data = callback(this[i], i);
+			element = callback(this[i], i);
 			if(element != null) {
 				array.push(element);
 			}
@@ -460,14 +460,25 @@ var _RambleTraversing = {
 	 */
 	unique: function() {
 		var array = this.slice();
-		return new Ramble(filter.call(array, function(item, index){
+		return new Ramble(nativeFilter.call(array, function(item, index){
 			return array.indexOf(item) == index;
 		}));
 	},
+	/**
+	 * get all children
+	 * @return {Ramble}
+	 */
 	children: function() {
-		return this.map(function() {
-
-		});
+		var array = [];
+		var i, len = this.length;
+		for(i = 0;i < len;i++) {
+			array.push(nativeMap.call(this[i].childNodes, function(node) {
+				if(node.nodeType == 1) {
+					return node;
+				}
+			}));
+		}
+		return new Ramble(array);
 	}
 };
 
@@ -823,6 +834,10 @@ var _RambleAnimation = {
 		this._transform.add(stringFormat("rotate({0}deg)", n));
 		return this;
 	},
+	/**
+	 * insert animation properties
+	 * @return {Ramble}
+	 */
 	animate: function() {
 		var prefix, i, len = this._prefix.length;
 		for(i = 0;i < len;i ++) {

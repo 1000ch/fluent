@@ -20,12 +20,16 @@ var slice = emptyArray.slice,
 	map = emptyArray.map;
 
 var rxConciseSelector = /^(?:#([\w\-]+)|(\w+)|\.([\w\-]+))$/,//filter #id, tagName, .className
+	rxIdSelector = /^#([\w-]+)$/,
+	rxClassSelector = /^\.([\w-]+)$/,
+	rxTagSelector = /^[\w-]+$/,
 	rxReady = /complete|loaded|interactive/,//dom ready state
 	rxWhitespace = /\s+/g,
 	rxStringFormat = /\{(.+?)\}/g;
 
 var qs = "querySelector", 
-	qsa = "querySelectorAll";
+	qsa = "querySelectorAll",
+	hop = "hasOwnProperty";
 
 /**
  * argument is string or not
@@ -96,7 +100,7 @@ function extend(obj) {
 		arg = args[i];
 		for(key in arg) {
 			//even if "key" property already exist, set into "key"
-			if(arg.hasOwnProperty(key)) {
+			if(arg[hop](key)) {
 				obj[key] = arg[key];
 			}
 		}
@@ -116,7 +120,7 @@ function fill(obj) {
 		arg = args[i];
 		for(key in arg) {
 			//if "key" is not undefined, "key" will not be rewrite
-			if(arg.hasOwnProperty(key) && !(key in obj)) {
+			if(arg[hop](key) && !(key in obj)) {
 				obj[key] = arg[key];
 			}
 		}
@@ -136,6 +140,7 @@ function loadScript(path, callback, async, defer) {
 
 	script.src = path;
 	script.charset = "utf-8";
+	script.type = "text/javascript";
 	script.async = (async === undefined ? false : async);
 	script.defer = (defer === undefined ? false : defer);
 
@@ -152,7 +157,7 @@ function loadScript(path, callback, async, defer) {
  * @param {Function} callback
  */
 function onDocumentReady(callback) {
-	var args = slice.call(arguments.length - 1);
+	var args = slice.call(arguments, 1);
 	if (rxReady.test(doc.readyState)) {
 		if(!args) {
 			callback();

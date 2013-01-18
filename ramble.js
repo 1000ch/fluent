@@ -10,7 +10,8 @@ var doc = window.document;
 
 var emptyArray = [],
 	emptyObject = {},
-	emptyFunction = function() {};
+	emptyFunction = function() {},
+	emptyElement = doc.createElement("div");
 
 var nativeSlice = emptyArray.slice,
 	nativeSplice = emptyArray.splice,
@@ -29,6 +30,17 @@ var rxConciseSelector = /^(?:#([\w\-]+)|(\w+)|\.([\w\-]+))$/,//filter #id, tagNa
 var qs = "querySelector", 
 	qsa = "querySelectorAll",
 	hop = "hasOwnProperty";
+
+var matches = "matchesSelector";
+if(emptyElement.webkitMatchesSelector) {
+	matches = "webkitMatchesSelector";
+} else if(emptyElement.mozMatchesSelector) {
+	matches = "mozMatchesSelector";
+} else if(emptyElement.msMatchesSelector) {
+	matches = "msMatchesSelector";
+} else if(emptyElement.oMatchesSelector) {
+	matches = "oMatchesSelector";
+}
 
 /**
  * argument is string or not
@@ -180,18 +192,10 @@ function loadScript(path, callback, async, defer) {
 function onDocumentReady(callback) {
 	var args = nativeSlice.call(arguments, 1);
 	if (rxReady.test(doc.readyState)) {
-		if(!args) {
-			callback();
-		} else {
-			callback(args)
-		}
+		!args ? callback() : callback(args);
 	} else {
 		doc.addEventListener("DOMContentLoaded", function() {
-			if(!args) {
-				callback();
-			} else {
-				callback(args)
-			}
+			!args ? callback() : callback(args);
 		}, false);
 	}
 }
@@ -209,8 +213,8 @@ function onDocumentReady(callback) {
  * @param {HTMLElement|Array|String}
  * @return {Array}
  */
-function _qsaHook(selector, context) {
-	var con = isString(context) ? _qsaHook(context) : context;
+function qsaHook(selector, context) {
+	var con = isString(context) ? qsaHook(context) : context;
 	var root = con ? con : doc;
 	var mergeBuffer = [], m = rxConciseSelector.exec(selector);
 
@@ -220,7 +224,7 @@ function _qsaHook(selector, context) {
 		} else if (m[2]) {//if selector is "tagName"
 			if(root.length !== undefined) {
 				nativeForEach.call(root, function(element) {
-					_mergeArray(mergeBuffer, element.getElementsByTagName(selector));
+					mergeArray(mergeBuffer, element.getElementsByTagName(selector));
 				});
 				return mergeBuffer;
 			} else {
@@ -229,7 +233,7 @@ function _qsaHook(selector, context) {
 		} else if (m[3]) {//if selector is ".className"
 			if(root.length !== undefined) {
 				nativeForEach.call(root, function(element) {
-					_mergeArray(mergeBuffer, element.getElementsByClassName(m[3]));
+					mergeArray(mergeBuffer, element.getElementsByClassName(m[3]));
 				});
 				return mergeBuffer;
 			} else {
@@ -239,7 +243,7 @@ function _qsaHook(selector, context) {
 	}
 	if(root.length !== undefined) {
 		nativeForEach.call(root, function(element) {
-			_mergeArray(mergeBuffer, element[qsa](selector));
+			mergeArray(mergeBuffer, element[qsa](selector));
 		});
 		return mergeBuffer;
 	} else {
@@ -251,7 +255,7 @@ function _qsaHook(selector, context) {
  * @param {Array} srcList
  * @param {Array|* which has length property}
  */
-function _mergeArray(srcList, mergeList) {
+function mergeArray(srcList, mergeList) {
 	nativeForEach.call(mergeList, function(mergeElement) {
 		if(nativeIndexOf.call(srcList, mergeElement) < 0) {
 			srcList[srcList.length] = mergeElement;
@@ -268,7 +272,7 @@ var Ramble = function(selector, context) {
 	var elementList = [], len;
 	if(isString(selector)) {
 		//if selector is string
-		elementList = _qsaHook(selector, context);
+		elementList = qsaHook(selector, context);
 	} else if(selector.nodeType) {
 		//if selector is single dom element
 		elementList = [selector];
@@ -353,7 +357,7 @@ var _RambleEvent = {
 	_delegateCache: "delegateCache",
 	_delegateClosure: function(selector, context, eventHandler) {
 		return function(e) {
-			var found = _qsaHook(selector, context);
+			var found = qsaHook(selector, context);
 			var i, len = found.length, element;
 			for(i = 0;i < len;i++) {
 				element = found[i];

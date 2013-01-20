@@ -73,7 +73,7 @@ function isNodeList(value) {
  * @param {String} key
  * @return {String}
  */
-function compuredStyle(element, key) {
+function computedStyle(element, key) {
 	if(element.currentStyle) {
 		return element.currentStyle[key];
 	} else if(window.getComputedStyle) {
@@ -641,7 +641,7 @@ var _RambleManipulation = {
 		var i, len = this.length;
 		for(i = 0;i < len;i++) {
 			this[i].style.display = "";
-			(compuredStyle(element, "display") === "none") ? element.style.display = "block" : 0;
+			(computedStyle(this[i], "display") === "none") ? this[i].style.display = "block" : 0;
 		}
 	},
 	/**

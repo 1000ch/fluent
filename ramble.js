@@ -8,14 +8,16 @@
 "use strict";
 var doc = window.document;
 
+//cache empty structure
 var emptyArray = [],
 	emptyObject = {},
 	emptyFunction = function() {},
 	emptyElement = doc.createElement("div");
 
+//cache referrence
 var objectCreate = Object.create,
 	objectDefineProperty = Object.defineProperty,
-	objectGetPropertyOf = Object.getPropertyOf(target),
+	objectGetPropertyOf = Object.getPropertyOf,
 	objectGetOwnPropertyNames = Object.getOwnPropertyNames,
 	objectGetOwnPropertyDescriptor = Object.getOwnPropertyDescriptor,
 	arraySlice = emptyArray.slice,
@@ -25,6 +27,7 @@ var objectCreate = Object.create,
 	arrayFilter = emptyArray.filter,
 	arrayMap = emptyArray.map;
 
+//regular expression
 var rxConciseSelector = /^(?:#([\w\-]+)|(\w+)|\.([\w\-]+))$/,//filter #id, tagName, .className
 	rxIdSelector = /^#([\w-]+)$/,
 	rxClassSelector = /^\.([\w-]+)$/,
@@ -36,6 +39,7 @@ var qs = "querySelector",
 	qsa = "querySelectorAll",
 	hop = "hasOwnProperty";
 
+//detect matchesSelector
 var matches = "matchesSelector";
 if(emptyElement.webkitMatchesSelector) {
 	matches = "webkitMatchesSelector";
@@ -71,7 +75,6 @@ function isLikeArray(value) {
 function isNodeList(value) {
 	return (String(value) === "[object NodeList]");
 }
-
 /**
  * get computed style of element
  * @param {HTMLDomElement} element
@@ -86,17 +89,18 @@ function computedStyle(element, key) {
 	}
 	return null;
 }
-
 /**
  * generic each function
+ * @description if callback function returns false, break loop.
  * @param {Object} target
  * @param {Function} callback
+ * @return {Object} target
  */
 function commonEach(target, callback) {
 	var args = arraySlice.call(arguments, 2);
 	var i, len = target.length, key, result;
 	if(args.length != 0) {
-		//if args is null, undefined, 0, ""
+		//if args is not "false"
 		if(isLikeArray(target)) {
 			for(i = 0;i < len;i++) {
 				result = callback.apply(target[i], args);
@@ -113,6 +117,7 @@ function commonEach(target, callback) {
 			}
 		}
 	} else {
+		//if args is null, undefined, 0, ""
 		if(isLikeArray(target)) {
 			for(i = 0;i < len;i++) {
 				result = callback.call(target[i], target[i], i);
@@ -129,9 +134,13 @@ function commonEach(target, callback) {
 			}
 		}
 	}
-	return target
+	return target;
 }
-
+/**
+ * copy object
+ * @param {Object} target
+ * @param {Object} copy
+ */
 function commonCopy(target) {
 	var copy = objectCreate(objectGetPropertyOf(target));
 	var propertyNames = objectGetOwnPropertyNames(target);
@@ -139,8 +148,48 @@ function commonCopy(target) {
 	arrayForEach.call(propertyNames, function(name) {
 		objectDefineProperty(copy, name, objectGetOwnPropertyDescriptor(target, name));
 	});
+	return copy;
 }
-
+/**
+ * extend object hardly
+ * @description if same property exist, it will be overriden
+ * @param {Object} obj
+ * @return {Object} obj
+ */
+function commonExtend(obj) {
+	var key, arg, args = arraySlice.call(arguments, 1),
+		i = 0, len = args.length;
+	for(;i < len;i++) {
+		arg = args[i];
+		for(key in arg) {
+			//even if "key" property already exist, set into "key"
+			if(arg[hop](key)) {
+				obj[key] = arg[key];
+			}
+		}
+	}
+	return obj;
+}
+/**
+ * extend object softly
+ * @description if same property exist, it will not be overriden
+ * @param {Object} obj
+ * @return {Object} obj
+ */
+function commonFill(obj) {
+	var key, arg, args = arraySlice.call(arguments, 1),
+		i = 0, len = args.length;
+	for(;i < len;i++) {
+		arg = args[i];
+		for(key in arg) {
+			//if "key" is not undefined, "key" will not be rewrite
+			if(arg[hop](key) && !(key in obj)) {
+				obj[key] = arg[key];
+			}
+		}
+	}
+	return obj;
+}
 /**
  * string format
  * @param {String} str
@@ -178,47 +227,6 @@ function stringDasherize(str) {
 		.toLowerCase();
 }
 /**
- * extend object hardly
- * @description if same property exist, it will be overriden
- * @param {Object} obj
- * @return {Object} obj
- */
-function extend(obj) {
-	var key, arg, args = arraySlice.call(arguments, 1),
-		i = 0, len = args.length;
-	for(;i < len;i++) {
-		arg = args[i];
-		for(key in arg) {
-			//even if "key" property already exist, set into "key"
-			if(arg[hop](key)) {
-				obj[key] = arg[key];
-			}
-		}
-	}
-	return obj;
-}
-/**
- * extend object softly
- * @description if same property exist, it will not be overriden
- * @param {Object} obj
- * @return {Object} obj
- */
-function fill(obj) {
-	var key, arg, args = arraySlice.call(arguments, 1),
-		i = 0, len = args.length;
-	for(;i < len;i++) {
-		arg = args[i];
-		for(key in arg) {
-			//if "key" is not undefined, "key" will not be rewrite
-			if(arg[hop](key) && !(key in obj)) {
-				obj[key] = arg[key];
-			}
-		}
-	}
-	return obj;
-}
-
-/**
  * load script immediately or asynchronously
  * @param {String} path
  * @param {Function} callback
@@ -241,7 +249,6 @@ function loadScript(path, callback, async, defer) {
 
 	doc[qs]("head").appendChild(script);
 }
-
 /**
  * execute callback when dom content loaded
  * @param {Function} callback
@@ -256,7 +263,6 @@ function onDocumentReady(callback) {
 		}, false);
 	}
 }
-
 /*
  * extend and hook querySelectorAll
  * evaluate selector concisely
@@ -319,7 +325,6 @@ function mergeArray(srcList, mergeList) {
 		}
 	});
 }
-
 /**
  * base class
  * @param {String} obj
@@ -345,7 +350,6 @@ var Ramble = function(selector, context) {
 		this[len] = elementList[len];
 	}
 };
-
 /**
  * base prototype
  */
@@ -385,7 +389,6 @@ var _RamblePrototype = {
 		return arraySlice.call(this);
 	}
 };
-
 var _RambleEvent = {
 	/**
 	 * bind event
@@ -493,7 +496,6 @@ var _RambleEvent = {
 		}
 	}
 };
-
 var _RambleTraversing = {
 	/**
 	 * get elements by search with callback
@@ -546,7 +548,6 @@ var _RambleTraversing = {
 		return new Ramble(array);
 	}
 };
-
 var _RambleManipulation = {
 	/**
 	 * set innerHTML property of element
@@ -712,7 +713,6 @@ var _RambleManipulation = {
 		return this.css("display", "none");
 	}
 };
-
 var _RambleAnimation = {
 	_param: {},
 	_prefix: ["-webkit-", "-moz-", "-ms-", "-o-", ""],
@@ -924,11 +924,11 @@ var _RambleAnimation = {
 };
 
 //extend Ramble prototype
-extend(Ramble.prototype, _RamblePrototype);
-extend(Ramble.prototype, _RambleEvent);
-extend(Ramble.prototype, _RambleTraversing);
-extend(Ramble.prototype, _RambleManipulation);
-extend(Ramble.prototype, _RambleAnimation);
+commonExtend(Ramble.prototype, _RamblePrototype);
+commonExtend(Ramble.prototype, _RambleEvent);
+commonExtend(Ramble.prototype, _RambleTraversing);
+commonExtend(Ramble.prototype, _RambleManipulation);
+commonExtend(Ramble.prototype, _RambleAnimation);
 
 window.Ramble = Ramble;
 
@@ -939,7 +939,7 @@ window.$ = function(selector, context) {
 
 window.$.ready = onDocumentReady;
 window.$.loadScript = loadScript;
-window.$.extend = extend;
-window.$.fill = fill;
+window.$.extend = commonExtend;
+window.$.fill = commonFill;
 
 })(window);

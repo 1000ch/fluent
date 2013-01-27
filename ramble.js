@@ -1,5 +1,5 @@
 /**
- * ramble.js JavaScript Library ver0.3
+ * ramble.js
  *
  * Copyright 2012~, 1000ch<http://1000ch.net/>
  * licensed under the MIT license.
@@ -37,13 +37,11 @@ arrayIndexOf || arrayIndexOf = function(searchElement) {
 	if(this == null) {
 		throw new TypeError();
 	}
-
 	var t = Object(this);
 	var len = t.length >>> 0;
 	if(len === 0) {
 		return -1;
 	}
-
 	var n = 0;
 	if(arguments.length > 1) {
 		n = Number(arguments[1]);
@@ -56,7 +54,6 @@ arrayIndexOf || arrayIndexOf = function(searchElement) {
 	if(n >= len) {
 			return -1;
 	}
-
 	var k = n >= 0 ? n : Math.max(len - Math.abs(n), 0);
 	for (; k < len; k++) {
 		if(k in t && t[k] === searchElement) {
@@ -70,13 +67,11 @@ arrayLastIndexOf || arrayLastIndexOf = function(searchElement) {
 	if(this == null) {
 		throw new TypeError();
 	}
-
 	var t = Object(this);
 	var len = t.length >>> 0;
 	if(len === 0) {
 		return -1;
 	}
-
 	var n = len;
 	if(arguments.length > 1) {
 		n = Number(arguments[1]);
@@ -86,7 +81,6 @@ arrayLastIndexOf || arrayLastIndexOf = function(searchElement) {
 			n = (n > 0 || -1) * Math.floor(Math.abs(n));
 		}
 	}
-
 	var k = n >= 0 ? Math.min(n, len - 1) : len - Math.abs(n);
 	for (; k >= 0; k--) {
 		if(k in t && t[k] === searchElement) {
@@ -106,20 +100,17 @@ arrayEvery || arrayEvery = function(callback) {
 	if(this == null) {
 		throw new TypeError();
 	}
-
 	var t = Object(this);
 	var len = t.length >>> 0;
 	if(typeof fun != "function") {
 		throw new TypeError();
 	}
-
 	var thisp = arguments[1];
 	for (var i = 0; i < len; i++) {
 		if(i in t && !fun.call(thisp, t[i], i, t)) {
 			return false;
 		}
 	}
-
 	return true;
 };
 
@@ -127,43 +118,34 @@ arraySome || arraySome = function(callback) {
 	if(this == null) {
 		throw new TypeError();
 	}
-
 	var t = Object(this);
 	var len = t.length >>> 0;
 	if(typeof fun != "function") {
 		throw new TypeError();
 	}
-
 	var thisp = arguments[1];
 	for (var i = 0; i < len; i++) {
 		if(i in t && fun.call(thisp, t[i], i, t)) {
 			return true;
 		}
 	}
-
 	return false;
 };
 
 arrayMap || arrayMap = function(callback, thisArg) {
 	var T, A, k;
-
 	if(this == null) {
 		throw new TypeError(" this is null or not defined");
 	}
-
 	var O = Object(this), len = O.length >>> 0;
-
 	if(typeof callback !== "function") {
 		throw new TypeError(callback + " is not a function");
 	}
-
 	if(thisArg) {
 		T = thisArg;
 	}
-
 	A = new Array(len);
 	k = 0;
-
 	while(k < len) {
 		var kValue, mappedValue;
 		if(k in O) {
@@ -173,7 +155,6 @@ arrayMap || arrayMap = function(callback, thisArg) {
 		}
 		k++;
 	}
-
 	return A;
 };
 
@@ -181,13 +162,11 @@ arrayFilter || arrayFilter = function(callback) {
 	if(this == null) {
 		throw new TypeError();
 	}
-
 	var t = Object(this);
 	var len = t.length >>> 0;
 	if(typeof callback != "function") {
 		throw new TypeError();
 	}
-
 	var res = [];
 	var thisp = arguments[1];
 	for (var i = 0; i < len; i++) {
@@ -198,7 +177,6 @@ arrayFilter || arrayFilter = function(callback) {
 			}
 		}
 	}
-
 	return res;
 };
 
@@ -207,11 +185,9 @@ arrayReduce || arrayReduce = function(callback) {
 		throw new TypeError("Object is null or undefined");
 	}
 	var i = 0, l = this.length >> 0, current;
-
 	if(typeof accumulator !== "function") {
 		throw new TypeError("First argument is not callable");
 	}
-
 	if(arguments.length < 2) {
 		if(l === 0) {
 			throw new TypeError("Array length is 0 and no second argument");
@@ -221,14 +197,12 @@ arrayReduce || arrayReduce = function(callback) {
 	} else {
 		current = arguments[1];
 	}
-
 	while(i < l) {
 		if(i in this) {
 			current = callback.call(undefined, current, this[i], i, this);
 		}
 		++i;
 	}
-
 	return current;
 };
 
@@ -236,17 +210,14 @@ arrayReduceRight || arrayReduceRight = function(callback) {
 	if(this == null) {
 		throw new TypeError();
 	}
-
 	var t = Object(this);
 	var len = t.length >>> 0;
 	if(typeof callback != "function") {
 		throw new TypeError();
 	}
-
 	if(len === 0 && arguments.length === 1) {
 		throw new TypeError();
 	}
-
 	var k = len - 1;
 	var accumulator;
 	if(arguments.length >= 2) {
@@ -257,20 +228,17 @@ arrayReduceRight || arrayReduceRight = function(callback) {
 				accumulator = this[k--];
 				break;
 			}
-
 			if(--k < 0) {
 				throw new TypeError();
 			}
 		} while(true);
 	}
-
 	while(k >= 0) {
 		if(k in t) {
 			accumulator = callback.call(undefined, accumulator, t[k], k, t);
 		}
 		k--;
 	}
-
 	return accumulator;
 };
 

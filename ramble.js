@@ -33,214 +33,232 @@ var objectToString = emptyObject.toString,
 	arrayReduce = emptyArray.reduce,
 	arrayReduceRight = emptyArray.reduceRight;
 
-arrayIndexOf || arrayIndexOf = function(searchElement) {
-	if(this == null) {
-		throw new TypeError();
-	}
-	var t = Object(this);
-	var len = t.length >>> 0;
-	if(len === 0) {
-		return -1;
-	}
-	var n = 0;
-	if(arguments.length > 1) {
-		n = Number(arguments[1]);
-		if(n != n) {
-			n = 0;
-		} else if(n != 0 && n != Infinity && n != -Infinity) {
-			n = (n > 0 || -1) * Math.floor(Math.abs(n));
+if(!arrayIndexOf) {
+	arrayIndexOf = function(searchElement) {
+		if(this == null) {
+			throw new TypeError();
 		}
-	}
-	if(n >= len) {
+		var t = Object(this);
+		var len = t.length >>> 0;
+		if(len === 0) {
 			return -1;
-	}
-	var k = n >= 0 ? n : Math.max(len - Math.abs(n), 0);
-	for (; k < len; k++) {
-		if(k in t && t[k] === searchElement) {
-			return k;
 		}
-	}
-	return -1;
-};
-
-arrayLastIndexOf || arrayLastIndexOf = function(searchElement) {
-	if(this == null) {
-		throw new TypeError();
-	}
-	var t = Object(this);
-	var len = t.length >>> 0;
-	if(len === 0) {
+		var n = 0;
+		if(arguments.length > 1) {
+			n = Number(arguments[1]);
+			if(n != n) {
+				n = 0;
+			} else if(n != 0 && n != Infinity && n != -Infinity) {
+				n = (n > 0 || -1) * Math.floor(Math.abs(n));
+			}
+		}
+		if(n >= len) {
+				return -1;
+		}
+		var k = n >= 0 ? n : Math.max(len - Math.abs(n), 0);
+		for (; k < len; k++) {
+			if(k in t && t[k] === searchElement) {
+				return k;
+			}
+		}
 		return -1;
-	}
-	var n = len;
-	if(arguments.length > 1) {
-		n = Number(arguments[1]);
-		if(n != n) {
-			n = 0;
-		} else if(n != 0 && n != (1 / 0) && n != -(1 / 0)) {
-			n = (n > 0 || -1) * Math.floor(Math.abs(n));
-		}
-	}
-	var k = n >= 0 ? Math.min(n, len - 1) : len - Math.abs(n);
-	for (; k >= 0; k--) {
-		if(k in t && t[k] === searchElement) {
-			return k;
-		}
-	}
-	return -1;
-};
+	};
+}
 
-arrayForEach || arrayForEach = function(callback, scope) {
-	for(var i = 0, len = this.length; i < len; ++i) {
-		callback.call(scope, this[i], i, this);
-	}
-};
-
-arrayEvery || arrayEvery = function(callback) {
-	if(this == null) {
-		throw new TypeError();
-	}
-	var t = Object(this);
-	var len = t.length >>> 0;
-	if(typeof fun != "function") {
-		throw new TypeError();
-	}
-	var thisp = arguments[1];
-	for (var i = 0; i < len; i++) {
-		if(i in t && !fun.call(thisp, t[i], i, t)) {
-			return false;
+if(!arrayLastIndexOf) {
+	arrayLastIndexOf = function(searchElement) {
+		if(this == null) {
+			throw new TypeError();
 		}
-	}
-	return true;
-};
-
-arraySome || arraySome = function(callback) {
-	if(this == null) {
-		throw new TypeError();
-	}
-	var t = Object(this);
-	var len = t.length >>> 0;
-	if(typeof fun != "function") {
-		throw new TypeError();
-	}
-	var thisp = arguments[1];
-	for (var i = 0; i < len; i++) {
-		if(i in t && fun.call(thisp, t[i], i, t)) {
-			return true;
+		var t = Object(this);
+		var len = t.length >>> 0;
+		if(len === 0) {
+			return -1;
 		}
-	}
-	return false;
-};
-
-arrayMap || arrayMap = function(callback, thisArg) {
-	var T, A, k;
-	if(this == null) {
-		throw new TypeError(" this is null or not defined");
-	}
-	var O = Object(this), len = O.length >>> 0;
-	if(typeof callback !== "function") {
-		throw new TypeError(callback + " is not a function");
-	}
-	if(thisArg) {
-		T = thisArg;
-	}
-	A = new Array(len);
-	k = 0;
-	while(k < len) {
-		var kValue, mappedValue;
-		if(k in O) {
-			kValue = O[k];
-			mappedValue = callback.call(T, kValue, k, O);
-			A[k] = mappedValue;
-		}
-		k++;
-	}
-	return A;
-};
-
-arrayFilter || arrayFilter = function(callback) {
-	if(this == null) {
-		throw new TypeError();
-	}
-	var t = Object(this);
-	var len = t.length >>> 0;
-	if(typeof callback != "function") {
-		throw new TypeError();
-	}
-	var res = [];
-	var thisp = arguments[1];
-	for (var i = 0; i < len; i++) {
-		if(i in t) {
-			var val = t[i];
-			if(callback.call(thisp, val, i, t)) {
-				res.push(val);
+		var n = len;
+		if(arguments.length > 1) {
+			n = Number(arguments[1]);
+			if(n != n) {
+				n = 0;
+			} else if(n != 0 && n != (1 / 0) && n != -(1 / 0)) {
+				n = (n > 0 || -1) * Math.floor(Math.abs(n));
 			}
 		}
-	}
-	return res;
-};
-
-arrayReduce || arrayReduce = function(callback) {
-	if(this === null || this === undefined) {
-		throw new TypeError("Object is null or undefined");
-	}
-	var i = 0, l = this.length >> 0, current;
-	if(typeof accumulator !== "function") {
-		throw new TypeError("First argument is not callable");
-	}
-	if(arguments.length < 2) {
-		if(l === 0) {
-			throw new TypeError("Array length is 0 and no second argument");
-		}
-		current = this[0];
-		i = 1;
-	} else {
-		current = arguments[1];
-	}
-	while(i < l) {
-		if(i in this) {
-			current = callback.call(undefined, current, this[i], i, this);
-		}
-		++i;
-	}
-	return current;
-};
-
-arrayReduceRight || arrayReduceRight = function(callback) {
-	if(this == null) {
-		throw new TypeError();
-	}
-	var t = Object(this);
-	var len = t.length >>> 0;
-	if(typeof callback != "function") {
-		throw new TypeError();
-	}
-	if(len === 0 && arguments.length === 1) {
-		throw new TypeError();
-	}
-	var k = len - 1;
-	var accumulator;
-	if(arguments.length >= 2) {
-		accumulator = arguments[1];
-	} else {
-		do {
-			if(k in this) {
-				accumulator = this[k--];
-				break;
+		var k = n >= 0 ? Math.min(n, len - 1) : len - Math.abs(n);
+		for (; k >= 0; k--) {
+			if(k in t && t[k] === searchElement) {
+				return k;
 			}
-			if(--k < 0) {
-				throw new TypeError();
-			}
-		} while(true);
-	}
-	while(k >= 0) {
-		if(k in t) {
-			accumulator = callback.call(undefined, accumulator, t[k], k, t);
 		}
-		k--;
-	}
-	return accumulator;
-};
+		return -1;
+	};
+}
+
+if(!arrayForEach) {
+	arrayForEach || arrayForEach = function(callback, scope) {
+		for(var i = 0, len = this.length; i < len; ++i) {
+			callback.call(scope, this[i], i, this);
+		}
+	};
+}
+
+if(!arrayEvery) {
+	arrayEvery || arrayEvery = function(callback) {
+		if(this == null) {
+			throw new TypeError();
+		}
+		var t = Object(this);
+		var len = t.length >>> 0;
+		if(typeof fun != "function") {
+			throw new TypeError();
+		}
+		var thisp = arguments[1];
+		for (var i = 0; i < len; i++) {
+			if(i in t && !fun.call(thisp, t[i], i, t)) {
+				return false;
+			}
+		}
+		return true;
+	};
+}
+
+if(!arraySome) {
+	arraySome || arraySome = function(callback) {
+		if(this == null) {
+			throw new TypeError();
+		}
+		var t = Object(this);
+		var len = t.length >>> 0;
+		if(typeof fun != "function") {
+			throw new TypeError();
+		}
+		var thisp = arguments[1];
+		for (var i = 0; i < len; i++) {
+			if(i in t && fun.call(thisp, t[i], i, t)) {
+				return true;
+			}
+		}
+		return false;
+	};
+}
+
+if(!arrayMap) {
+	arrayMap = function(callback, thisArg) {
+		var T, A, k;
+		if(this == null) {
+			throw new TypeError(" this is null or not defined");
+		}
+		var O = Object(this), len = O.length >>> 0;
+		if(typeof callback !== "function") {
+			throw new TypeError(callback + " is not a function");
+		}
+		if(thisArg) {
+			T = thisArg;
+		}
+		A = new Array(len);
+		k = 0;
+		while(k < len) {
+			var kValue, mappedValue;
+			if(k in O) {
+				kValue = O[k];
+				mappedValue = callback.call(T, kValue, k, O);
+				A[k] = mappedValue;
+			}
+			k++;
+		}
+		return A;
+	};
+}
+
+if(!arrayFilter) {
+	arrayFilter = function(callback) {
+		if(this == null) {
+			throw new TypeError();
+		}
+		var t = Object(this);
+		var len = t.length >>> 0;
+		if(typeof callback != "function") {
+			throw new TypeError();
+		}
+		var res = [];
+		var thisp = arguments[1];
+		for (var i = 0; i < len; i++) {
+			if(i in t) {
+				var val = t[i];
+				if(callback.call(thisp, val, i, t)) {
+					res.push(val);
+				}
+			}
+		}
+		return res;
+	};
+}
+
+if(!arrayReduce) {
+	arrayReduce || arrayReduce = function(callback) {
+		if(this === null || this === undefined) {
+			throw new TypeError("Object is null or undefined");
+		}
+		var i = 0, l = this.length >> 0, current;
+		if(typeof accumulator !== "function") {
+			throw new TypeError("First argument is not callable");
+		}
+		if(arguments.length < 2) {
+			if(l === 0) {
+				throw new TypeError("Array length is 0 and no second argument");
+			}
+			current = this[0];
+			i = 1;
+		} else {
+			current = arguments[1];
+		}
+		while(i < l) {
+			if(i in this) {
+				current = callback.call(undefined, current, this[i], i, this);
+			}
+			++i;
+		}
+		return current;
+	};
+}
+
+if(!arrayReduceRight) {
+	arrayReduceRight = function(callback) {
+		if(this == null) {
+			throw new TypeError();
+		}
+		var t = Object(this);
+		var len = t.length >>> 0;
+		if(typeof callback != "function") {
+			throw new TypeError();
+		}
+		if(len === 0 && arguments.length === 1) {
+			throw new TypeError();
+		}
+		var k = len - 1;
+		var accumulator;
+		if(arguments.length >= 2) {
+			accumulator = arguments[1];
+		} else {
+			do {
+				if(k in this) {
+					accumulator = this[k--];
+					break;
+				}
+				if(--k < 0) {
+					throw new TypeError();
+				}
+			} while(true);
+		}
+		while(k >= 0) {
+			if(k in t) {
+				accumulator = callback.call(undefined, accumulator, t[k], k, t);
+			}
+			k--;
+		}
+		return accumulator;
+	};
+}
 
 //regular expression
 var rxConciseSelector = /^(?:#([\w\-]+)|(\w+)|\.([\w\-]+))$/,//filter #id, tagName, .className

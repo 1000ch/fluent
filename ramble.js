@@ -630,8 +630,7 @@ var _RambleEvent = {
 	 * @return {Ramble}
 	 */
 	bind: function(type, eventHandler, useCapture) {
-		var i, len = this.length;
-		for(i = 0;i < len;i++) {
+		for(var i = 0, len = this.length;i < len;i++) {
 			this[i].addEventListener(type, eventHandler, useCapture);
 		}
 		return this;
@@ -644,8 +643,7 @@ var _RambleEvent = {
 	 * @return {Ramble}
 	 */
 	unbind: function(type, eventHandler, useCapture) {
-		var i, len = this.length;
-		for(i = 0;i < len;i++) {
+		for(var i = 0, len = this.length;i < len;i++) {
 			this[i].removeEventListener(type, eventHandler, useCapture);
 		}
 		return this;
@@ -654,8 +652,8 @@ var _RambleEvent = {
 	_delegateClosure: function(selector, context, eventHandler) {
 		return function(e) {
 			var found = qsaHook(selector, context);
-			var i, len = found.length, element;
-			for(i = 0;i < len;i++) {
+			var element;
+			for(var i = 0, len = found.length;i < len;i++) {
 				element = found[i];
 				if(element == e.target) {
 					eventHandler.call(element);
@@ -715,8 +713,7 @@ var _RambleEvent = {
 				continue;
 			}
 
-			var i, length = listeners.length;
-			for(i = 0;i < length;i++) {
+			for(var i = 0, length = listeners.length;i < length;i++) {
 				if(listeners[i] == callback) {
 					element.removeEventListener(type, closures[i], true);
 					closures.splice(i, 1);
@@ -744,8 +741,7 @@ var _RambleTraversing = {
 	 */
 	map: function(callback) {
 		var array = [], element;
-		var i, len = this.length;
-		for(i = 0;i < len;i++) {
+		for(var i = 0, len = this.length;i < len;i++) {
 			element = callback(this[i], i);
 			if(element != null) {
 				array.push(element);
@@ -769,8 +765,7 @@ var _RambleTraversing = {
 	 */
 	children: function() {
 		var array = [];
-		var i, len = this.length;
-		for(i = 0;i < len;i++) {
+		for(var i = 0, len = this.length;i < len;i++) {
 			array.push(arrayMap.call(this[i].childNodes, function(node) {
 				if(node.nodeType == 1) {
 					return node;
@@ -911,8 +906,7 @@ var _RambleManipulation = {
 		} else if(isNodeList(value)) {
 			nodeList = value;
 		} else if(isLikeArray(value)) {
-			var i, len = value.length;
-			for(i = 0;i < len;i++) {
+			for(var i = 0, len = value.length;i < len;i++) {
 				if(value[i].nodeType) {
 					nodeList[nodeList.length] = value[i];
 				}
@@ -932,8 +926,7 @@ var _RambleManipulation = {
 	 * show all element as computed styles
 	 */
 	show: function() {
-		var i, len = this.length;
-		for(i = 0;i < len;i++) {
+		for(var i = 0, len = this.length;i < len;i++) {
 			this[i].style.display = "";
 			(computedStyle(this[i], "display") === "none") ? this[i].style.display = "block" : 0;
 		}
@@ -1136,8 +1129,8 @@ var _RambleAnimation = {
 	 * @return {Ramble}
 	 */
 	animate: function() {
-		var prefix, i, len = this._prefix.length;
-		for(i = 0;i < len;i ++) {
+		var prefix;
+		for(var i = 0, len = this._prefix.length;i < len;i ++) {
 			prefix = this._prefix[i];
 			this._setProperty(prefix + this._ease.key, this._ease.value);
 			this._setProperty(prefix + this._delay.key, this._delay.value);

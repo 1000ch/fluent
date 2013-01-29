@@ -33,6 +33,7 @@ var objectToString = emptyObject.toString,
 	arrayReduce = emptyArray.reduce,
 	arrayReduceRight = emptyArray.reduceRight;
 
+//array polyfill
 if(!arrayIndexOf) {
 	arrayIndexOf = function(searchElement) {
 		if(this == null) {
@@ -95,7 +96,7 @@ if(!arrayLastIndexOf) {
 }
 
 if(!arrayForEach) {
-	arrayForEach || arrayForEach = function(callback, scope) {
+	arrayForEach = function(callback, scope) {
 		for(var i = 0, len = this.length; i < len; ++i) {
 			callback.call(scope, this[i], i, this);
 		}
@@ -103,7 +104,7 @@ if(!arrayForEach) {
 }
 
 if(!arrayEvery) {
-	arrayEvery || arrayEvery = function(callback) {
+	arrayEvery = function(callback) {
 		if(this == null) {
 			throw new TypeError();
 		}
@@ -123,7 +124,7 @@ if(!arrayEvery) {
 }
 
 if(!arraySome) {
-	arraySome || arraySome = function(callback) {
+	arraySome = function(callback) {
 		if(this == null) {
 			throw new TypeError();
 		}
@@ -195,7 +196,7 @@ if(!arrayFilter) {
 }
 
 if(!arrayReduce) {
-	arrayReduce || arrayReduce = function(callback) {
+	arrayReduce = function(callback) {
 		if(this === null || this === undefined) {
 			throw new TypeError("Object is null or undefined");
 		}
@@ -390,9 +391,8 @@ function commonCopy(target) {
  * @return {Object} obj
  */
 function commonExtend(obj) {
-	var key, arg, args = arraySlice.call(arguments, 1),
-		i = 0, len = args.length;
-	for(;i < len;i++) {
+	var key, arg, args = arraySlice.call(arguments, 1);
+	for(var i = 0, len = args.length;i < len;i++) {
 		arg = args[i];
 		for(key in arg) {
 			//even if "key" property already exist, set into "key"
@@ -410,9 +410,8 @@ function commonExtend(obj) {
  * @return {Object} obj
  */
 function commonFill(obj) {
-	var key, arg, args = arraySlice.call(arguments, 1),
-		i = 0, len = args.length;
-	for(;i < len;i++) {
+	var key, arg, args = arraySlice.call(arguments, 1);
+	for(var i = 0, len = args.length;i < len;i++) {
 		arg = args[i];
 		for(key in arg) {
 			//if "key" is not undefined, "key" will not be rewrite

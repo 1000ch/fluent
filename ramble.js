@@ -599,6 +599,123 @@ var _RamblePrototype = {
 		return arraySlice.call(this);
 	}
 };
+
+/**
+ * bind
+ * @param {Array} targetList
+ * @param {String} type
+ * @param {Function} eventHandler
+ * @param {Boolean} useCapture
+ */
+function bind(targetList, type, eventHandler, useCapture) {
+	nativeForEach.call(targetList, function(target) {
+		target.addEventListener(type, eventHandler, useCapture);
+	});
+}
+
+/**
+ * unbind
+ * @param {Array} targetList
+ * @param {String} type
+ * @param {Function} eventHandler
+ * @param {Boolean} useCapture
+ */
+function unbind(targetList, type, eventHandler, useCapture) {
+	nativeForEach.call(targetList, function(target) {
+		target.removeEventListener(type, eventHandler, useCapture);
+	});
+}
+
+function searchIndex(array, propertyName, compareData) {
+	var data;
+	for(var i = 0, len = array.length;i < len;i++) {
+		data = array[i];
+		if(data[propertyName] == compareData) {
+			return i;
+		}
+	}
+	return -1;
+}
+function createClosure(parent, selector, eventHandler) {
+	var closure = function(e) {
+		var children = qsaHook(selector, parent);
+		nativeForEach.call(children, function(child) {
+			if(e.target === child) {
+				eventHandler.call(child, e);
+			}
+		});
+	};
+	return closure;
+}
+
+//constant
+var CLOSURE = "closure";
+var EVENT_HANDLER = "eventHandler";
+var SELECTOR = "selector";
+
+/**
+ * delegate
+ * @param {Array} targetList
+ * @param {String} type
+ * @param {String} selector
+ * @param {Function} eventHandler
+ */
+function delegate(targetList, type, selector, eventHandler) {
+	var closure = null;
+	nativeForEach.call(targetList, function(target) {
+		if(!target.closureList) {
+			target.closureList = {};
+		}
+		if(!target.closureList.hasOwnProperty(type)) {
+			target.closureList[type] = [];
+		}
+		closure = _createClosure(target, selector, eventHandler);
+		if(_searchIndex(target.closureList[type], CLOSURE, closure) < 0) {
+			target.closureList[type].push({
+				selector: selector,
+				eventHandler: eventHandler,
+				closure: closure
+			});
+		}
+		target.addEventListener(type, closure);
+	});
+}
+
+/**
+ * undelegate
+ * @param {Array} targetList
+ * @param {String} type
+ * @param {String*} selector
+ * @param {Function*} eventHandler
+ */
+function undelegate(targetList, type, selector, eventHandler) {
+	nativeForEach.call(targetList, function(target) {
+		if(target.closureList && target.closureList.hasOwnProperty(type)) {
+			if(type && selector && eventHandler) {
+				var array = target.closureList[type];
+				var idx = _searchIndex(array, EVENT_HANDLER, eventHandler);
+				if(idx > -1) {
+					target.removeEventListener(type, array[idx][CLOSURE]);
+					target.closureList[type].splice(idx, 1);
+				}
+			} else if(type && selector && !eventHandler) {
+				var array = target.closureList[type];
+				var idx = _searchIndex(array, SELECTOR, selector);
+				if(idx > -1) {
+					target.removeEventListener(type, array[idx][CLOSURE]);
+					target.closureList[type].splice(idx, 1);
+				}
+			} else if(type && !selector && !eventHandler) {
+				var itemList = target.closureList[type];
+				nativeForEach.call(itemList, function(item) {
+					target.removeEventListener(type, item[CLOSURE]);
+				});
+				delete target.closureList[type];
+			}
+		}
+	});
+}
+
 var _RambleEvent = {
 	/**
 	 * bind event
@@ -608,9 +725,7 @@ var _RambleEvent = {
 	 * @return {Ramble}
 	 */
 	bind: function(type, eventHandler, useCapture) {
-		for(var i = 0, len = this.length;i < len;i++) {
-			this[i].addEventListener(type, eventHandler, useCapture);
-		}
+		bind(this, type, eventHandler, useCapture);
 		return this;
 	},
 	/**
@@ -621,25 +736,8 @@ var _RambleEvent = {
 	 * @return {Ramble}
 	 */
 	unbind: function(type, eventHandler, useCapture) {
-		for(var i = 0, len = this.length;i < len;i++) {
-			this[i].removeEventListener(type, eventHandler, useCapture);
-		}
+		unbind(this, type, eventHandler, useCapture);
 		return this;
-	},
-	_delegateCache: "delegateCache",
-	_delegateClosure: function(selector, eventHandler) {
-		return function(e) {
-			var found = qsaHook(selector);
-			var element;
-			for(var i = 0, len = found.length;i < len;i++) {
-				element = found[i];
-				if(element == e.target) {
-					eventHandler.call(element);
-					e.stopPropagation();
-					break;
-				}
-			}
-		};
 	},
 	/**
 	 * begin propagation event
@@ -648,25 +746,8 @@ var _RambleEvent = {
 	 * @return {Ramble}
 	 */
 	delegate: function(type, selector, eventHandler) {
-		var context = this.slice();
-		var store, element, len = context.length;
-		var closure = this._delegateClosure(selector, context, eventHandler);
-		while(len--) {
-			element = context[len];
-			store = element[this._delegateCache] || (element[this._delegateCache] = {
-				closure: {}, selector: {}, listener: {}
-			});
-
-			store.closure[type] || (store.closure[type] = []);
-			store.selector[type] || (store.selector[type] = []);
-			store.listener[type] || (store.listener[type] = []);
-
-			store.closure[type].push(closure);
-			store.selector[type].push(selector);
-			store.listener[type].push(eventHandler);
-
-			element.addEventListener(type, closure, true);
-		}
+		delegate(this, type, selector, eventHandler);
+		return this;
 	},
 	/**
 	 * finish propagation event
@@ -675,32 +756,8 @@ var _RambleEvent = {
 	 * @return {Ramble}
 	 */
 	undelegate: function(type, selector, eventHandler) {
-		var context = this.slice();
-		var store, closures, selectors, listeners, element, len = context.length;
-		while(len--) {
-			element = context[len];
-			store = element[this._delegateCache];
-			if(!store) {
-				continue;
-			}
-
-			closures = store.closure ? store.closure[type] : undefined;
-			selectors = store.selector ? store.selector[type] : undefined;
-			listeners = store.listener ? store.listener[type] : undefined;
-			if(!closures || !selectors || !listeners) {
-				continue;
-			}
-
-			for(var i = 0, length = listeners.length;i < length;i++) {
-				if(listeners[i] == callback) {
-					element.removeEventListener(type, closures[i], true);
-					closures.splice(i, 1);
-					selectors.splice(i, 1);
-					listeners.splice(i, 1);
-					break;
-				}
-			}
-		}
+		undelegate(this, type, selector, eventHandler);
+		return this;
 	}
 };
 var _RambleTraversing = {

@@ -6,7 +6,8 @@
  **/
 (function(window, undefined){
 "use strict";
-var doc = window.document;
+var win = window,
+	doc = window.document;
 
 //cache empty structure
 var emptyArray = [],
@@ -318,8 +319,8 @@ function isNodeList(value) {
 function computedStyle(element, key) {
 	if(element.currentStyle) {
 		return element.currentStyle[key];
-	} else if(window.getComputedStyle) {
-		return window.getComputedStyle(element, null).getPropertyValue(key);
+	} else if(win.getComputedStyle) {
+		return win.getComputedStyle(element, null).getPropertyValue(key);
 	}
 	return null;
 }
@@ -505,45 +506,22 @@ function onDocumentReady(callback) {
  * if context is given, search element with selector
  * in context (or related condition).
  * @param {String} selector css selector
- * @param {HTMLElement|Array|String}
  * @return {Array}
  */
-function qsaHook(selector, context) {
-	var con = isString(context) ? qsaHook(context) : context;
-	var root = con ? con : doc;
+function qsaHook(selector) {
+	context = context ? context : doc;
 	var mergeBuffer = [], m = rxConciseSelector.exec(selector);
 
 	if (m) {//regex result is not undefined
 		if (m[1]) {//if selector is "#id"
 			return [doc.getElementById(m[1])];
 		} else if (m[2]) {//if selector is "tagName"
-			if(root.length !== undefined) {
-				arrayForEach.call(root, function(element) {
-					mergeArray(mergeBuffer, element.getElementsByTagName(selector));
-				});
-				return mergeBuffer;
-			} else {
-				return arraySlice.call(root.getElementsByTagName(selector));
-			}
+			return arraySlice.call(context.getElementsByTagName(selector));
 		} else if (m[3]) {//if selector is ".className"
-			if(root.length !== undefined) {
-				arrayForEach.call(root, function(element) {
-					mergeArray(mergeBuffer, element.getElementsByClassName(m[3]));
-				});
-				return mergeBuffer;
-			} else {
-				return arraySlice.call(root.getElementsByClassName(m[3]));
-			}
+			return arraySlice.call(context.getElementsByClassName(m[3]));
 		}
 	}
-	if(root.length !== undefined) {
-		arrayForEach.call(root, function(element) {
-			mergeArray(mergeBuffer, element[qsa](selector));
-		});
-		return mergeBuffer;
-	} else {
-		return arraySlice.call(root[qsa](selector));
-	}
+	return arraySlice.call(context[qsa](selector));
 }
 /**
  * merge array or object (like an array) into array
@@ -562,11 +540,11 @@ function mergeArray(srcList, mergeList) {
  * @param {String} obj
  * @param {String|HTMLElement}
  */
-var Ramble = function(selector, context) {
+var Ramble = function(selector) {
 	var elementList = [], len;
 	if(isString(selector)) {
 		//if selector is string
-		elementList = qsaHook(selector, context);
+		elementList = qsaHook(selector);
 	} else if(selector.nodeType) {
 		//if selector is single dom element
 		elementList = [selector];
@@ -649,9 +627,9 @@ var _RambleEvent = {
 		return this;
 	},
 	_delegateCache: "delegateCache",
-	_delegateClosure: function(selector, context, eventHandler) {
+	_delegateClosure: function(selector, eventHandler) {
 		return function(e) {
-			var found = qsaHook(selector, context);
+			var found = qsaHook(selector);
 			var element;
 			for(var i = 0, len = found.length;i < len;i++) {
 				element = found[i];
@@ -773,6 +751,15 @@ var _RambleTraversing = {
 			}));
 		}
 		return new Ramble(array);
+	},
+	/**
+	 * @return {String} selector
+	 */
+	find: function(selector) {
+		var array = [];
+		for(var i = 0, len = this.length;i < len;i++) {
+
+		}
 	}
 };
 var _RambleManipulation = {
@@ -1155,16 +1142,16 @@ commonExtend(Ramble.prototype, _RambleTraversing);
 commonExtend(Ramble.prototype, _RambleManipulation);
 commonExtend(Ramble.prototype, _RambleAnimation);
 
-window.Ramble = Ramble;
+win.Ramble = Ramble;
 
 //set $ as constructor alias to global
-window.$ = function(selector, context) {
+win.$ = function(selector, context) {
 	return new Ramble(selector, context);
 };
 
-window.$.ready = onDocumentReady;
-window.$.loadScript = loadScript;
-window.$.extend = commonExtend;
-window.$.fill = commonFill;
+win.$.ready = onDocumentReady;
+win.$.loadScript = loadScript;
+win.$.extend = commonExtend;
+win.$.fill = commonFill;
 
 })(window);

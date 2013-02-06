@@ -506,11 +506,12 @@ function onDocumentReady(callback) {
  * if context is given, search element with selector
  * in context (or related condition).
  * @param {String} selector css selector
+ * @param {HTMLElement} context
  * @return {Array}
  */
-function qsaHook(selector) {
+function qsaHook(selector, context) {
 	context = context ? context : doc;
-	var mergeBuffer = [], m = rxConciseSelector.exec(selector);
+	var m = rxConciseSelector.exec(selector);
 
 	if (m) {//regex result is not undefined
 		if (m[1]) {//if selector is "#id"
@@ -626,6 +627,12 @@ function unbind(targetList, type, eventHandler, useCapture) {
 	});
 }
 
+/**
+ * search index
+ * @param {Array} array
+ * @param {String} propertyName
+ * @param {Object} compareData
+ */
 function searchIndex(array, propertyName, compareData) {
 	var data;
 	for(var i = 0, len = array.length;i < len;i++) {
@@ -636,6 +643,13 @@ function searchIndex(array, propertyName, compareData) {
 	}
 	return -1;
 }
+
+/**
+ * create callback closure
+ * @param {HTMLElement} parent
+ * @param {String} selector
+ * @param {Function} eventHandler
+ */
 function createClosure(parent, selector, eventHandler) {
 	var closure = function(e) {
 		var children = qsaHook(selector, parent);
@@ -669,8 +683,8 @@ function delegate(targetList, type, selector, eventHandler) {
 		if(!target.closureList.hasOwnProperty(type)) {
 			target.closureList[type] = [];
 		}
-		closure = _createClosure(target, selector, eventHandler);
-		if(_searchIndex(target.closureList[type], CLOSURE, closure) < 0) {
+		closure = createClosure(target, selector, eventHandler);
+		if(searchIndex(target.closureList[type], CLOSURE, closure) < 0) {
 			target.closureList[type].push({
 				selector: selector,
 				eventHandler: eventHandler,
@@ -693,14 +707,14 @@ function undelegate(targetList, type, selector, eventHandler) {
 		if(target.closureList && target.closureList.hasOwnProperty(type)) {
 			if(type && selector && eventHandler) {
 				var array = target.closureList[type];
-				var idx = _searchIndex(array, EVENT_HANDLER, eventHandler);
+				var idx = searchIndex(array, EVENT_HANDLER, eventHandler);
 				if(idx > -1) {
 					target.removeEventListener(type, array[idx][CLOSURE]);
 					target.closureList[type].splice(idx, 1);
 				}
 			} else if(type && selector && !eventHandler) {
 				var array = target.closureList[type];
-				var idx = _searchIndex(array, SELECTOR, selector);
+				var idx = searchIndex(array, SELECTOR, selector);
 				if(idx > -1) {
 					target.removeEventListener(type, array[idx][CLOSURE]);
 					target.closureList[type].splice(idx, 1);
@@ -815,8 +829,9 @@ var _RambleTraversing = {
 	find: function(selector) {
 		var array = [];
 		for(var i = 0, len = this.length;i < len;i++) {
-
+			mergeArray(array, qsaHook(selector, this[i]));
 		}
+		return new Ramble(array);
 	}
 };
 var _RambleManipulation = {

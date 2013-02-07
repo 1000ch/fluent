@@ -995,6 +995,11 @@ var _RambleManipulation = {
 				}
 			}
 		}
+		commonEach(this, function(element) {
+			for(var i = 0, i < nodeList.length;i++) {
+				element.appendChild(nodeList[i]);
+			}
+		});
 		return this;
 	},
 	/**

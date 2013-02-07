@@ -511,17 +511,41 @@ function onDocumentReady(callback) {
  */
 function qsaHook(selector, context) {
 	context = context ? context : doc;
+
+	//if selector contains any, resolve for each.
+	if(selector.indexOf(",")) {
+		var buffer = [];
+		selector.split(",").forEach(function(s) {
+			mergeArray(buffer, qsaHook(s.trim(), context));
+		});
+		return buffer;
+	}
+	
 	var m = rxConciseSelector.exec(selector);
 
 	if (m) {//regex result is not undefined
 		if (m[1]) {//if selector is "#id"
 			return [doc.getElementById(m[1])];
 		} else if (m[2]) {//if selector is "tagName"
-			return arraySlice.call(context.getElementsByTagName(selector));
+			return arraySlice.call(context.getElementsByTagName(m[2]));
 		} else if (m[3]) {//if selector is ".className"
 			return arraySlice.call(context.getElementsByClassName(m[3]));
 		}
 	}
+
+	//process for case of "#id [any selector]"
+	var token, tokenList = selector.split(rxWhitespace);
+	var tokenIndex = arrayLastIndexOf.call(tokenList, rxIdSelector);
+	if(tokenIndex > -1) {
+		//last id selector
+		token = tokenList.slice(tokenIndex + 1).join(" ");
+		if(tokenIndex + 1 == tokenList.length) {
+			return [doc.getElementById(tokenList[tokenList + 1])];
+		} else {
+			return qsaHook(token, doc.getElementById(tokenList[tokenIndex]);
+		}
+	}
+
 	return arraySlice.call(context[qsa](selector));
 }
 /**
@@ -609,7 +633,7 @@ var _RamblePrototype = {
  * @param {Boolean} useCapture
  */
 function bind(targetList, type, eventHandler, useCapture) {
-	nativeForEach.call(targetList, function(target) {
+	arrayForEach.call(targetList, function(target) {
 		target.addEventListener(type, eventHandler, useCapture);
 	});
 }
@@ -622,7 +646,7 @@ function bind(targetList, type, eventHandler, useCapture) {
  * @param {Boolean} useCapture
  */
 function unbind(targetList, type, eventHandler, useCapture) {
-	nativeForEach.call(targetList, function(target) {
+	arrayForEach.call(targetList, function(target) {
 		target.removeEventListener(type, eventHandler, useCapture);
 	});
 }
@@ -653,7 +677,7 @@ function searchIndex(array, propertyName, compareData) {
 function createClosure(parent, selector, eventHandler) {
 	var closure = function(e) {
 		var children = qsaHook(selector, parent);
-		nativeForEach.call(children, function(child) {
+		arrayForEach.call(children, function(child) {
 			if(e.target === child) {
 				eventHandler.call(child, e);
 			}
@@ -676,11 +700,11 @@ var SELECTOR = "selector";
  */
 function delegate(targetList, type, selector, eventHandler) {
 	var closure = null;
-	nativeForEach.call(targetList, function(target) {
+	arrayForEach.call(targetList, function(target) {
 		if(!target.closureList) {
 			target.closureList = {};
 		}
-		if(!target.closureList.hasOwnProperty(type)) {
+		if(!target.closureList[hop](type)) {
 			target.closureList[type] = [];
 		}
 		closure = createClosure(target, selector, eventHandler);
@@ -703,8 +727,8 @@ function delegate(targetList, type, selector, eventHandler) {
  * @param {Function*} eventHandler
  */
 function undelegate(targetList, type, selector, eventHandler) {
-	nativeForEach.call(targetList, function(target) {
-		if(target.closureList && target.closureList.hasOwnProperty(type)) {
+	arrayForEach.call(targetList, function(target) {
+		if(target.closureList && target.closureList[hop](type)) {
 			if(type && selector && eventHandler) {
 				var array = target.closureList[type];
 				var idx = searchIndex(array, EVENT_HANDLER, eventHandler);
@@ -721,7 +745,7 @@ function undelegate(targetList, type, selector, eventHandler) {
 				}
 			} else if(type && !selector && !eventHandler) {
 				var itemList = target.closureList[type];
-				nativeForEach.call(itemList, function(item) {
+				arrayForEach.call(itemList, function(item) {
 					target.removeEventListener(type, item[CLOSURE]);
 				});
 				delete target.closureList[type];

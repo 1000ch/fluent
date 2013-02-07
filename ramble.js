@@ -632,7 +632,7 @@ var _RamblePrototype = {
  * @param {Function} eventHandler
  * @param {Boolean} useCapture
  */
-function bind(targetList, type, eventHandler, useCapture) {
+function eventBind(targetList, type, eventHandler, useCapture) {
 	arrayForEach.call(targetList, function(target) {
 		target.addEventListener(type, eventHandler, useCapture);
 	});
@@ -645,7 +645,7 @@ function bind(targetList, type, eventHandler, useCapture) {
  * @param {Function} eventHandler
  * @param {Boolean} useCapture
  */
-function unbind(targetList, type, eventHandler, useCapture) {
+function eventUnbind(targetList, type, eventHandler, useCapture) {
 	arrayForEach.call(targetList, function(target) {
 		target.removeEventListener(type, eventHandler, useCapture);
 	});
@@ -698,7 +698,7 @@ var SELECTOR = "selector";
  * @param {String} selector
  * @param {Function} eventHandler
  */
-function delegate(targetList, type, selector, eventHandler) {
+function eventDelegate(targetList, type, selector, eventHandler) {
 	var closure = null;
 	arrayForEach.call(targetList, function(target) {
 		if(!target.closureList) {
@@ -726,7 +726,7 @@ function delegate(targetList, type, selector, eventHandler) {
  * @param {String*} selector
  * @param {Function*} eventHandler
  */
-function undelegate(targetList, type, selector, eventHandler) {
+function eventUndelegate(targetList, type, selector, eventHandler) {
 	arrayForEach.call(targetList, function(target) {
 		if(target.closureList && target.closureList[hop](type)) {
 			if(type && selector && eventHandler) {
@@ -763,7 +763,7 @@ var _RambleEvent = {
 	 * @return {Ramble}
 	 */
 	bind: function(type, eventHandler, useCapture) {
-		bind(this, type, eventHandler, useCapture);
+		eventBind(this, type, eventHandler, useCapture);
 		return this;
 	},
 	/**
@@ -774,7 +774,7 @@ var _RambleEvent = {
 	 * @return {Ramble}
 	 */
 	unbind: function(type, eventHandler, useCapture) {
-		unbind(this, type, eventHandler, useCapture);
+		eventUnbind(this, type, eventHandler, useCapture);
 		return this;
 	},
 	/**
@@ -784,7 +784,7 @@ var _RambleEvent = {
 	 * @return {Ramble}
 	 */
 	delegate: function(type, selector, eventHandler) {
-		delegate(this, type, selector, eventHandler);
+		eventDelegate(this, type, selector, eventHandler);
 		return this;
 	},
 	/**
@@ -794,7 +794,7 @@ var _RambleEvent = {
 	 * @return {Ramble}
 	 */
 	undelegate: function(type, selector, eventHandler) {
-		undelegate(this, type, selector, eventHandler);
+		eventUndelegate(this, type, selector, eventHandler);
 		return this;
 	}
 };

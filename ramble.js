@@ -408,7 +408,7 @@ function commonExtend(obj) {
  * extend object softly
  * @description if same property exist, it will not be overriden
  * @param {Object} obj
- * @return {Object} obj
+ * @return {Object}
  */
 function commonFill(obj) {
 	var key, arg, args = arraySlice.call(arguments, 1);
@@ -422,6 +422,45 @@ function commonFill(obj) {
 		}
 	}
 	return obj;
+}
+/**
+ * serialize object to query string
+ * @param {Object} data
+ * @return {String}
+ */
+function commonSerialize(data) {
+	var ret = [], key, value;
+	for(key in data) {
+		if(data[hop](key)) {
+			ret.push(euc(key) + "=" + euc(value));
+		}
+	}
+	return ret.join("&").replace("%20", "+");
+}
+/**
+ * deserialize query string
+ * @param {String} data
+ * @return {Object}
+ */
+function commonDeserialize(data) {
+	var ret = {}, query = "";
+	if(data) {
+		query = data;
+	} else {
+		var href = location.href, index = href.indexOf("?");
+		query = href.substring(index + 1);
+	}
+	if(query.charAt(0) == "?") {
+		query = query.substring(1);
+	}
+	var array = query.split("&"), buffer = [];
+	for(var i = 0, len = array.length;i < len;i++) {
+		buffer = array[i].split("=");
+		if(buffer.length == 2) {
+			obj[duc(buffer[0])] = duc(buffer[1]);
+		}
+	}
+	return ret;
 }
 /**
  * string format
@@ -1250,9 +1289,17 @@ win.$ = function(selector, context) {
 	return new Ramble(selector, context);
 };
 
-win.$.ready = onDOMContentLoaded;
-win.$.loadScript = loadScript;
-win.$.extend = commonExtend;
-win.$.fill = commonFill;
+win.Event = {
+	ready: onDOMContentLoaded
+};
+win.Common = {
+	extend: commonExtend,
+	fill: commonFill,
+	each: commonEach,
+	copy: commonCopy,
+	serialize: commonSerialize,
+	deserialize: commonDeserialize,
+	loadScript: loadScript
+};
 
 })(window);

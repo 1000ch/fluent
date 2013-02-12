@@ -486,7 +486,7 @@ function loadScript(path, callback, async, defer) {
  * execute callback when dom content loaded
  * @param {Function} callback
  */
-function onDocumentReady(callback) {
+function onDOMContentLoaded(callback) {
 	var args = arraySlice.call(arguments, 1);
 	if (rxReady.test(doc.readyState)) {
 		!args ? callback() : callback(args);
@@ -1250,7 +1250,7 @@ win.$ = function(selector, context) {
 	return new Ramble(selector, context);
 };
 
-win.$.ready = onDocumentReady;
+win.$.ready = onDOMContentLoaded;
 win.$.loadScript = loadScript;
 win.$.extend = commonExtend;
 win.$.fill = commonFill;

@@ -329,7 +329,7 @@ function computedStyle(element, key) {
  * @description if callback function returns false, break loop.
  * @param {Object} target
  * @param {Function} callback
- * @return {Object} target
+ * @return {Object}
  */
 function commonEach(target, callback) {
 	var args = arraySlice.call(arguments, 2);
@@ -374,7 +374,7 @@ function commonEach(target, callback) {
 /**
  * copy object
  * @param {Object} target
- * @param {Object} copy
+ * @return {Object}
  */
 function commonCopy(target) {
 	var copy = objectCreate(objectGetPropertyOf(target));
@@ -389,7 +389,7 @@ function commonCopy(target) {
  * extend object hardly
  * @description if same property exist, it will be overriden
  * @param {Object} obj
- * @return {Object} obj
+ * @return {Object}
  */
 function commonExtend(obj) {
 	var key, arg, args = arraySlice.call(arguments, 1);
@@ -652,7 +652,7 @@ var _RamblePrototype = {
 				return arraySlice.call(this, from);
 			}
 		} else {
-			return arraySlice.call(this);
+			return this.toArray();
 		}
 	},
 	/**
@@ -1290,9 +1290,13 @@ win.$ = function(selector, context) {
 };
 
 win.Event = {
-	ready: onDOMContentLoaded
+	ready: onDOMContentLoaded,
+	bind: eventBind,
+	unbind: eventUnbind,
+	delegate: eventDelegate,
+	undelegate: eventDelegate
 };
-win.Common = {
+win.CommonUtil = {
 	extend: commonExtend,
 	fill: commonFill,
 	each: commonEach,
@@ -1300,6 +1304,11 @@ win.Common = {
 	serialize: commonSerialize,
 	deserialize: commonDeserialize,
 	loadScript: loadScript
+};
+win.StringUtil = {
+	camelize: stringCamelize,
+	dasherize: stringDasherize,
+	format: stringFormat
 };
 
 })(window);

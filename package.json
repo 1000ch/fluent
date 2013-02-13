@@ -7,7 +7,8 @@
   "devDependencies": {
     "grunt": "~0.4.0rc7",
     "grunt-contrib-uglify": "~0.1.1rc6",
-    "grunt-contrib-watch": "~0.2.0rc7"
+    "grunt-contrib-watch": "~0.2.0rc7",
+    "grunt-contrib-jshint": "~0.1.1rc6"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

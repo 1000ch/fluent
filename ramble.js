@@ -581,7 +581,7 @@ function qsaHook(selector, context) {
 		if(tokenIndex + 1 == tokenList.length) {
 			return [doc.getElementById(tokenList[tokenList + 1])];
 		} else {
-			return qsaHook(token, doc.getElementById(tokenList[tokenIndex]);
+			return qsaHook(token, doc.getElementById(tokenList[tokenIndex]));
 		}
 	}
 
@@ -1035,7 +1035,7 @@ var _RambleManipulation = {
 			}
 		}
 		commonEach(this, function(element) {
-			for(var i = 0, i < nodeList.length;i++) {
+			for(var i = 0, len = nodeList.length;i < len;i++) {
 				element.appendChild(nodeList[i]);
 			}
 		});

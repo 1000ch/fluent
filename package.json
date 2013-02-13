@@ -1,0 +1,23 @@
+{
+  "name": "ramble",
+  "version": "0.1.0",
+  "description": "Lightweight DOM library.",
+  "main": "ramble.js",
+  "dependencies": {},
+  "devDependencies": {
+    "grunt": "~0.4.0rc7",
+    "grunt-contrib-uglify": "~0.1.1rc6",
+    "grunt-contrib-watch": "~0.2.0rc7"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/1000ch/ramble.git"
+  },
+  "author": "1000ch",
+  "license": "MIT",
+  "gitHead": "902d1598b38800d07695b7469e57af05f6faa928",
+  "readmeFilename": "README.md"
+}

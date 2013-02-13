@@ -7,7 +7,8 @@
 (function(window, undefined){
 "use strict";
 var win = window,
-	doc = window.document;
+	doc = window.document,
+	loc = window.location;
 
 //cache empty structure
 var emptyArray = [],
@@ -37,7 +38,7 @@ var objectToString = emptyObject.toString,
 //array polyfill
 if(!arrayIndexOf) {
 	arrayIndexOf = function(searchElement) {
-		if(this == null) {
+		if(this === null) {
 			throw new TypeError();
 		}
 		var t = Object(this);
@@ -48,9 +49,9 @@ if(!arrayIndexOf) {
 		var n = 0;
 		if(arguments.length > 1) {
 			n = Number(arguments[1]);
-			if(n != n) {
+			if(n !== n) {
 				n = 0;
-			} else if(n != 0 && n != Infinity && n != -Infinity) {
+			} else if(n !== 0 && n != Infinity && n != -Infinity) {
 				n = (n > 0 || -1) * Math.floor(Math.abs(n));
 			}
 		}
@@ -69,7 +70,7 @@ if(!arrayIndexOf) {
 
 if(!arrayLastIndexOf) {
 	arrayLastIndexOf = function(searchElement) {
-		if(this == null) {
+		if(this === null) {
 			throw new TypeError();
 		}
 		var t = Object(this);
@@ -82,7 +83,7 @@ if(!arrayLastIndexOf) {
 			n = Number(arguments[1]);
 			if(n != n) {
 				n = 0;
-			} else if(n != 0 && n != (1 / 0) && n != -(1 / 0)) {
+			} else if(n !== 0 && n != (1 / 0) && n != -(1 / 0)) {
 				n = (n > 0 || -1) * Math.floor(Math.abs(n));
 			}
 		}
@@ -106,17 +107,17 @@ if(!arrayForEach) {
 
 if(!arrayEvery) {
 	arrayEvery = function(callback) {
-		if(this == null) {
+		if(this === null) {
 			throw new TypeError();
 		}
 		var t = Object(this);
 		var len = t.length >>> 0;
-		if(typeof fun != "function") {
+		if(typeof callback != "function") {
 			throw new TypeError();
 		}
 		var thisp = arguments[1];
 		for (var i = 0; i < len; i++) {
-			if(i in t && !fun.call(thisp, t[i], i, t)) {
+			if(i in t && !callback.call(thisp, t[i], i, t)) {
 				return false;
 			}
 		}
@@ -126,17 +127,17 @@ if(!arrayEvery) {
 
 if(!arraySome) {
 	arraySome = function(callback) {
-		if(this == null) {
+		if(this === null) {
 			throw new TypeError();
 		}
 		var t = Object(this);
 		var len = t.length >>> 0;
-		if(typeof fun != "function") {
+		if(typeof callback != "function") {
 			throw new TypeError();
 		}
 		var thisp = arguments[1];
 		for (var i = 0; i < len; i++) {
-			if(i in t && fun.call(thisp, t[i], i, t)) {
+			if(i in t && callback.call(thisp, t[i], i, t)) {
 				return true;
 			}
 		}
@@ -147,7 +148,7 @@ if(!arraySome) {
 if(!arrayMap) {
 	arrayMap = function(callback, thisArg) {
 		var T, A, k;
-		if(this == null) {
+		if(this === null) {
 			throw new TypeError(" this is null or not defined");
 		}
 		var O = Object(this), len = O.length >>> 0;
@@ -174,7 +175,7 @@ if(!arrayMap) {
 
 if(!arrayFilter) {
 	arrayFilter = function(callback) {
-		if(this == null) {
+		if(this === null) {
 			throw new TypeError();
 		}
 		var t = Object(this);
@@ -226,7 +227,7 @@ if(!arrayReduce) {
 
 if(!arrayReduceRight) {
 	arrayReduceRight = function(callback) {
-		if(this == null) {
+		if(this === null) {
 			throw new TypeError();
 		}
 		var t = Object(this);
@@ -272,7 +273,9 @@ var rxConciseSelector = /^(?:#([\w\-]+)|(\w+)|\.([\w\-]+))$/,//filter #id, tagNa
 
 var qs = "querySelector", 
 	qsa = "querySelectorAll",
-	hop = "hasOwnProperty";
+	hop = "hasOwnProperty",
+	euc = encodeURIComponent,
+	duc = decodeURIComponent;
 
 //detect matchesSelector
 var matches = "matchesSelector";
@@ -334,7 +337,7 @@ function computedStyle(element, key) {
 function commonEach(target, callback) {
 	var args = arraySlice.call(arguments, 2);
 	var i, len = target.length, key, result;
-	if(args.length != 0) {
+	if(args.length !== 0) {
 		//if args is not "false"
 		if(isLikeArray(target)) {
 			for(i = 0;i < len;i++) {
@@ -447,7 +450,7 @@ function commonDeserialize(data) {
 	if(data) {
 		query = data;
 	} else {
-		var href = location.href, index = href.indexOf("?");
+		var href = loc.href, index = href.indexOf("?");
 		query = href.substring(index + 1);
 	}
 	if(query.charAt(0) == "?") {
@@ -457,7 +460,7 @@ function commonDeserialize(data) {
 	for(var i = 0, len = array.length;i < len;i++) {
 		buffer = array[i].split("=");
 		if(buffer.length == 2) {
-			obj[duc(buffer[0])] = duc(buffer[1]);
+			ret[duc(buffer[0])] = duc(buffer[1]);
 		}
 	}
 	return ret;
@@ -473,7 +476,7 @@ function stringFormat(str, replacement) {
 		replacement = arraySlice.call(arguments);
 	}
 	return str.replace(/\{(.+?)\}/g, function(m, c) {
-		return (replacement[c] != null) ? replacement[c] : m;
+		return (replacement[c] !== null) ? replacement[c] : m;
 	});
 }
 /**
@@ -516,7 +519,9 @@ function loadScript(path, callback, async, defer) {
 
 	script.onload = script.onreadystatechange = function() {
 		script.onload = script.onreadystatechange = null;
-		callback && callback();
+		if(callback) {
+			callback();
+		}
 	};
 
 	doc[qs]("head").appendChild(script);
@@ -528,19 +533,27 @@ function loadScript(path, callback, async, defer) {
 function onDOMContentLoaded(callback) {
 	var args = arraySlice.call(arguments, 1);
 	if (rxReady.test(doc.readyState)) {
-		!args ? callback() : callback(args);
+		if(!args) {
+			callback();
+		} else {
+			callback(args);
+		}
 	} else {
 		doc.addEventListener("DOMContentLoaded", function() {
-			!args ? callback() : callback(args);
+			if(!args) {
+				callback();
+			} else {
+				callback(args);
+			}
 		}, false);
 	}
 }
 /*
  * extend and hook querySelectorAll
  * evaluate selector concisely
- * 	if selector is "#id", call getElementById
- * 	if selector is ".className", call getElementsByClassName
- * 	if selector is "tagName", call getElementsByTagName
+ * if selector is "#id", call getElementById
+ * if selector is ".className", call getElementsByClassName
+ * if selector is "tagName", call getElementsByTagName
 
  * if context is given, search element with selector
  * in context (or related condition).
@@ -766,21 +779,22 @@ function eventDelegate(targetList, type, selector, eventHandler) {
  * @param {Function*} eventHandler
  */
 function eventUndelegate(targetList, type, selector, eventHandler) {
+	var array, index;
 	arrayForEach.call(targetList, function(target) {
 		if(target.closureList && target.closureList[hop](type)) {
 			if(type && selector && eventHandler) {
-				var array = target.closureList[type];
-				var idx = searchIndex(array, EVENT_HANDLER, eventHandler);
-				if(idx > -1) {
-					target.removeEventListener(type, array[idx][CLOSURE]);
-					target.closureList[type].splice(idx, 1);
+				array = target.closureList[type];
+				index = searchIndex(array, EVENT_HANDLER, eventHandler);
+				if(index > -1) {
+					target.removeEventListener(type, array[index][CLOSURE]);
+					target.closureList[type].splice(index, 1);
 				}
 			} else if(type && selector && !eventHandler) {
-				var array = target.closureList[type];
-				var idx = searchIndex(array, SELECTOR, selector);
-				if(idx > -1) {
-					target.removeEventListener(type, array[idx][CLOSURE]);
-					target.closureList[type].splice(idx, 1);
+				array = target.closureList[type];
+				index = searchIndex(array, SELECTOR, selector);
+				if(index > -1) {
+					target.removeEventListener(type, array[index][CLOSURE]);
+					target.closureList[type].splice(index, 1);
 				}
 			} else if(type && !selector && !eventHandler) {
 				var itemList = target.closureList[type];
@@ -855,7 +869,7 @@ var _RambleTraversing = {
 		var array = [], element;
 		for(var i = 0, len = this.length;i < len;i++) {
 			element = callback(this[i], i);
-			if(element != null) {
+			if(element !== null) {
 				array.push(element);
 			}
 		}
@@ -1055,7 +1069,9 @@ var _RambleManipulation = {
 	show: function() {
 		for(var i = 0, len = this.length;i < len;i++) {
 			this[i].style.display = "";
-			(computedStyle(this[i], "display") === "none") ? this[i].style.display = "block" : 0;
+			if(computedStyle(this[i], "display") === "none") {
+				this[i].style.display = "block";
+			}
 		}
 	},
 	/**
@@ -1135,7 +1151,7 @@ var _RambleAnimation = {
 	 * @return {Ramble}
 	 */
 	skew: function(x, y) {
-		if(x == undefined || y == undefined) {
+		if(x === undefined || y === undefined) {
 			return this;
 		}
 		this._transform.add(stringFormat("skew({0}deg, {1}deg)", x, y));
@@ -1147,7 +1163,7 @@ var _RambleAnimation = {
 	 * @return {Ramble}
 	 */
 	skewX: function(x) {
-		if(x == undefined) {
+		if(x === undefined) {
 			return this;
 		}
 		this._transform.add(stringFormat("skewX({0}deg)", x));
@@ -1159,7 +1175,7 @@ var _RambleAnimation = {
 	 * @return {Ramble}
 	 */
 	skewY: function(y) {
-		if(y == undefined) {
+		if(y === undefined) {
 			return this;
 		}
 		this._transform.add(stringFormat("skewY({0}deg)", y));
@@ -1172,7 +1188,7 @@ var _RambleAnimation = {
 	 * @return {Ramble}
 	 */
 	translate: function(x, y) {
-		if(x == undefined || y == undefined) {
+		if(x === undefined || y === undefined) {
 			return this;
 		}
 		this._transform.add(stringFormat("translate({0}px, {1}px)", x, y));
@@ -1184,7 +1200,7 @@ var _RambleAnimation = {
 	 * @return {Ramble}
 	 */
 	translateX: function(x) {
-		if(x == undefined) {
+		if(x === undefined) {
 			return this;
 		}
 		this._transform.add(stringFormat("translateX({0}px)", x));
@@ -1196,7 +1212,7 @@ var _RambleAnimation = {
 	 * @return {Ramble}
 	 */
 	translateY: function(y) {
-		if(y == undefined) {
+		if(y === undefined) {
 			return this;
 		}
 		this._transform.add(stringFormat("translateY({0}px)", y));
@@ -1209,7 +1225,7 @@ var _RambleAnimation = {
 	 * @return {Ramble}
 	 */
 	scale: function(x, y) {
-		if(x == undefined || y == undefined) {
+		if(x === undefined || y === undefined) {
 			return this;
 		}
 		this._transform.add(stringFormat("scale({0}, {1})", x, y));
@@ -1221,7 +1237,7 @@ var _RambleAnimation = {
 	 * @return {Ramble}
 	 */
 	scaleX: function(x) {
-		if(x == undefined) {
+		if(x === undefined) {
 			return this;
 		}
 		this._transform.add(stringFormat("scaleX({0})", x));
@@ -1233,7 +1249,7 @@ var _RambleAnimation = {
 	 * @return {Ramble}
 	 */
 	scaleY: function(y) {
-		if(y == undefined) {
+		if(y === undefined) {
 			return this;
 		}
 		this._transform.add(stringFormat("scaleY({0})", y));
@@ -1245,7 +1261,7 @@ var _RambleAnimation = {
 	 * @return {Ramble}
 	 */
 	rotate: function(n) {
-		if(n == undefined) {
+		if(n === undefined) {
 			return this;
 		}
 		this._transform.add(stringFormat("rotate({0}deg)", n));

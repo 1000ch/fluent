@@ -892,11 +892,9 @@ var _RambleTraversing = {
 	children: function() {
 		var array = [];
 		for(var i = 0, len = this.length;i < len;i++) {
-			array.push(arrayMap.call(this[i].childNodes, function(node) {
-				if(node.nodeType == 1) {
-					return node;
-				}
-			}));
+			arrayForEach.call(this[i].childNodes, function(node) {
+				array.push(node);
+			});
 		}
 		return new Ramble(array);
 	},

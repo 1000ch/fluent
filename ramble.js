@@ -565,7 +565,7 @@ function qsaHook(selector, context) {
 	context = context ? context : doc;
 
 	//if selector contains any, resolve for each.
-	if(selector.indexOf(",")) {
+	if(selector.indexOf(",") > -1) {
 		var buffer = [];
 		selector.split(",").forEach(function(s) {
 			mergeArray(buffer, qsaHook(s.trim(), context));
@@ -579,9 +579,9 @@ function qsaHook(selector, context) {
 		if (m[1]) {//if selector is "#id"
 			return [doc.getElementById(m[1])];
 		} else if (m[2]) {//if selector is "tagName"
-			return arraySlice.call(context.getElementsByTagName(m[2]));
+			return context.getElementsByTagName(m[2]);
 		} else if (m[3]) {//if selector is ".className"
-			return arraySlice.call(context.getElementsByClassName(m[3]));
+			return context.getElementsByClassName(m[3]);
 		}
 	}
 
@@ -598,7 +598,7 @@ function qsaHook(selector, context) {
 		}
 	}
 
-	return arraySlice.call(context[qsa](selector));
+	return context[qsa](selector);
 }
 /**
  * merge array or object (like an array) into array
@@ -642,7 +642,6 @@ var Ramble = function(selector) {
  */
 var _RamblePrototype = {
 	constructor: Ramble,
-	length: 0,
 	/**
 	 * execute function to all element
 	 * @param {Function} callback

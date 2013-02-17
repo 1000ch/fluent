@@ -265,9 +265,9 @@ if(!arrayReduceRight) {
 
 //regular expression
 var rxConciseSelector = /^(?:#([\w\-]+)|(\w+)|\.([\w\-]+))$/,//filter #id, tagName, .className
-	rxIdSelector = /^#([\w-]+)$/,
-	rxClassSelector = /^\.([\w-]+)$/,
-	rxTagSelector = /^[\w-]+$/,
+	rxIdSelector = /^#([\w\-]+)$/,
+	rxClassSelector = /^\.([\w\-]+)$/,
+	rxTagSelector = /^[\w\-]+$/,
 	rxReady = /complete|loaded|interactive/,//dom ready state
 	rxWhitespace = /\s+/g;
 
@@ -288,14 +288,47 @@ if(emptyElement.webkitMatchesSelector) {
 } else if(emptyElement.oMatchesSelector) {
 	matches = "oMatchesSelector";
 }
-
+/**
+ * value has key or not.
+ * @param {String} key
+ * @param {Object} value
+ * @return {Boolean}
+ */
+function has(key, value) {
+	return (key in value);
+}
+/**
+ * value is typeof key, or not.
+ * @param {String} key
+ * @param {Object} value
+ * @return {Boolean}
+ */
+function is(key, value) {
+	return (objectToString.call(value) === "[object " + key + "]");
+}
 /**
  * value is string or not
  * @param {Object} value
  * @return {Boolean}
  */
 function isString(value) {
-	return (typeof value === "string");
+	return is("String", value);
+}
+/**
+ * value is function or not
+ * @param {Object} value
+ * @return {Boolean}
+ */
+function isFunction(value) {
+	return is("Function", value);
+}
+/**
+ * value is nodeList or not
+ * @param {Object} value
+ * @return {Boolean}
+ */
+function isNodeList(value) {
+	return is("NodeList", value);
 }
 /**
  * value is like an array or not
@@ -304,14 +337,6 @@ function isString(value) {
  */
 function isLikeArray(value) {
 	return (typeof value.length == "number");
-}
-/**
- * value is nodeList or not
- * @param {Object} value
- * @return {Boolean}
- */
-function isNodeList(value) {
-	return (String(value) === "[object NodeList]");
 }
 /**
  * get computed style of element
@@ -564,23 +589,14 @@ function onDOMContentLoaded(callback) {
 function qsaHook(selector, context) {
 	context = context ? context : doc;
 
-	//if selector contains any, resolve for each.
-	if(selector.indexOf(",") > -1) {
-		var buffer = [];
-		selector.split(",").forEach(function(s) {
-			mergeArray(buffer, qsaHook(s.trim(), context));
-		});
-		return buffer;
-	}
-	
 	var m = rxConciseSelector.exec(selector);
 
-	if (m) {//regex result is not undefined
-		if (m[1]) {//if selector is "#id"
+	if(m) {//regex result is not undefined
+		if(m[1]) {//if selector is "#id"
 			return [doc.getElementById(m[1])];
-		} else if (m[2]) {//if selector is "tagName"
+		} else if(m[2]) {//if selector is "tagName"
 			return context.getElementsByTagName(m[2]);
-		} else if (m[3]) {//if selector is ".className"
+		} else if(m[3]) {//if selector is ".className"
 			return context.getElementsByClassName(m[3]);
 		}
 	}
@@ -650,22 +666,6 @@ var _RamblePrototype = {
 	each: function(callback) {
 		var args = arraySlice.call(arguments, 1);
 		return commonEach(this, callback, args);
-	},
-	/**
-	 * get all element
-	 * @description not return Ramble object
-	 * @return {Array<HTMLElement>}
-	 */
-	slice: function(from, to) {
-		if(from) {
-			if(to) {
-				return arraySlice.call(this, from, to);
-			} else {
-				return arraySlice.call(this, from);
-			}
-		} else {
-			return this.toArray();
-		}
 	},
 	/**
 	 * get all element
@@ -879,7 +879,7 @@ var _RambleTraversing = {
 	 * @return {Ramble}
 	 */
 	unique: function() {
-		var array = this.slice();
+		var array = this.toArray();
 		return new Ramble(arrayFilter.call(array, function(item, index){
 			return array.indexOf(item) == index;
 		}));
@@ -891,9 +891,12 @@ var _RambleTraversing = {
 	children: function() {
 		var array = [];
 		for(var i = 0, len = this.length;i < len;i++) {
-			arrayForEach.call(this[i].childNodes, function(node) {
-				array.push(node);
-			});
+			if(this[i].hasChildNodes()) {
+				var childNodes = this[i].childNodes;
+				for(var j = 0, nodeLen = childNodes.length;j < nodeLen;j++) {
+					array.push(childNodes[j]);
+				}
+			}
 		}
 		return new Ramble(array);
 	},
@@ -1035,7 +1038,7 @@ var _RambleManipulation = {
 	append: function(value) {
 		var nodeList = [];
 		if(value instanceof Ramble) {
-			nodeList = value.slice();
+			nodeList = value.toArray();
 		} else if(isNodeList(value)) {
 			nodeList = value;
 		} else if(isLikeArray(value)) {
@@ -1278,12 +1281,12 @@ var _RambleAnimation = {
 			this._setProperty(prefix + this._transform.key, this._transform.values.join(" "));
 			this._setProperty(prefix + this._transitionProperties.key, this._transitionProperties.values.join(", "));
 		}
-		var key, p = this._param;
-		for(key in p) {
-			this.each(function(element, index){
+		this.each(function(element, index){
+			var key, p = this._param;
+			for(key in p) {
 				element.style[key] = p[key];
-			});
-		}
+			}
+		});
 		this._param = {};
 	}
 };
@@ -1316,7 +1319,8 @@ win.CommonUtil = {
 	copy: commonCopy,
 	serialize: commonSerialize,
 	deserialize: commonDeserialize,
-	loadScript: loadScript
+	loadScript: loadScript,
+	is: is
 };
 win.StringUtil = {
 	camelize: stringCamelize,

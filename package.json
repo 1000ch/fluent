@@ -1,8 +1,8 @@
 {
-  "name": "ramble",
+  "name": "fluent",
   "version": "0.1.0",
   "description": "Lightweight DOM library.",
-  "main": "ramble.js",
+  "main": "fluent.js",
   "dependencies": {},
   "devDependencies": {
     "grunt": "~0.4.0",
@@ -15,7 +15,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/1000ch/ramble.git"
+    "url": "git://github.com/1000ch/fluent.git"
   },
   "author": "1000ch",
   "license": "MIT",

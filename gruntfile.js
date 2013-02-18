@@ -1,17 +1,17 @@
 module.exports = function(grunt) {
 	grunt.initConfig({
 		jshint: {
-			all: ["./ramble.js"]
+			all: ["./fluent.js"]
 		},
 		uglify: {
 			my_target: {
 				files: {
-					"./ramble.min.js": ["./ramble.js"]
+					"./fluent.min.js": ["./fluent.js"]
 				}
 			}
 		},
 		watch: {
-			files: ["./ramble.js"],
+			files: ["./fluent.js"],
 			tasks: ["jshint", "uglify"]
 		}
 	});

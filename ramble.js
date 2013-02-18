@@ -17,23 +17,28 @@ var emptyArray = [],
 	emptyElement = doc.createElement("div");
 
 //cache referrence
-var objectToString = emptyObject.toString,
+var objectToString = Object.prototype.toString,
 	objectCreate = Object.create,
 	objectDefineProperty = Object.defineProperty,
 	objectGetPropertyOf = Object.getPropertyOf,
 	objectGetOwnPropertyNames = Object.getOwnPropertyNames,
 	objectGetOwnPropertyDescriptor = Object.getOwnPropertyDescriptor,
-	arraySlice = emptyArray.slice,
-	arraySplice = emptyArray.splice,
-	arrayIndexOf = emptyArray.indexOf,
-	arrayLastIndexOf = emptyArray.lastIndexOf,
-	arrayForEach = emptyArray.forEach,
-	arrayEvery = emptyArray.every,
-	arraySome = emptyArray.some,
-	arrayMap = emptyArray.map,
-	arrayFilter = emptyArray.filter,
-	arrayReduce = emptyArray.reduce,
-	arrayReduceRight = emptyArray.reduceRight;
+	arraySlice = Array.prototype.slice,
+	arraySplice = Array.prototype.splice,
+	arrayIndexOf = Array.prototype.indexOf,
+	arrayLastIndexOf = Array.prototype.lastIndexOf,
+	arrayForEach = Array.prototype.forEach,
+	arrayEvery = Array.prototype.every,
+	arraySome = Array.prototype.some,
+	arrayMap = Array.prototype.map,
+	arrayFilter = Array.prototype.filter,
+	arrayReduce = Array.prototype.reduce,
+	arrayReduceRight = Array.prototype.reduceRight,
+	stringRepeat = String.prototype.repeat,
+	stringStartsWith = String.prototype.startsWith,
+	stringEndsWith = String.prototype.endsWith,
+	stringContains = String.prototype.contains,
+	stringToArray = String.prototype.toArray;
 
 //array polyfill
 if(!arrayIndexOf) {
@@ -67,7 +72,6 @@ if(!arrayIndexOf) {
 		return -1;
 	};
 }
-
 if(!arrayLastIndexOf) {
 	arrayLastIndexOf = function(searchElement) {
 		if(this === null) {
@@ -96,7 +100,6 @@ if(!arrayLastIndexOf) {
 		return -1;
 	};
 }
-
 if(!arrayForEach) {
 	arrayForEach = function(callback, scope) {
 		for(var i = 0, len = this.length; i < len; ++i) {
@@ -104,7 +107,6 @@ if(!arrayForEach) {
 		}
 	};
 }
-
 if(!arrayEvery) {
 	arrayEvery = function(callback) {
 		if(this === null) {
@@ -124,7 +126,6 @@ if(!arrayEvery) {
 		return true;
 	};
 }
-
 if(!arraySome) {
 	arraySome = function(callback) {
 		if(this === null) {
@@ -144,7 +145,6 @@ if(!arraySome) {
 		return false;
 	};
 }
-
 if(!arrayMap) {
 	arrayMap = function(callback, thisArg) {
 		var T, A, k;
@@ -172,7 +172,6 @@ if(!arrayMap) {
 		return A;
 	};
 }
-
 if(!arrayFilter) {
 	arrayFilter = function(callback) {
 		if(this === null) {
@@ -196,7 +195,6 @@ if(!arrayFilter) {
 		return res;
 	};
 }
-
 if(!arrayReduce) {
 	arrayReduce = function(callback) {
 		if(this === null || this === undefined) {
@@ -224,7 +222,6 @@ if(!arrayReduce) {
 		return current;
 	};
 }
-
 if(!arrayReduceRight) {
 	arrayReduceRight = function(callback) {
 		if(this === null) {
@@ -260,6 +257,44 @@ if(!arrayReduceRight) {
 			k--;
 		}
 		return accumulator;
+	};
+}
+//string polyfill
+if(!stringRepeat) {
+	stringRepeat = function(count) {
+		if((count |= 0 ) <= 0) {
+			throw new RangeError();
+		}
+		var result = '', self = this;
+		while(count) {
+			if(count & 1) {
+				result += self;
+			}
+			if(count >= 1) {
+				self += self;
+			}
+		}
+		return result;
+	};
+}
+if(!stringStartsWith) {
+	stringStartsWith = function(value, position) {
+		return (this.indexOf(value, position |= 0) === position);
+	};
+}
+if(!stringEndsWith) {
+	stringEndsWith = function(value, position) {
+		return (this.lastIndexOf(value, position) === (position >= 0 ? position | 0 : this.length - 1));
+	};
+}
+if(!stringContains) {
+	stringContains = function(value, index) {
+		return (this.indexOf(value, index | 0) !== -1);
+	};
+}
+if(!stringToArray) {
+	stringToArray = function(value) {
+		return this.split("");
 	};
 }
 

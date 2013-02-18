@@ -1,5 +1,5 @@
 /**
- * ramble.js
+ * fluent.js
  *
  * Copyright 2012~, 1000ch<http://1000ch.net/>
  * licensed under the MIT license.
@@ -668,7 +668,7 @@ function mergeArray(srcList, mergeList) {
  * @param {String} obj
  * @param {String|HTMLElement}
  */
-var Ramble = function(selector) {
+var Fluent = function(selector) {
 	var elementList = [], len;
 	if(isString(selector)) {
 		//if selector is string
@@ -691,12 +691,12 @@ var Ramble = function(selector) {
 /**
  * base prototype
  */
-var _RamblePrototype = {
-	constructor: Ramble,
+var _FluentPrototype = {
+	constructor: Fluent,
 	/**
 	 * execute function to all element
 	 * @param {Function} callback
-	 * @return {Ramble}
+	 * @return {Fluent}
 	 */
 	each: function(callback) {
 		var args = arraySlice.call(arguments, 1);
@@ -841,13 +841,13 @@ function eventUndelegate(targetList, type, selector, eventHandler) {
 	});
 }
 
-var _RambleEvent = {
+var _FluentEvent = {
 	/**
 	 * bind event
 	 * @param {String} type
 	 * @param {Function} eventHandler
 	 * @param {Boolean} useCapture 
-	 * @return {Ramble}
+	 * @return {Fluent}
 	 */
 	bind: function(type, eventHandler, useCapture) {
 		eventBind(this, type, eventHandler, useCapture);
@@ -858,7 +858,7 @@ var _RambleEvent = {
 	 * @param {String} type
 	 * @param {Function} eventHandler
 	 * @param {Boolean} useCapture
-	 * @return {Ramble}
+	 * @return {Fluent}
 	 */
 	unbind: function(type, eventHandler, useCapture) {
 		eventUnbind(this, type, eventHandler, useCapture);
@@ -868,7 +868,7 @@ var _RambleEvent = {
 	 * begin propagation event
 	 * @param {String} type
 	 * @param {Function} eventHandler
-	 * @return {Ramble}
+	 * @return {Fluent}
 	 */
 	delegate: function(type, selector, eventHandler) {
 		eventDelegate(this, type, selector, eventHandler);
@@ -878,26 +878,26 @@ var _RambleEvent = {
 	 * finish propagation event
 	 * @param {String} type
 	 * @param {Function} eventHandler
-	 * @return {Ramble}
+	 * @return {Fluent}
 	 */
 	undelegate: function(type, selector, eventHandler) {
 		eventUndelegate(this, type, selector, eventHandler);
 		return this;
 	}
 };
-var _RambleTraversing = {
+var _FluentTraversing = {
 	/**
 	 * get elements by search with callback
 	 * @param {Function} callback
-	 * @return {Ramble}
+	 * @return {Fluent}
 	 */
 	filter: function(callback) {
-		return new Ramble(arrayFilter.call(this, callback));
+		return new Fluent(arrayFilter.call(this, callback));
 	},
 	/**
 	 * apply callback and get elements
 	 * @param {Function} callback
-	 * @return {Ramble}
+	 * @return {Fluent}
 	 */
 	map: function(callback) {
 		var array = [], element;
@@ -907,21 +907,21 @@ var _RambleTraversing = {
 				array.push(element);
 			}
 		}
-		return new Ramble(array);
+		return new Fluent(array);
 	},
 	/**
 	 * get unique elements
-	 * @return {Ramble}
+	 * @return {Fluent}
 	 */
 	unique: function() {
 		var array = this.toArray();
-		return new Ramble(arrayFilter.call(array, function(item, index){
+		return new Fluent(arrayFilter.call(array, function(item, index){
 			return array.indexOf(item) == index;
 		}));
 	},
 	/**
 	 * get all children
-	 * @return {Ramble}
+	 * @return {Fluent}
 	 */
 	children: function() {
 		var array = [];
@@ -933,7 +933,7 @@ var _RambleTraversing = {
 				}
 			}
 		}
-		return new Ramble(array);
+		return new Fluent(array);
 	},
 	/**
 	 * @return {String} selector
@@ -943,14 +943,14 @@ var _RambleTraversing = {
 		for(var i = 0, len = this.length;i < len;i++) {
 			mergeArray(array, qsaHook(selector, this[i]));
 		}
-		return new Ramble(array);
+		return new Fluent(array);
 	}
 };
-var _RambleManipulation = {
+var _FluentManipulation = {
 	/**
 	 * set innerHTML property of element
 	 * @param {String} value
-	 * @return {Ramble}
+	 * @return {Fluent}
 	 */
 	html: function(value) {
 		return this.each(function(element, index) {
@@ -962,7 +962,7 @@ var _RambleManipulation = {
 	/**
 	 * set textContent property of element
 	 * @param {String} value
-	 * @return {Ramble}
+	 * @return {Fluent}
 	 */
 	text: function(value) {
 		return this.each(function(element, index) {
@@ -974,7 +974,7 @@ var _RambleManipulation = {
 	/**
 	 * set value property of element
 	 * @param {String} value
-	 * @return {Ramble}
+	 * @return {Fluent}
 	 */
 	val: function(value) {
 		return this.each(function(element, index) {
@@ -987,7 +987,7 @@ var _RambleManipulation = {
 	 * set or add attribute
 	 * @param {String} key
 	 * @param {String} value
-	 * @return {Ramble}
+	 * @return {Fluent}
 	 */
 	attr: function(key, value) {
 		return this.each(function(element, index) {
@@ -998,7 +998,7 @@ var _RambleManipulation = {
 	 * set or add dataset
 	 * @param {String} key
 	 * @param {String} value
-	 * @return {Ramble}
+	 * @return {Fluent}
 	 */
 	data: function(key, value) {
 		var datasetAttr = stringCamelize("data-" + key);
@@ -1010,7 +1010,7 @@ var _RambleManipulation = {
 	 * set style of element
 	 * @param {String} key
 	 * @param {String} value
-	 * @return {Ramble}
+	 * @return {Fluent}
 	 */
 	css: function(key, value) {
 		return this.each(function(element, index) {
@@ -1020,7 +1020,7 @@ var _RambleManipulation = {
 	/**
 	 * add class to element
 	 * @param {String} className
-	 * @return {Ramble}
+	 * @return {Fluent}
 	 */
 	addClass: function(className) {
 		var list = className.split(rxWhitespace);
@@ -1033,7 +1033,7 @@ var _RambleManipulation = {
 	/**
 	 * remove class from element
 	 * @param {String} className
-	 * @return {Ramble}
+	 * @return {Fluent}
 	 */
 	removeClass: function(className) {
 		if(!className){
@@ -1055,7 +1055,7 @@ var _RambleManipulation = {
 	/**
 	 * toggle class of element
 	 * @param {String} className
-	 * @return {Ramble}
+	 * @return {Fluent}
 	 */
 	toggleClass: function(className) {
 		var list = className.split(rxWhitespace);
@@ -1068,11 +1068,11 @@ var _RambleManipulation = {
 	/**
 	 * append element
 	 * @param 
-	 * @return {Ramble}
+	 * @return {Fluent}
 	 */
 	append: function(value) {
 		var nodeList = [];
-		if(value instanceof Ramble) {
+		if(value instanceof Fluent) {
 			nodeList = value.toArray();
 		} else if(isNodeList(value)) {
 			nodeList = value;
@@ -1093,7 +1093,7 @@ var _RambleManipulation = {
 	/**
 	 * prepend element
 	 * @param
-	 * @return {Ramble}
+	 * @return {Fluent}
 	 */
 	prepend: function(value) {
 		return this;
@@ -1116,7 +1116,7 @@ var _RambleManipulation = {
 		return this.css("display", "none");
 	}
 };
-var _RambleAnimation = {
+var _FluentAnimation = {
 	_param: {},
 	_prefix: ["-webkit-", "-moz-", "-ms-", "-o-", ""],
 	_transform: {
@@ -1155,7 +1155,7 @@ var _RambleAnimation = {
 	/**
 	 * set delay
 	 * @param {String} value
-	 * @return {Ramble}
+	 * @return {Fluent}
 	 */
 	delay: function(value) {
 		this._delay.value = value;
@@ -1164,7 +1164,7 @@ var _RambleAnimation = {
 	/**
 	 * set duration
 	 * @param {String} value
-	 * @return {Ramble}
+	 * @return {Fluent}
 	 */
 	duration: function(value) {
 		this._duration.value = value;
@@ -1173,7 +1173,7 @@ var _RambleAnimation = {
 	/**
 	 * set ease
 	 * @param {String} value
-	 * @return {Ramble}
+	 * @return {Fluent}
 	 */
 	ease: function(value) {
 		this._ease.value = value;
@@ -1183,7 +1183,7 @@ var _RambleAnimation = {
 	 * set skew
 	 * @param {Number} x
 	 * @param {Number} y
-	 * @return {Ramble}
+	 * @return {Fluent}
 	 */
 	skew: function(x, y) {
 		if(x === undefined || y === undefined) {
@@ -1195,7 +1195,7 @@ var _RambleAnimation = {
 	/**
 	 * set skewX
 	 * @param {Number} x
-	 * @return {Ramble}
+	 * @return {Fluent}
 	 */
 	skewX: function(x) {
 		if(x === undefined) {
@@ -1207,7 +1207,7 @@ var _RambleAnimation = {
 	/**
 	 * set skewY
 	 * @param {Number} y
-	 * @return {Ramble}
+	 * @return {Fluent}
 	 */
 	skewY: function(y) {
 		if(y === undefined) {
@@ -1220,7 +1220,7 @@ var _RambleAnimation = {
 	 * set translate
 	 * @param {Number} x
 	 * @param {Number} y
-	 * @return {Ramble}
+	 * @return {Fluent}
 	 */
 	translate: function(x, y) {
 		if(x === undefined || y === undefined) {
@@ -1232,7 +1232,7 @@ var _RambleAnimation = {
 	/**
 	 * set translateX
 	 * @param {Number} x
-	 * @return {Ramble}
+	 * @return {Fluent}
 	 */
 	translateX: function(x) {
 		if(x === undefined) {
@@ -1244,7 +1244,7 @@ var _RambleAnimation = {
 	/**
 	 * set translateY
 	 * @param {Number} y
-	 * @return {Ramble}
+	 * @return {Fluent}
 	 */
 	translateY: function(y) {
 		if(y === undefined) {
@@ -1257,7 +1257,7 @@ var _RambleAnimation = {
 	 * set scale
 	 * @param {Number} x
 	 * @param {Number} y
-	 * @return {Ramble}
+	 * @return {Fluent}
 	 */
 	scale: function(x, y) {
 		if(x === undefined || y === undefined) {
@@ -1269,7 +1269,7 @@ var _RambleAnimation = {
 	/**
 	 * set scaleX
 	 * @param {Number} x
-	 * @return {Ramble}
+	 * @return {Fluent}
 	 */
 	scaleX: function(x) {
 		if(x === undefined) {
@@ -1281,7 +1281,7 @@ var _RambleAnimation = {
 	/**
 	 * set scaleY
 	 * @param {Number} y
-	 * @return {Ramble}
+	 * @return {Fluent}
 	 */
 	scaleY: function(y) {
 		if(y === undefined) {
@@ -1293,7 +1293,7 @@ var _RambleAnimation = {
 	/**
 	 * set rotate
 	 * @param {Number} n
-	 * @return {Ramble}
+	 * @return {Fluent}
 	 */
 	rotate: function(n) {
 		if(n === undefined) {
@@ -1304,7 +1304,7 @@ var _RambleAnimation = {
 	},
 	/**
 	 * insert animation properties
-	 * @return {Ramble}
+	 * @return {Fluent}
 	 */
 	animate: function() {
 		var prefix;
@@ -1326,18 +1326,18 @@ var _RambleAnimation = {
 	}
 };
 
-//extend Ramble prototype
-commonExtend(Ramble.prototype, _RamblePrototype);
-commonExtend(Ramble.prototype, _RambleEvent);
-commonExtend(Ramble.prototype, _RambleTraversing);
-commonExtend(Ramble.prototype, _RambleManipulation);
-commonExtend(Ramble.prototype, _RambleAnimation);
+//extend Fluent prototype
+commonExtend(Fluent.prototype, _FluentPrototype);
+commonExtend(Fluent.prototype, _FluentEvent);
+commonExtend(Fluent.prototype, _FluentTraversing);
+commonExtend(Fluent.prototype, _FluentManipulation);
+commonExtend(Fluent.prototype, _FluentAnimation);
 
-win.Ramble = Ramble;
+win.Fluent = Fluent;
 
 //set $ as constructor alias to global
 win.$ = function(selector, context) {
-	return new Ramble(selector, context);
+	return new Fluent(selector, context);
 };
 
 win.Event = {

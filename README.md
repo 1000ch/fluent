@@ -1,4 +1,4 @@
-#ramble.js
+#fluent.js
 ======
 
 ##About
@@ -15,120 +15,116 @@ so this extends through "extend" or "fill" function.
 
     $([selector][, context])
     
-    [RambleObject].each(function(element, index) {
+    [FluentObject].each(function(element, index) {
     	//any process
-    })
+    });
     
-    var domArray = [RambleObject].slice();
-    //get dom element as array which ramble object contains
-    //array is not a nodeList and ramble object
-    
-    var domArray = [RambleObject].toArray();
+    var domArray = [FluentObject].toArray();
 
 ###Event
 
-    [RambleObject].bind(type, callback);
+    [FluentObject].bind(type, callback);
     //bind event to element
     
-    [RambleObject].unbind(type, callback);
+    [FluentObject].unbind(type, callback);
     //unbind event from element
     
-    [RambleObject].delegate(type, selector, callback);
+    [FluentObject].delegate(type, selector, callback);
     //start to delegate event
     //elements will be searched by selector and fired 
-    //in context which ramble object contains
+    //in context which Fluent object contains
     
-    [RambleObject].undelegate(type, selector, callback);
+    [FluentObject].undelegate(type, selector, callback);
     //end to delegate event
 
 ###Traversing
 
-    [RambleObject].filter(callback);
+    [FluentObject].filter(callback);
     //filter elements with callback function
     
-    [RambleObject].map(callback);
+    [FluentObject].map(callback);
     //execute callback to elements,
-    //and return affected elements as ramble object
+    //and return affected elements as Fluent object
     
-    var uniqueElements = [RambleObject].unique();
+    var uniqueElements = [FluentObject].unique();
     
-    var childElements = [RambleObject].children();
+    var childElements = [FluentObject].children();
 
 ###Manipulation
 
-    [RambleObject].html(value);
+    [FluentObject].html(value);
     //set value to innerHTML property
     
-    [RambleObject].text(value);
+    [FluentObject].text(value);
     //set value to textContent property
     
-    [RambleObject].val(value);
+    [FluentObject].val(value);
     //set value to value property
     
-    [RambleObject].css(key, value);
+    [FluentObject].css(key, value);
     //set value to key of style structure
     
-    [RambleObject].addClass(value);
+    [FluentObject].addClass(value);
     //add class to elements
     
-    [RambleObject].removeClass(value);
+    [FluentObject].removeClass(value);
     //remove class from elements
     
-    [RambleObject].removeAllClass();
+    [FluentObject].removeAllClass();
     //remove all class from elements
     
-    [RambleObject].toggleClass(value);
+    [FluentObject].toggleClass(value);
     //toggle class of elements
     
-    [RambleObject].show()
+    [FluentObject].show()
     //show elements
     
-    [RambleObject].hide()
+    [FluentObject].hide()
     //hide elements
 
 
 ###Animation
 
-    [RambleObject].delay(value);
+    [FluentObject].delay(value);
     //set delay of animation
     
-    [RambleObject].duration(value);
+    [FluentObject].duration(value);
     //set duration of animation
     
-    [RambleObject].ease(value);
+    [FluentObject].ease(value);
     //set ease type of animation
     
-    [RambleObject].skew(x, y);
+    [FluentObject].skew(x, y);
     //add skew property for animation
     
-    [RambleObject].skewX(x);
+    [FluentObject].skewX(x);
     //add skewX property for animation
     
-    [RambleObject].skewY(y);
+    [FluentObject].skewY(y);
     //add skewY property for animation
     
-    [RambleObject].translate(x, y);
+    [FluentObject].translate(x, y);
     //add translate property for animation
     
-    [RambleObject].translateX(x);
+    [FluentObject].translateX(x);
     //add translateX property for animation
     
-    [RambleObject].translateY(y);
+    [FluentObject].translateY(y);
     //add translateY property for animation
     
-    [RambleObject].scale(x, y);
+    [FluentObject].scale(x, y);
     //add scale property for animation
     
-    [RambleObject].scaleX(x);
+    [FluentObject].scaleX(x);
     //add scaleX property for animation
     
-    [RambleObject].scaleY(y);
+    [FluentObject].scaleY(y);
     //add scaleY property for animation
     
-    [RambleObject].rotate(n);
+    [FluentObject].rotate(n);
     //add rotate property for animation
     
-    [RambleObject].animate();
+    [FluentObject].animate();
     //execute animation basis of stacked properties
 
 others are to be announced...
@@ -138,7 +134,7 @@ others are to be announced...
 Copyright [1000ch.net](http://1000ch.net/)  
 Released under the MIT license  
 
-#ramble.js
+#fluent.js
 
 ##ライブラリについて
 

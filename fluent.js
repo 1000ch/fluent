@@ -712,6 +712,16 @@ var _FluentPrototype = {
 };
 
 /**
+ * create proxy
+ * @param {Function} callback
+ * @param {Object} target
+ */
+function proxy(callback, target) {
+	return function() {
+		return callback.apply(target, arguments);
+	};
+}
+/**
  * bind
  * @param {Array} targetList
  * @param {String} type
@@ -723,7 +733,6 @@ function eventBind(targetList, type, eventHandler, useCapture) {
 		target.addEventListener(type, eventHandler, useCapture);
 	});
 }
-
 /**
  * unbind
  * @param {Array} targetList
@@ -736,7 +745,6 @@ function eventUnbind(targetList, type, eventHandler, useCapture) {
 		target.removeEventListener(type, eventHandler, useCapture);
 	});
 }
-
 /**
  * search index
  * @param {Array} array
@@ -753,7 +761,6 @@ function searchIndex(array, propertyName, compareData) {
 	}
 	return -1;
 }
-
 /**
  * create callback closure
  * @param {HTMLElement} parent
@@ -1037,19 +1044,26 @@ var _FluentManipulation = {
 	 */
 	removeClass: function(className) {
 		if(!className){
-			var classList, len;
-			return this.each(function(element, index) {
-				classList = element.classList, len = classList.length;
-				while(len--) {
-					classList.remove(classList[len]);
-				}
-			});
+			return this;
 		}
 		var list = className.split(rxWhitespace);
 		return this.each(function(element, index) {
 			list.forEach(function(name) {
 				element.classList.remove(name);
 			});
+		});
+	},
+	/**
+	 * remove all class from element
+	 * @return {Fluent}
+	 */
+	removeAllClass: function() {
+		var classList, len;
+		return this.each(function(element, index) {
+			classList = element.classList, len = classList.length;
+			while(len--) {
+				classList.remove(classList[len]);
+			}
 		});
 	},
 	/**
@@ -1355,7 +1369,8 @@ win.CommonUtil = {
 	serialize: commonSerialize,
 	deserialize: commonDeserialize,
 	loadScript: loadScript,
-	is: is
+	is: is,
+	has: has
 };
 win.StringUtil = {
 	camelize: stringCamelize,

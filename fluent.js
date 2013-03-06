@@ -691,7 +691,7 @@ var Fluent = function(selector) {
 /**
  * base prototype
  */
-var _FluentPrototype = {
+Fluent.fn = Fluent.prototype = {
 	constructor: Fluent,
 	/**
 	 * execute function to all element
@@ -1341,7 +1341,6 @@ var _FluentAnimation = {
 };
 
 //extend Fluent prototype
-commonExtend(Fluent.prototype, _FluentPrototype);
 commonExtend(Fluent.prototype, _FluentEvent);
 commonExtend(Fluent.prototype, _FluentTraversing);
 commonExtend(Fluent.prototype, _FluentManipulation);

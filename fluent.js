@@ -953,6 +953,71 @@ var _FluentTraversing = {
 		return new Fluent(array);
 	}
 };
+
+/**
+ * add class to element
+ * @param {HTMLElement} targetNode
+ * @param {String} value
+ */
+function addClass(targetNode, value) {
+	value = value + "";
+	var className = targetNode.className;
+	if(className === "" || className === undefined) {
+		targetNode.className = value;
+	} else {
+		var arrayBuffer = className.split(rxWhitespace);
+		var valueIndex = arrayBuffer.indexOf(value);
+		if(valueIndex == -1) {
+			//if does not exist
+			targetNode.className = arrayBuffer.push(value).join(rxWhitespace);
+		}
+	}
+}
+
+/**
+ * remove class from element
+ * @param {HTMLElement} targetNode
+ * @param {String} value
+ */
+function removeClass(targetNode, value) {
+	value = value + "";
+	var className = targetNode.className;
+	if(className === "" || className === undefined) {
+	} else {
+		var arrayBuffer = className.split(rxWhitespace);
+		var valueIndex = arrayBuffer.indexOf(value);
+		if(valueIndex != -1) {
+			//if exist
+			arrayBuffer.splice(valueIndex, 1);
+			targetNode.className = arrayBuffer.join(rxWhitespace);
+		}
+	}
+}
+
+/**
+ * toggle class of element
+ * @param {HTMLElement} targetNode
+ * @param {String} value
+ */
+function toggleClass(targetNode, value) {
+	value = value + "";
+	var className = targetNode.className;
+	if(className === "" || className === undefined) {
+		targetNode.className = value;
+	} else {
+		var arrayBuffer = className.split(rxWhitespace);
+		var valueIndex = arrayBuffer.indexOf(value);
+		if(valueIndex == -1) {
+			//if does not exist
+			targetNode.className = arrayBuffer.push(value).join(rxWhitespace);
+		} else {
+			//if exist
+			arrayBuffer.splice(valueIndex, 1);
+			targetNode.className = arrayBuffer.join(rxWhitespace);
+		}
+	}
+}
+
 var _FluentManipulation = {
 	/**
 	 * set innerHTML property of element

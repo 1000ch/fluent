@@ -1095,10 +1095,13 @@ var _FluentManipulation = {
 	 * @return {Fluent}
 	 */
 	addClass: function(className) {
+		if(!list) {
+			return this;
+		}
 		var list = className.split(rxWhitespace);
 		return this.each(function(element, index) {
 			list.forEach(function(name) {
-				element.classList.add(name);
+				addClass(element, name);
 			});
 		});
 	},
@@ -1114,7 +1117,7 @@ var _FluentManipulation = {
 		var list = className.split(rxWhitespace);
 		return this.each(function(element, index) {
 			list.forEach(function(name) {
-				element.classList.remove(name);
+				removeClass(name);
 			});
 		});
 	},
@@ -1137,10 +1140,13 @@ var _FluentManipulation = {
 	 * @return {Fluent}
 	 */
 	toggleClass: function(className) {
+		if(!className){
+			return this;
+		}
 		var list = className.split(rxWhitespace);
 		return this.each(function(element, index) {
 			list.forEach(function(name) {
-				element.classList.toggle(name);
+				toggleClass(element, name);
 			});
 		});
 	},

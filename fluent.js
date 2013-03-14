@@ -18,11 +18,6 @@ var emptyArray = [],
 
 //cache referrence
 var objectToString = Object.prototype.toString,
-	objectCreate = Object.create,
-	objectDefineProperty = Object.defineProperty,
-	objectGetPropertyOf = Object.getPropertyOf,
-	objectGetOwnPropertyNames = Object.getOwnPropertyNames,
-	objectGetOwnPropertyDescriptor = Object.getOwnPropertyDescriptor,
 	arraySlice = Array.prototype.slice,
 	arraySplice = Array.prototype.splice,
 	arrayIndexOf = Array.prototype.indexOf,
@@ -303,8 +298,7 @@ var rxConciseSelector = /^(?:#([\w\-]+)|(\w+)|\.([\w\-]+))$/,//filter #id, tagNa
 	rxIdSelector = /^#([\w\-]+)$/,
 	rxClassSelector = /^\.([\w\-]+)$/,
 	rxTagSelector = /^[\w\-]+$/,
-	rxReady = /complete|loaded|interactive/,//dom ready state
-	rxWhitespace = /\s+/g;
+	rxReady = /complete|loaded|interactive/;
 
 var qs = "querySelector", 
 	qsa = "querySelectorAll",
@@ -440,11 +434,11 @@ function commonEach(target, callback) {
  * @return {Object}
  */
 function commonCopy(target) {
-	var copy = objectCreate(objectGetPropertyOf(target));
-	var propertyNames = objectGetOwnPropertyNames(target);
+	var copy = Object.Create(Object.getPropertyOf(target));
+	var propertyNames = Object.getOwnPropertyNames(target);
 
 	arrayForEach.call(propertyNames, function(name) {
-		objectDefineProperty(copy, name, objectGetOwnPropertyDescriptor(target, name));
+		Object.defineProperty(copy, name, Object.getOwnPropertyDescriptor(target, name));
 	});
 	return copy;
 }
@@ -637,7 +631,7 @@ function qsaHook(selector, context) {
 	}
 
 	//process for case of "#id [any selector]"
-	var token, tokenList = selector.split(rxWhitespace);
+	var token, tokenList = selector.split(" ");
 	var tokenIndex = arrayLastIndexOf.call(tokenList, rxIdSelector);
 	if(tokenIndex > -1) {
 		//last id selector
@@ -691,7 +685,7 @@ var Fluent = function(selector) {
 /**
  * base prototype
  */
-Fluent.fn = Fluent.prototype = {
+Fluent.fn = {
 	constructor: Fluent,
 	/**
 	 * execute function to all element
@@ -710,6 +704,8 @@ Fluent.fn = Fluent.prototype = {
 		return arraySlice.call(this);
 	}
 };
+
+Fluent.prototype = Fluent.fn;
 
 /**
  * create proxy
@@ -965,11 +961,11 @@ function addClass(targetNode, value) {
 	if(className === "" || className === undefined) {
 		targetNode.className = value;
 	} else {
-		var arrayBuffer = className.split(rxWhitespace);
+		var arrayBuffer = className.split(" ");
 		var valueIndex = arrayBuffer.indexOf(value);
 		if(valueIndex == -1) {
 			//if does not exist
-			targetNode.className = arrayBuffer.push(value).join(rxWhitespace);
+			targetNode.className = arrayBuffer.push(value).join(" ");
 		}
 	}
 }
@@ -984,12 +980,12 @@ function removeClass(targetNode, value) {
 	var className = targetNode.className;
 	if(className === "" || className === undefined) {
 	} else {
-		var arrayBuffer = className.split(rxWhitespace);
+		var arrayBuffer = className.split(" ");
 		var valueIndex = arrayBuffer.indexOf(value);
 		if(valueIndex != -1) {
 			//if exist
 			arrayBuffer.splice(valueIndex, 1);
-			targetNode.className = arrayBuffer.join(rxWhitespace);
+			targetNode.className = arrayBuffer.join(" ");
 		}
 	}
 }
@@ -1005,15 +1001,15 @@ function toggleClass(targetNode, value) {
 	if(className === "" || className === undefined) {
 		targetNode.className = value;
 	} else {
-		var arrayBuffer = className.split(rxWhitespace);
+		var arrayBuffer = className.split(" ");
 		var valueIndex = arrayBuffer.indexOf(value);
 		if(valueIndex == -1) {
 			//if does not exist
-			targetNode.className = arrayBuffer.push(value).join(rxWhitespace);
+			targetNode.className = arrayBuffer.push(value).join(" ");
 		} else {
 			//if exist
 			arrayBuffer.splice(valueIndex, 1);
-			targetNode.className = arrayBuffer.join(rxWhitespace);
+			targetNode.className = arrayBuffer.join(" ");
 		}
 	}
 }
@@ -1098,7 +1094,7 @@ var _FluentManipulation = {
 		if(!list) {
 			return this;
 		}
-		var list = className.split(rxWhitespace);
+		var list = className.split(" ");
 		return this.each(function(element, index) {
 			list.forEach(function(name) {
 				addClass(element, name);
@@ -1114,7 +1110,7 @@ var _FluentManipulation = {
 		if(!className){
 			return this;
 		}
-		var list = className.split(rxWhitespace);
+		var list = className.split(" ");
 		return this.each(function(element, index) {
 			list.forEach(function(name) {
 				removeClass(name);
@@ -1143,7 +1139,7 @@ var _FluentManipulation = {
 		if(!className){
 			return this;
 		}
-		var list = className.split(rxWhitespace);
+		var list = className.split(" ");
 		return this.each(function(element, index) {
 			list.forEach(function(name) {
 				toggleClass(element, name);
@@ -1412,10 +1408,10 @@ var _FluentAnimation = {
 };
 
 //extend Fluent prototype
-commonExtend(Fluent.prototype, _FluentEvent);
-commonExtend(Fluent.prototype, _FluentTraversing);
-commonExtend(Fluent.prototype, _FluentManipulation);
-commonExtend(Fluent.prototype, _FluentAnimation);
+commonExtend(Fluent.fn, _FluentEvent);
+commonExtend(Fluent.fn, _FluentTraversing);
+commonExtend(Fluent.fn, _FluentManipulation);
+commonExtend(Fluent.fn, _FluentAnimation);
 
 win.Fluent = Fluent;
 

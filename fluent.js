@@ -685,27 +685,28 @@ var Fluent = function(selector) {
 /**
  * base prototype
  */
-Fluent.fn = {
-	constructor: Fluent,
-	/**
-	 * execute function to all element
-	 * @param {Function} callback
-	 * @return {Fluent}
-	 */
-	each: function(callback) {
-		var args = arraySlice.call(arguments, 1);
-		return commonEach(this, callback, args);
-	},
-	/**
-	 * get all element
-	 * @return {Array<HTMLElement>}
-	 */
-	toArray: function() {
-		return arraySlice.call(this);
-	}
+Fluent.fn = { constructor: Fluent };
+
+//mapping fn to prototype
+Fluent.prototype = Fluent.fn;
+
+/**
+ * execute function to all element
+ * @param {Function} callback
+ * @return {Fluent}
+ */
+Fluent.fn.each = function(callback) {
+	var args = arraySlice.call(arguments, 1);
+	return commonEach(this, callback, args);
 };
 
-Fluent.prototype = Fluent.fn;
+/**
+ * get all element
+ * @return {Array<HTMLElement>}
+ */
+Fluent.fn.toArray = function() {
+	return arraySlice.call(this);
+};
 
 /**
  * create proxy

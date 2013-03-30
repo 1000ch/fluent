@@ -930,7 +930,7 @@ var _FluentTraversing = {
 	children: function() {
 		var array = [];
 		for(var i = 0, len = this.length;i < len;i++) {
-			if(this[i].hasChildNodes()) {
+			if(this[i].firstChild) {
 				var childNodes = this[i].childNodes;
 				for(var j = 0, nodeLen = childNodes.length;j < nodeLen;j++) {
 					array.push(childNodes[j]);

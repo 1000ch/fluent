@@ -588,16 +588,16 @@ function onDOMContentLoaded(callback) {
 	var args = arraySlice.call(arguments, 1);
 	if (rxReady.test(doc.readyState)) {
 		if(!args) {
-			callback();
+			callback.call(doc);
 		} else {
-			callback(args);
+			callback.apply(doc, args);
 		}
 	} else {
 		doc.addEventListener("DOMContentLoaded", function() {
 			if(!args) {
-				callback();
+				callback.call(doc);
 			} else {
-				callback(args);
+				callback.apply(doc, args);
 			}
 		}, false);
 	}

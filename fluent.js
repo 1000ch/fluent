@@ -434,7 +434,7 @@ function commonEach(target, callback) {
  * @return {Object}
  */
 function commonCopy(target) {
-	var copy = Object.Create(Object.getPropertyOf(target));
+	var copy = Object.create(Object.getPropertyOf(target));
 	var propertyNames = Object.getOwnPropertyNames(target);
 
 	arrayForEach.call(propertyNames, function(name) {
@@ -956,18 +956,12 @@ var _FluentTraversing = {
  * @param {HTMLElement} targetNode
  * @param {String} value
  */
-function addClass(targetNode, value) {
-	value = value + "";
-	var className = targetNode.className;
-	if(className === "" || className === undefined) {
-		targetNode.className = value;
-	} else {
-		var arrayBuffer = className.split(" ");
-		var valueIndex = arrayBuffer.indexOf(value);
-		if(valueIndex == -1) {
-			//if does not exist
-			targetNode.className = arrayBuffer.push(value).join(" ");
-		}
+function _addClass(targetNode, value) {
+	var arrayBuffer = targetNode.className.split(" ");
+	var valueIndex = arrayBuffer.indexOf(value + "");
+	if(valueIndex == -1) {
+		//if does not exist
+		targetNode.className = arrayBuffer.push(value).join(" ");
 	}
 }
 
@@ -976,18 +970,13 @@ function addClass(targetNode, value) {
  * @param {HTMLElement} targetNode
  * @param {String} value
  */
-function removeClass(targetNode, value) {
-	value = value + "";
-	var className = targetNode.className;
-	if(className === "" || className === undefined) {
-	} else {
-		var arrayBuffer = className.split(" ");
-		var valueIndex = arrayBuffer.indexOf(value);
-		if(valueIndex != -1) {
-			//if exist
-			arrayBuffer.splice(valueIndex, 1);
-			targetNode.className = arrayBuffer.join(" ");
-		}
+function _removeClass(targetNode, value) {
+	var arrayBuffer = targetNode.className.split(" ");
+	var valueIndex = arrayBuffer.indexOf(value + "");
+	if(valueIndex != -1) {
+		//if exist
+		arrayBuffer.splice(valueIndex, 1);
+		targetNode.className = arrayBuffer.join(" ");
 	}
 }
 
@@ -996,23 +985,49 @@ function removeClass(targetNode, value) {
  * @param {HTMLElement} targetNode
  * @param {String} value
  */
-function toggleClass(targetNode, value) {
-	value = value + "";
-	var className = targetNode.className;
-	if(className === "" || className === undefined) {
-		targetNode.className = value;
+function _toggleClass(targetNode, value) {
+	var arrayBuffer = targetNode.className.split(" ");
+	var valueIndex = arrayBuffer.indexOf(value + "");
+	if(valueIndex == -1) {
+		//if does not exist
+		targetNode.className = arrayBuffer.push(value).join(" ");
 	} else {
-		var arrayBuffer = className.split(" ");
-		var valueIndex = arrayBuffer.indexOf(value);
-		if(valueIndex == -1) {
-			//if does not exist
-			targetNode.className = arrayBuffer.push(value).join(" ");
-		} else {
-			//if exist
-			arrayBuffer.splice(valueIndex, 1);
-			targetNode.className = arrayBuffer.join(" ");
+		//if exist
+		arrayBuffer.splice(valueIndex, 1);
+		targetNode.className = arrayBuffer.join(" ");
+	}
+}
+
+/**
+ * target has class or not.
+ * @param {HTMLElement} targetNode
+ * @param {String} value
+ */
+function _hasClass(targetNode, value) {
+	var arrayBuffer = targetNode.className.split(" ");
+	return (arrayBuffer.indexOf(value + "") != -1);
+}
+
+/**
+ * normalize object to node array.
+ * @param {Fluent|NodeList|Array} value
+ */
+function _normalizeNode(value) {
+	var nodeList = [];
+	if(value.nodeType) {
+		nodeList.push(value);
+	} else if(value instanceof Fluent) {
+		nodeList = value.toArray();
+	} else if(isNodeList(value)) {
+		nodeList = value;
+	} else if(isLikeArray(value)) {
+		for(var i = 0, len = value.length;i < len;i++) {
+			if(value[i].nodeType) {
+				nodeList[nodeList.length] = value[i];
+			}
 		}
 	}
+	return nodeList;
 }
 
 var _FluentManipulation = {
@@ -1092,14 +1107,14 @@ var _FluentManipulation = {
 	 * @return {Fluent}
 	 */
 	addClass: function(className) {
-		if(!list) {
+		if(!className) {
 			return this;
 		}
 		var list = className.split(" ");
 		return this.each(function(element, index) {
-			list.forEach(function(name) {
-				addClass(element, name);
-			});
+			for(var i = 0, len = list.length;i < len;i++) {
+				_addClass(element, list[i]);
+			}
 		});
 	},
 	/**
@@ -1113,9 +1128,9 @@ var _FluentManipulation = {
 		}
 		var list = className.split(" ");
 		return this.each(function(element, index) {
-			list.forEach(function(name) {
-				removeClass(name);
-			});
+			for(var i = 0, len = list.length;i < len;i++) {
+				_removeClass(element, list[i]);
+			}
 		});
 	},
 	/**
@@ -1142,9 +1157,9 @@ var _FluentManipulation = {
 		}
 		var list = className.split(" ");
 		return this.each(function(element, index) {
-			list.forEach(function(name) {
-				toggleClass(element, name);
-			});
+			for(var i = 0, len = list.length;i < len;i++) {
+				_toggleClass(element, list[i]);
+			}
 		});
 	},
 	/**
@@ -1153,18 +1168,7 @@ var _FluentManipulation = {
 	 * @return {Fluent}
 	 */
 	append: function(value) {
-		var nodeList = [];
-		if(value instanceof Fluent) {
-			nodeList = value.toArray();
-		} else if(isNodeList(value)) {
-			nodeList = value;
-		} else if(isLikeArray(value)) {
-			for(var i = 0, len = value.length;i < len;i++) {
-				if(value[i].nodeType) {
-					nodeList[nodeList.length] = value[i];
-				}
-			}
-		}
+		var nodeList = _normalizeNode(value);
 		commonEach(this, function(element) {
 			for(var i = 0, len = nodeList.length;i < len;i++) {
 				element.appendChild(nodeList[i]);
@@ -1178,6 +1182,12 @@ var _FluentManipulation = {
 	 * @return {Fluent}
 	 */
 	prepend: function(value) {
+		var nodeList = _normalizeNode(value);
+		commonEach(this, function(element) {
+			for(var i = 0, len = nodeList.length;i < len;i++) {
+				element.insertBefore(nodeList[i], element.firstChild);
+			}
+		});
 		return this;
 	},
 	/**

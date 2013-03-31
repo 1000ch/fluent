@@ -50,6 +50,8 @@ so this extends through "extend" or "fill" function.
     
     var childElements = [FluentObject].children();
 
+    var foundElements = [FluentObject].find("selector");
+
 ###Manipulation
 
     [FluentObject].html(value);
@@ -60,6 +62,12 @@ so this extends through "extend" or "fill" function.
     
     [FluentObject].val(value);
     //set value to value property
+    
+    [FluentObject].attr(key, value);
+    //set value to attribute
+    
+    [FluentObject].data(key, value);
+    //set value to dataset
     
     [FluentObject].css(key, value);
     //set value to key of style structure
@@ -79,9 +87,14 @@ so this extends through "extend" or "fill" function.
     [FluentObject].show()
     //show elements
     
+    [FluentObject].append();
+    //append element
+    
+    [FluentObject].prepend();
+    //insert element
+    
     [FluentObject].hide()
     //hide elements
-
 
 ###Animation
 

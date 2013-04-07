@@ -584,7 +584,7 @@ function loadScript(path, callback, async, defer) {
  * execute callback when dom content loaded
  * @param {Function} callback
  */
-function onDOMContentLoaded(callback) {
+function onDocumentReady(callback) {
 	var args = arraySlice.call(arguments, 1);
 	if (rxReady.test(doc.readyState)) {
 		if(!args) {
@@ -764,7 +764,7 @@ function searchIndex(array, propertyName, compareData) {
  * @param {String} selector
  * @param {Function} eventHandler
  */
-function createClosure(parent, selector, eventHandler) {
+function createDelegateClosure(parent, selector, eventHandler) {
 	var closure = function(e) {
 		var children = qsaHook(selector, parent);
 		arrayForEach.call(children, function(child) {
@@ -797,7 +797,7 @@ function eventDelegate(targetList, type, selector, eventHandler) {
 		if(!target.closureList[hop](type)) {
 			target.closureList[type] = [];
 		}
-		closure = createClosure(target, selector, eventHandler);
+		closure = createDelegateClosure(target, selector, eventHandler);
 		if(searchIndex(target.closureList[type], CLOSURE, closure) < 0) {
 			target.closureList[type].push({
 				selector: selector,
@@ -1432,7 +1432,7 @@ win.$ = function(selector, context) {
 };
 
 win.Event = {
-	ready: onDOMContentLoaded,
+	ready: onDocumentReady,
 	bind: eventBind,
 	unbind: eventUnbind,
 	delegate: eventDelegate,

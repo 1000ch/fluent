@@ -4,7 +4,7 @@ module.exports = function(grunt) {
 			all: ["./fluent.js"]
 		},
 		uglify: {
-			my_target: {
+			js: {
 				files: {
 					"./fluent.min.js": ["./fluent.js"]
 				}

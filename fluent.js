@@ -743,6 +743,22 @@ function eventUnbind(targetList, type, eventHandler, useCapture) {
 	});
 }
 /**
+ * once
+ * @param {Array} targetList
+ * @param {String} type
+ * @param {Function} eventHandler
+ * @param {Boolean} useCapture
+ */
+function eventOnce(targetList, type, eventHandler, useCapture) {
+	arrayForEach.call(targetList, function(target) {
+		var wrapOnce = function(e) {
+			eventHandler.call(target, e);
+			target.removeEventListener(type, wrapOnce, useCapture);
+		};
+		target.addEventListener(type, wrapOnce, useCapture);
+	});
+}
+/**
  * search index
  * @param {Array} array
  * @param {String} propertyName
@@ -866,6 +882,17 @@ var _FluentEvent = {
 	 */
 	unbind: function(type, eventHandler, useCapture) {
 		eventUnbind(this, type, eventHandler, useCapture);
+		return this;
+	},
+	/**
+	 * bind event once
+	 * @param {String} type
+	 * @param {Function} eventHandler
+	 * @param {Boolean} useCapture
+	 * @return {Fluent}
+	 */
+	once: function(type, eventHandler, useCapture) {
+		eventOnce(this, type, eventHandler, useCapture);
 		return this;
 	},
 	/**
@@ -1435,6 +1462,7 @@ win.Event = {
 	ready: onDocumentReady,
 	bind: eventBind,
 	unbind: eventUnbind,
+	once: eventOnce,
 	delegate: eventDelegate,
 	undelegate: eventDelegate
 };

@@ -1,7 +1,7 @@
 /**
  * fluent.js
  *
- * Copyright 2012~, 1000ch<http://1000ch.net/>
+ * Copyright 1000ch<http://1000ch.net/>
  * licensed under the MIT license.
  **/
 (function(window, undefined){
@@ -579,6 +579,26 @@ function loadScript(path, callback, async, defer) {
 	};
 
 	doc[qs]("head").appendChild(script);
+}
+/**
+ * escape html string
+ * @param {String} value
+ * @return {String}
+ */
+function escapeHTML(value) {
+	var text = "";
+	if(value) {
+		text = value + "";
+	}
+	var escapeMap = {
+		"&": "&amp;",
+		'"': "&quot;",
+		"<": "&lt;",
+		">": "&gt;"
+	};
+	return text.replace(/&"<>/g, function(c) {
+		return escapeMap[c];
+	});
 }
 /**
  * execute callback when dom content loaded
@@ -1480,7 +1500,8 @@ win.CommonUtil = {
 win.StringUtil = {
 	camelize: stringCamelize,
 	dasherize: stringDasherize,
-	format: stringFormat
+	format: stringFormat,
+	escapeHTML: escapeHTML
 };
 
 })(window);

@@ -303,8 +303,8 @@ var rxConciseSelector = /^(?:#([\w\-]+)|(\w+)|\.([\w\-]+))$/,//filter #id, tagNa
 var qs = "querySelector", 
 	qsa = "querySelectorAll",
 	hop = "hasOwnProperty",
-	euc = encodeURIComponent,
-	duc = decodeURIComponent;
+	_encode = encodeURIComponent,
+	_decode = decodeURIComponent;
 
 //detect matchesSelector
 var matches = "matchesSelector";
@@ -419,7 +419,7 @@ function commonEach(target, callback) {
 			}
 		} else {
 			for(key in target) {
-				result = callback.apply(target[key], target[key], i);
+				result = callback.call(target[key], target[key], i);
 				if(result === false) {
 					break;
 				}
@@ -489,7 +489,7 @@ function commonSerialize(data) {
 	var ret = [], key, value;
 	for(key in data) {
 		if(data[hop](key)) {
-			ret.push(euc(key) + "=" + euc(value));
+			ret.push(_encode(key) + "=" + _encode(value));
 		}
 	}
 	return ret.join("&").replace("%20", "+");
@@ -514,7 +514,7 @@ function commonDeserialize(data) {
 	for(var i = 0, len = array.length;i < len;i++) {
 		buffer = array[i].split("=");
 		if(buffer.length == 2) {
-			ret[duc(buffer[0])] = duc(buffer[1]);
+			ret[_decode(buffer[0])] = _decode(buffer[1]);
 		}
 	}
 	return ret;

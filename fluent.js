@@ -368,8 +368,22 @@ function isLikeArray(value) {
 	return (typeof value.length == "number");
 }
 /**
+ * is appendable node or not
+ * @param {HTMLElement} element
+ * @return {Boolean}
+ */
+function isAppendable(element) {
+	if(element.nodeType) {
+		var nodeType = element.nodeType;
+		if(nodeType === 1 || nodeType === 11 || nodeType === 9) {
+			return !!element.appendChild;
+		}
+	}
+	return false;
+}
+/**
  * get computed style of element
- * @param {HTMLDomElement} element
+ * @param {HTMLElement} element
  * @param {String} key
  * @return {String}
  */
@@ -1218,7 +1232,9 @@ var _FluentManipulation = {
 		var nodeList = _normalizeNode(value);
 		commonEach(this, function(element) {
 			for(var i = 0, len = nodeList.length;i < len;i++) {
-				element.appendChild(nodeList[i]);
+				if(isAppendable(nodeList[i])) {
+					element.appendChild(nodeList[i]);
+				}
 			}
 		});
 		return this;

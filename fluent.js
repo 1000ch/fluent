@@ -1033,8 +1033,8 @@ var _FluentTraversing = {
  */
 function _addClass(targetNode, value) {
 	var classList = (value + "").split(" ");
-	var arrayBuffer = targetNode.className.split(" ");
-	var oldLength = arrayBuffer.length;
+	var newClass = "", oldClass = targetNode.className + "";
+	var arrayBuffer = oldClass.split(" ");
 	var valueIndex = -1;
 	for(var i = 0, len = classList.length;i < len;i++) {
 		valueIndex = arrayBuffer.indexOf(classList[i]);
@@ -1042,9 +1042,10 @@ function _addClass(targetNode, value) {
 			arrayBuffer.push(classList[i]);
 		}
 	}
-	if(oldLength !== arrayBuffer.length) {
+	newClass = arrayBuffer.join(" ")l
+	if(newClass != oldClass) {
 		//if className is updated
-		targetNode.className = arrayBuffer.join(" ");
+		targetNode.className = newClass;
 	}
 }
 
@@ -1055,18 +1056,19 @@ function _addClass(targetNode, value) {
  */
 function _removeClass(targetNode, value) {
 	var classList = (value + "").split(" ");
-	var arrayBuffer = targetNode.className.split(" ");
-	var oldLength = arrayBuffer.length;
+	var newClass = "", oldClass = targetNode.className + "";
+	var arrayBuffer = oldClass.split(" ");
 	var valueIndex = -1;
-	if(var i = 0, len = classList.length;i < len;i++) {
+	for(var i = 0, len = classList.length;i < len;i++) {
 		valueIndex = arrayBuffer.indexOf(classList[i]);
 		if(valueIndex !== -1) {
 			arrayBuffer.splice(valueIndex, 1);
 		}
 	}
-	if(oldLength !== arrayBuffer.length) {
+	newClass = arrayBuffer.join(" ");
+	if(newClass != oldClass) {
 		//if className is updated
-		targetNode.className = arrayBuffer.join(" ");
+		targetNode.className = newClass;
 	}
 }
 
@@ -1076,15 +1078,24 @@ function _removeClass(targetNode, value) {
  * @param {String} value
  */
 function _toggleClass(targetNode, value) {
-	var arrayBuffer = targetNode.className.split(" ");
-	var valueIndex = arrayBuffer.indexOf(value + "");
-	if(valueIndex === -1) {
-		//if does not exist
-		targetNode.className = arrayBuffer.push(value).join(" ");
-	} else {
-		//if exist
-		arrayBuffer.splice(valueIndex, 1);
-		targetNode.className = arrayBuffer.join(" ");
+	var classList = (value + "").split(" ");
+	var newClass = "", oldClass = targetNode.className + "";
+	var arrayBuffer = oldClass.split(" ");
+	var valueIndex = -1;
+	for(var i = 0, len = classList.length;i < len;i++) {
+		valueIndex = arrayBuffer.indexOf(classList[i]);
+		if(valueIndex === -1) {
+			//if does not exist
+			arrayBuffer.push(value);
+		} else {
+			//if exist
+			arrayBuffer.splice(valueIndex, 1);
+		}
+	}
+	newClass = arrayBuffer.join(" ");
+	if(newClass != oldClass) {
+		//if className is updated
+		targetNode.className = newClass;
 	}
 }
 

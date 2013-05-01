@@ -1018,11 +1018,19 @@ var _FluentTraversing = {
  * @param {String} value
  */
 function _addClass(targetNode, value) {
+	var classList = (value + "").split(" ");
 	var arrayBuffer = targetNode.className.split(" ");
-	var valueIndex = arrayBuffer.indexOf(value + "");
-	if(valueIndex == -1) {
-		//if does not exist
-		targetNode.className = arrayBuffer.push(value).join(" ");
+	var oldLength = arrayBuffer.length;
+	var valueIndex = -1;
+	for(var i = 0, len = classList.length;i < len;i++) {
+		valueIndex = arrayBuffer.indexOf(classList[i]);
+		if(valueIndex === -1) {
+			arrayBuffer.push(classList[i]);
+		}
+	}
+	if(oldLength !== arrayBuffer.length) {
+		//if className is updated
+		targetNode.className = arrayBuffer.join(" ");
 	}
 }
 
@@ -1032,11 +1040,18 @@ function _addClass(targetNode, value) {
  * @param {String} value
  */
 function _removeClass(targetNode, value) {
+	var classList = (value + "").split(" ");
 	var arrayBuffer = targetNode.className.split(" ");
-	var valueIndex = arrayBuffer.indexOf(value + "");
-	if(valueIndex != -1) {
-		//if exist
-		arrayBuffer.splice(valueIndex, 1);
+	var oldLength = arrayBuffer.length;
+	var valueIndex = -1;
+	if(var i = 0, len = classList.length;i < len;i++) {
+		valueIndex = arrayBuffer.indexOf(classList[i]);
+		if(valueIndex !== -1) {
+			arrayBuffer.splice(valueIndex, 1);
+		}
+	}
+	if(oldLength !== arrayBuffer.length) {
+		//if className is updated
 		targetNode.className = arrayBuffer.join(" ");
 	}
 }
@@ -1049,7 +1064,7 @@ function _removeClass(targetNode, value) {
 function _toggleClass(targetNode, value) {
 	var arrayBuffer = targetNode.className.split(" ");
 	var valueIndex = arrayBuffer.indexOf(value + "");
-	if(valueIndex == -1) {
+	if(valueIndex === -1) {
 		//if does not exist
 		targetNode.className = arrayBuffer.push(value).join(" ");
 	} else {

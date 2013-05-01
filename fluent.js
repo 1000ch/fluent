@@ -600,18 +600,32 @@ function loadScript(path, callback, async, defer) {
  * @return {String}
  */
 function escapeHTML(value) {
-	var text = "";
-	if(value) {
-		text = value + "";
-	}
+	value = value + "";
 	var escapeMap = {
 		"&": "&amp;",
 		'"': "&quot;",
 		"<": "&lt;",
 		">": "&gt;"
 	};
-	return text.replace(/&"<>/g, function(c) {
+	return value.replace(/&"<>/g, function(c) {
 		return escapeMap[c];
+	});
+}
+/**
+ * unescape html string
+ * @param {String} value
+ * @return {String}
+ */
+function unescapeHTML(value) 
+	value = value + "";
+	var unescapeMap = {
+		"&amp;": "&",
+		"&quot;": '"',
+		"&lt;": "<",
+		"&gt;": ">"
+	};
+	return value.replace(/&amp;&quot;&lt;&gt;/g, function(c) {
+		return unescapeMap[c];
 	});
 }
 /**

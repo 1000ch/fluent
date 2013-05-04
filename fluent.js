@@ -616,7 +616,7 @@ function escapeHTML(value) {
  * @param {String} value
  * @return {String}
  */
-function unescapeHTML(value) 
+function unescapeHTML(value) {
 	value = value + "";
 	var unescapeMap = {
 		"&amp;": "&",
@@ -1042,7 +1042,7 @@ function _addClass(targetNode, value) {
 			arrayBuffer.push(classList[i]);
 		}
 	}
-	newClass = arrayBuffer.join(" ")l
+	newClass = arrayBuffer.join(" ");
 	if(newClass != oldClass) {
 		//if className is updated
 		targetNode.className = newClass;

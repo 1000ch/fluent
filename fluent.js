@@ -17,8 +17,8 @@ var emptyArray = [],
 	emptyElement = doc.createElement("div");
 
 //cache referrence
-var arraySlice = Array.prototype.slice,
-	arraySplice = Array.prototype.splice;
+var arraySlice = emptyArray.slice,
+	arraySplice = emptyArray.splice;
 
 var arrayIndexOf = function(searchElement) {
 	if(this === null) {

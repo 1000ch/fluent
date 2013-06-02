@@ -1235,19 +1235,6 @@ var _FluentManipulation = {
 		});
 	},
 	/**
-	 * remove all class from element
-	 * @return {Fluent}
-	 */
-	removeAllClass: function() {
-		var classList, len;
-		return this.each(function(element, index) {
-			classList = element.classList, len = classList.length;
-			while(len--) {
-				classList.remove(classList[len]);
-			}
-		});
-	},
-	/**
 	 * toggle class of element
 	 * @param {String} className
 	 * @return {Fluent}

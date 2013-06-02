@@ -78,9 +78,6 @@ so this extends through "extend" or "fill" function.
     [FluentObject].removeClass(value);
     //remove class from elements
     
-    [FluentObject].removeAllClass();
-    //remove all class from elements
-    
     [FluentObject].toggleClass(value);
     //toggle class of elements
     

@@ -1,17 +1,15 @@
-#fluent.js
-======
+# fluent.js
 
-##About
+## About
 
-rambling to reconstruct architect of library.  
-to adopt grunt.js system for package build,  
-so this extends through "extend" or "fill" function.  
+This is light-weight dom library.  
+This supports following functions.  
 
-##API
+## API
 
-###Core
+### Core
 
-####Base
+#### Base
 
     $([selector][, context])
     
@@ -21,7 +19,7 @@ so this extends through "extend" or "fill" function.
     
     var domArray = [FluentObject].toArray();
 
-###Event
+### Event
 
     [FluentObject].bind(type, callback);
     //bind event to element
@@ -37,7 +35,7 @@ so this extends through "extend" or "fill" function.
     [FluentObject].undelegate(type, selector, callback);
     //end to delegate event
 
-###Traversing
+### Traversing
 
     [FluentObject].filter(callback);
     //filter elements with callback function
@@ -52,7 +50,7 @@ so this extends through "extend" or "fill" function.
 
     var foundElements = [FluentObject].find("selector");
 
-###Manipulation
+### Manipulation
 
     [FluentObject].html(value);
     //set value to innerHTML property
@@ -93,7 +91,7 @@ so this extends through "extend" or "fill" function.
     [FluentObject].hide()
     //hide elements
 
-###Animation
+### Animation
 
     [FluentObject].delay(value);
     //set delay of animation
@@ -139,24 +137,7 @@ so this extends through "extend" or "fill" function.
 
 others are to be announced...
 
-##License
+## License
 
-Copyright [1000ch.net](http://1000ch.net/)  
-Released under the MIT license  
-
-#fluent.js
-
-##ライブラリについて
-
-ライブラリとしての在り方を悠々自適に模索。  
-後々のビルドシステムを楽にするため、  
-関数はプロトタイプマッピングで拡張。  
-コアにはほとんど何も置かない。  
-
-##API
-
-鋭意作成中。
-
-##ライセンスについて
-
-著作権は1000chに帰属します。  
+Copyright [1000ch](http://twitter.com/1000ch)  
+Lisenced under the GPL Lisence version 3.  

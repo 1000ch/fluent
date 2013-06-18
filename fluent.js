@@ -6,9 +6,7 @@
  **/
 (function(window, undefined){
 "use strict";
-var win = window,
-	doc = window.document,
-	loc = window.location;
+var win = window, doc = window.document, loc = window.location;
 
 //cache empty structure
 var emptyArray = [],
@@ -17,237 +15,9 @@ var emptyArray = [],
 	emptyElement = doc.createElement("div");
 
 //cache referrence
-var arraySlice = emptyArray.slice,
+var toString = emptyObject.toString,
+	arraySlice = emptyArray.slice,
 	arraySplice = emptyArray.splice;
-
-var arrayIndexOf = function(searchElement) {
-	if(this === null) {
-		throw new TypeError();
-	}
-	var t = Object(this);
-	var len = t.length >>> 0;
-	if(len === 0) {
-		return -1;
-	}
-	var n = 0;
-	if(arguments.length > 1) {
-		n = Number(arguments[1]);
-		if(n !== n) {
-			n = 0;
-		} else if(n !== 0 && n != Infinity && n != -Infinity) {
-			n = (n > 0 || -1) * Math.floor(Math.abs(n));
-		}
-	}
-	if(n >= len) {
-			return -1;
-	}
-	var k = n >= 0 ? n : Math.max(len - Math.abs(n), 0);
-	for (; k < len; k++) {
-		if(k in t && t[k] === searchElement) {
-			return k;
-		}
-	}
-	return -1;
-};
-var arrayLastIndexOf = function(searchElement) {
-	if(this === null) {
-		throw new TypeError();
-	}
-	var t = Object(this);
-	var len = t.length >>> 0;
-	if(len === 0) {
-		return -1;
-	}
-	var n = len;
-	if(arguments.length > 1) {
-		n = Number(arguments[1]);
-		if(n != n) {
-			n = 0;
-		} else if(n !== 0 && n != (1 / 0) && n != -(1 / 0)) {
-			n = (n > 0 || -1) * Math.floor(Math.abs(n));
-		}
-	}
-	var k = n >= 0 ? Math.min(n, len - 1) : len - Math.abs(n);
-	for (; k >= 0; k--) {
-		if(k in t && t[k] === searchElement) {
-			return k;
-		}
-	}
-	return -1;
-};
-var arrayForEach = function(callback, scope) {
-	for(var i = 0, len = this.length; i < len; ++i) {
-		callback.call(scope, this[i], i, this);
-	}
-};
-var arrayEvery = function(callback) {
-	if(this === null) {
-		throw new TypeError();
-	}
-	var t = Object(this);
-	var len = t.length >>> 0;
-	if(typeof callback != "function") {
-		throw new TypeError();
-	}
-	var thisp = arguments[1];
-	for (var i = 0; i < len; i++) {
-		if(i in t && !callback.call(thisp, t[i], i, t)) {
-			return false;
-		}
-	}
-	return true;
-};
-var arraySome = function(callback) {
-	if(this === null) {
-		throw new TypeError();
-	}
-	var t = Object(this);
-	var len = t.length >>> 0;
-	if(typeof callback != "function") {
-		throw new TypeError();
-	}
-	var thisp = arguments[1];
-	for (var i = 0; i < len; i++) {
-		if(i in t && callback.call(thisp, t[i], i, t)) {
-			return true;
-		}
-	}
-	return false;
-};
-var arrayMap = function(callback, thisArg) {
-	var T, A, k;
-	if(this === null) {
-		throw new TypeError(" this is null or not defined");
-	}
-	var O = Object(this), len = O.length >>> 0;
-	if(typeof callback !== "function") {
-		throw new TypeError(callback + " is not a function");
-	}
-	if(thisArg) {
-		T = thisArg;
-	}
-	A = new Array(len);
-	k = 0;
-	while(k < len) {
-		var kValue, mappedValue;
-		if(k in O) {
-			kValue = O[k];
-			mappedValue = callback.call(T, kValue, k, O);
-			A[k] = mappedValue;
-		}
-		k++;
-	}
-	return A;
-};
-var arrayFilter = function(callback) {
-	if(this === null) {
-		throw new TypeError();
-	}
-	var t = Object(this);
-	var len = t.length >>> 0;
-	if(typeof callback != "function") {
-		throw new TypeError();
-	}
-	var res = [];
-	var thisp = arguments[1];
-	for (var i = 0; i < len; i++) {
-		if(i in t) {
-			var val = t[i];
-			if(callback.call(thisp, val, i, t)) {
-				res.push(val);
-			}
-		}
-	}
-	return res;
-};
-var arrayReduce = function(callback) {
-	if(this === null || this === undefined) {
-		throw new TypeError("Object is null or undefined");
-	}
-	var i = 0, l = this.length >> 0, current;
-	if(typeof accumulator !== "function") {
-		throw new TypeError("First argument is not callable");
-	}
-	if(arguments.length < 2) {
-		if(l === 0) {
-			throw new TypeError("Array length is 0 and no second argument");
-		}
-		current = this[0];
-		i = 1;
-	} else {
-		current = arguments[1];
-	}
-	while(i < l) {
-		if(i in this) {
-			current = callback.call(undefined, current, this[i], i, this);
-		}
-		++i;
-	}
-	return current;
-};
-var arrayReduceRight = function(callback) {
-	if(this === null) {
-		throw new TypeError();
-	}
-	var t = Object(this);
-	var len = t.length >>> 0;
-	if(typeof callback != "function") {
-		throw new TypeError();
-	}
-	if(len === 0 && arguments.length === 1) {
-		throw new TypeError();
-	}
-	var k = len - 1;
-	var accumulator;
-	if(arguments.length >= 2) {
-		accumulator = arguments[1];
-	} else {
-		do {
-			if(k in this) {
-				accumulator = this[k--];
-				break;
-			}
-			if(--k < 0) {
-				throw new TypeError();
-			}
-		} while(true);
-	}
-	while(k >= 0) {
-		if(k in t) {
-			accumulator = callback.call(undefined, accumulator, t[k], k, t);
-		}
-		k--;
-	}
-	return accumulator;
-};
-
-if(!Array.prototype.indexOf) {
-	Array.prototype.indexOf = arrayIndexOf;
-}
-if(!Array.prototype.lastIndexOf) {
-	Array.prototype.lastIndexOf = arrayLastIndexOf;
-}
-if(!Array.prototype.forEach) {
-	Array.prototype.forEach = arrayForEach;
-}
-if(!Array.prototype.every) {
-	Array.prototype.every = arrayEvery;
-}
-if(!Array.prototype.filter) {
-	Array.prototype.filter = arrayFilter;
-}
-if(!Array.prototype.some) {
-	Array.prototype.some = arraySome;
-}
-if(!Array.prototype.map) {
-	Array.prototype.map = arrayMap;
-}
-if(!Array.prototype.reduce) {
-	Array.prototype.reduce = arrayReduce;
-}
-if(!Array.prototype.reduceRight) {
-	Array.prototype.reduceRight = arrayReduceRight;
-}
 
 var stringRepeat = function(count) {
 	if((count |= 0 ) <= 0) {
@@ -333,7 +103,7 @@ function has(key, value) {
  * @return {Boolean}
  */
 function is(key, value) {
-	return (Object.prototype.toString.call(value) === "[object " + key + "]");
+	return (toString.call(value) === "[object " + key + "]");
 }
 /**
  * value is string or not
@@ -402,7 +172,7 @@ function computedStyle(element, key) {
  * @param {Function} callback
  * @return {Object}
  */
-function commonEach(target, callback) {
+function each(target, callback) {
 	var args = arraySlice.call(arguments, 2);
 	var i, len = target.length, key, result;
 	if(args.length !== 0) {
@@ -447,14 +217,14 @@ function commonEach(target, callback) {
  * @param {Object} target
  * @return {Object}
  */
-function commonCopy(target) {
-	var copy = Object.create(Object.getPropertyOf(target));
+function copy(target) {
+	var buffer = Object.create(Object.getPropertyOf(target));
 	var propertyNames = Object.getOwnPropertyNames(target);
 
 	arrayForEach.call(propertyNames, function(name) {
-		Object.defineProperty(copy, name, Object.getOwnPropertyDescriptor(target, name));
+		Object.defineProperty(buffer, name, Object.getOwnPropertyDescriptor(target, name));
 	});
-	return copy;
+	return buffer;
 }
 /**
  * extend object hardly
@@ -462,7 +232,7 @@ function commonCopy(target) {
  * @param {Object} obj
  * @return {Object}
  */
-function commonExtend(obj) {
+function extend(obj) {
 	var key, arg, args = arraySlice.call(arguments, 1);
 	for(var i = 0, len = args.length;i < len;i++) {
 		arg = args[i];
@@ -481,7 +251,7 @@ function commonExtend(obj) {
  * @param {Object} obj
  * @return {Object}
  */
-function commonFill(obj) {
+function fill(obj) {
 	var key, arg, args = arraySlice.call(arguments, 1);
 	for(var i = 0, len = args.length;i < len;i++) {
 		arg = args[i];
@@ -499,7 +269,7 @@ function commonFill(obj) {
  * @param {Object} data
  * @return {String}
  */
-function commonSerialize(data) {
+function serialize(data) {
 	var ret = [], key, value;
 	for(key in data) {
 		if(data[hop](key)) {
@@ -513,7 +283,7 @@ function commonSerialize(data) {
  * @param {String} data
  * @return {Object}
  */
-function commonDeserialize(data) {
+function deserialize(data) {
 	var ret = {}, query = "";
 	if(data) {
 		query = data;
@@ -552,7 +322,7 @@ function stringFormat(str, replacement) {
  * @param {String} str
  * @return {String}
  */
-function stringCamelize(str) {
+function camelize(str) {
 	return str.replace(/-+(.)?/g, function(match, character){
 		return character ? character.toUpperCase() : "";
 	});
@@ -562,7 +332,7 @@ function stringCamelize(str) {
  * @param {String} str
  * @return {String}
  */
-function stringDasherize(str) {
+function dasherize(str) {
 	return str.replace(/::/g, '/')
 		.replace(/([A-Z]+)([A-Z][a-z])/g, '$1_$2')
 		.replace(/([a-z\d])([A-Z])/g, '$1_$2')
@@ -632,7 +402,7 @@ function unescapeHTML(value) {
  * execute callback when dom content loaded
  * @param {Function} callback
  */
-function onDocumentReady(callback) {
+function ready(callback) {
 	var args = arraySlice.call(arguments, 1);
 	if (rxReady.test(doc.readyState)) {
 		if(!args) {
@@ -745,7 +515,7 @@ Fluent.prototype = Fluent.fn;
  */
 Fluent.fn.each = function(callback) {
 	var args = arraySlice.call(arguments, 1);
-	return commonEach(this, callback, args);
+	return each(this, callback, args);
 };
 
 /**
@@ -773,7 +543,7 @@ function proxy(callback, target) {
  * @param {Function} eventHandler
  * @param {Boolean} useCapture
  */
-function eventBind(targetList, type, eventHandler, useCapture) {
+function bind(targetList, type, eventHandler, useCapture) {
 	arrayForEach.call(targetList, function(target) {
 		target.addEventListener(type, eventHandler, useCapture);
 	});
@@ -785,7 +555,7 @@ function eventBind(targetList, type, eventHandler, useCapture) {
  * @param {Function} eventHandler
  * @param {Boolean} useCapture
  */
-function eventUnbind(targetList, type, eventHandler, useCapture) {
+function unbind(targetList, type, eventHandler, useCapture) {
 	arrayForEach.call(targetList, function(target) {
 		target.removeEventListener(type, eventHandler, useCapture);
 	});
@@ -797,7 +567,7 @@ function eventUnbind(targetList, type, eventHandler, useCapture) {
  * @param {Function} eventHandler
  * @param {Boolean} useCapture
  */
-function eventOnce(targetList, type, eventHandler, useCapture) {
+function once(targetList, type, eventHandler, useCapture) {
 	arrayForEach.call(targetList, function(target) {
 		var wrapOnce = function(e) {
 			eventHandler.call(target, e);
@@ -852,7 +622,7 @@ var SELECTOR = "selector";
  * @param {String} selector
  * @param {Function} eventHandler
  */
-function eventDelegate(targetList, type, selector, eventHandler) {
+function delegate(targetList, type, selector, eventHandler) {
 	var closure = null;
 	arrayForEach.call(targetList, function(target) {
 		if(!target.closureList) {
@@ -880,7 +650,7 @@ function eventDelegate(targetList, type, selector, eventHandler) {
  * @param {String*} selector
  * @param {Function*} eventHandler
  */
-function eventUndelegate(targetList, type, selector, eventHandler) {
+function undelegate(targetList, type, selector, eventHandler) {
 	var array, index;
 	arrayForEach.call(targetList, function(target) {
 		if(target.closureList && target.closureList[hop](type)) {
@@ -918,7 +688,7 @@ var _FluentEvent = {
 	 * @return {Fluent}
 	 */
 	bind: function(type, eventHandler, useCapture) {
-		eventBind(this, type, eventHandler, useCapture);
+		bind(this, type, eventHandler, useCapture);
 		return this;
 	},
 	/**
@@ -929,7 +699,7 @@ var _FluentEvent = {
 	 * @return {Fluent}
 	 */
 	unbind: function(type, eventHandler, useCapture) {
-		eventUnbind(this, type, eventHandler, useCapture);
+		unbind(this, type, eventHandler, useCapture);
 		return this;
 	},
 	/**
@@ -940,7 +710,7 @@ var _FluentEvent = {
 	 * @return {Fluent}
 	 */
 	once: function(type, eventHandler, useCapture) {
-		eventOnce(this, type, eventHandler, useCapture);
+		once(this, type, eventHandler, useCapture);
 		return this;
 	},
 	/**
@@ -950,7 +720,7 @@ var _FluentEvent = {
 	 * @return {Fluent}
 	 */
 	delegate: function(type, selector, eventHandler) {
-		eventDelegate(this, type, selector, eventHandler);
+		delegate(this, type, selector, eventHandler);
 		return this;
 	},
 	/**
@@ -960,7 +730,7 @@ var _FluentEvent = {
 	 * @return {Fluent}
 	 */
 	undelegate: function(type, selector, eventHandler) {
-		eventUndelegate(this, type, selector, eventHandler);
+		undelegate(this, type, selector, eventHandler);
 		return this;
 	}
 };
@@ -1186,7 +956,7 @@ var _FluentManipulation = {
 	 * @return {Fluent}
 	 */
 	data: function(key, value) {
-		var datasetAttr = stringCamelize("data-" + key);
+		var datasetAttr = camelize("data-" + key);
 		return this.each(function(element, index) {
 			element.dataset[datasetAttr] = value;
 		});
@@ -1257,7 +1027,7 @@ var _FluentManipulation = {
 	 */
 	append: function(value) {
 		var nodeList = _normalizeNode(value);
-		commonEach(this, function(element) {
+		each(this, function(element) {
 			for(var i = 0, len = nodeList.length;i < len;i++) {
 				if(isAppendable(nodeList[i])) {
 					element.appendChild(nodeList[i]);
@@ -1273,7 +1043,7 @@ var _FluentManipulation = {
 	 */
 	insert: function(value) {
 		var nodeList = _normalizeNode(value);
-		commonEach(this, function(element) {
+		each(this, function(element) {
 			for(var i = 0, len = nodeList.length;i < len;i++) {
 				element.insertBefore(nodeList[i], element.firstChild);
 			}
@@ -1509,10 +1279,10 @@ var _FluentAnimation = {
 };
 
 //extend Fluent prototype
-commonExtend(Fluent.fn, _FluentEvent);
-commonExtend(Fluent.fn, _FluentTraversing);
-commonExtend(Fluent.fn, _FluentManipulation);
-commonExtend(Fluent.fn, _FluentAnimation);
+extend(Fluent.fn, _FluentEvent);
+extend(Fluent.fn, _FluentTraversing);
+extend(Fluent.fn, _FluentManipulation);
+extend(Fluent.fn, _FluentAnimation);
 
 win.Fluent = Fluent;
 
@@ -1522,29 +1292,30 @@ win.$ = function(selector, context) {
 };
 
 win.Event = {
-	ready: onDocumentReady,
-	bind: eventBind,
-	unbind: eventUnbind,
-	once: eventOnce,
-	delegate: eventDelegate,
-	undelegate: eventDelegate
+	ready: ready,
+	bind: bind,
+	unbind: unbind,
+	once: once,
+	delegate: delegate,
+	undelegate: undelegate
 };
 win.CommonUtil = {
-	extend: commonExtend,
-	fill: commonFill,
-	each: commonEach,
-	copy: commonCopy,
-	serialize: commonSerialize,
-	deserialize: commonDeserialize,
+	extend: extend,
+	fill: fill,
+	each: each,
+	copy: copy,
+	serialize: serialize,
+	deserialize: deserialize,
 	loadScript: loadScript,
 	is: is,
 	has: has
 };
 win.StringUtil = {
-	camelize: stringCamelize,
-	dasherize: stringDasherize,
+	camelize: camelize,
+	dasherize: dasherize,
 	format: stringFormat,
-	escapeHTML: escapeHTML
+	escapeHTML: escapeHTML,
+	unescapeHTML: unescapeHTML
 };
 
 })(window);

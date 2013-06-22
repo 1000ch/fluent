@@ -166,6 +166,20 @@ function computedStyle(element, key) {
 	return null;
 }
 /**
+ * create element with attributes
+ * @param {String} tagName
+ * @param {Object} attributes
+ */
+function createElement(tagName, attributes) {
+	var element = doc.createElement(tagName);
+	if(attributes) {
+		for(var key in attributes) {
+			element.setAttribute(key, attributes[key]);
+		}
+	}
+	return element;
+}
+/**
  * generic each function
  * @description if callback function returns false, break loop.
  * @param {Object} target
@@ -347,13 +361,13 @@ function dasherize(str) {
  * @param {String} defer
  */
 function loadScript(path, callback, async, defer) {
-	var script = doc.createElement("script");
-
-	script.src = path;
-	script.charset = "utf-8";
-	script.type = "text/javascript";
-	script.async = (async === undefined ? false : async);
-	script.defer = (defer === undefined ? false : defer);
+	var script = createElement("script", {
+		src: path,
+		charset: "utf-8",
+		type: "text/javascript",
+		async: (async === undefined ? false : async),
+		defer: (defer === undefined ? false : defer)
+	});
 
 	script.onload = script.onreadystatechange = function() {
 		script.onload = script.onreadystatechange = null;
@@ -795,13 +809,12 @@ var _FluentTraversing = {
 		return new Fluent(array);
 	}
 };
-
 /**
  * add class to element
  * @param {HTMLElement} targetNode
  * @param {String} value
  */
-function _addClass(targetNode, value) {
+function addClass(targetNode, value) {
 	var classList = (value + "").split(" ");
 	var newClass = "", oldClass = targetNode.className + "";
 	var arrayBuffer = oldClass.split(" ");
@@ -824,7 +837,7 @@ function _addClass(targetNode, value) {
  * @param {HTMLElement} targetNode
  * @param {String} value
  */
-function _removeClass(targetNode, value) {
+function removeClass(targetNode, value) {
 	var classList = (value + "").split(" ");
 	var newClass = "", oldClass = targetNode.className + "";
 	var arrayBuffer = oldClass.split(" ");
@@ -847,7 +860,7 @@ function _removeClass(targetNode, value) {
  * @param {HTMLElement} targetNode
  * @param {String} value
  */
-function _toggleClass(targetNode, value) {
+function toggleClass(targetNode, value) {
 	var classList = (value + "").split(" ");
 	var newClass = "", oldClass = targetNode.className + "";
 	var arrayBuffer = oldClass.split(" ");
@@ -984,7 +997,7 @@ var _FluentManipulation = {
 		var list = className.split(" ");
 		return this.each(function(element, index) {
 			for(var i = 0, len = list.length;i < len;i++) {
-				_addClass(element, list[i]);
+				addClass(element, list[i]);
 			}
 		});
 	},
@@ -1000,7 +1013,7 @@ var _FluentManipulation = {
 		var list = className.split(" ");
 		return this.each(function(element, index) {
 			for(var i = 0, len = list.length;i < len;i++) {
-				_removeClass(element, list[i]);
+				removeClass(element, list[i]);
 			}
 		});
 	},
@@ -1016,7 +1029,7 @@ var _FluentManipulation = {
 		var list = className.split(" ");
 		return this.each(function(element, index) {
 			for(var i = 0, len = list.length;i < len;i++) {
-				_toggleClass(element, list[i]);
+				toggleClass(element, list[i]);
 			}
 		});
 	},

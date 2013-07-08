@@ -391,7 +391,7 @@ function escapeHTML(value) {
 		"<": "&lt;",
 		">": "&gt;"
 	};
-	return value.replace(/&"<>/g, function(c) {
+	return value.replace(/(&|"|<|>)/g, function(c) {
 		return escapeMap[c];
 	});
 }
@@ -408,7 +408,7 @@ function unescapeHTML(value) {
 		"&lt;": "<",
 		"&gt;": ">"
 	};
-	return value.replace(/&amp;&quot;&lt;&gt;/g, function(c) {
+	return value.replace(/(&amp;|&quot;|&lt;|&gt;)/g, function(c) {
 		return unescapeMap[c];
 	});
 }

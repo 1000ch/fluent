@@ -16,6 +16,7 @@ var emptyArray = [],
 
 //cache referrence
 var toString = emptyObject.toString,
+	arrayForEach = emptyArray.forEach,
 	arraySlice = emptyArray.slice,
 	arraySplice = emptyArray.splice;
 
@@ -179,6 +180,7 @@ function createElement(tagName, attributes) {
 	}
 	return element;
 }
+
 /**
  * generic each function
  * @description if callback function returns false, break loop.
@@ -616,7 +618,7 @@ function _createDelegateClosure(parent, selector, eventHandler) {
 	var closure = function(e) {
 		var children = qsaHook(selector, parent);
 		arrayForEach.call(children, function(child) {
-			if(e.target === child) {
+			if(child.compareDocumentPosition(e.target) === 0) {
 				eventHandler.call(child, e);
 			}
 		});
@@ -1297,38 +1299,34 @@ extend(Fluent.fn, _FluentTraversing);
 extend(Fluent.fn, _FluentManipulation);
 extend(Fluent.fn, _FluentAnimation);
 
+Fluent.ready = ready;
+Fluent.bind = bind;
+Fluent.unbind = unbind;
+Fluent.once = once;
+Fluent.delegate = delegate;
+Fluent.undelegate = undelegate;
+
+Fluent.extend = extend;
+Fluent.fill = fill;
+Fluent.each = each;
+Fluent.copy = copy;
+
+Fluent.serialize = serialize;
+Fluent.deserialize = deserialize;
+Fluent.loadScript = loadScript;
+Fluent.is = is;
+Fluent.has = has;
+Fluent.camelize = camelize;
+Fluent.dasherize = dasherize;
+Fluent.format = stringFormat;
+Fluent.escapeHTML = escapeHTML;
+Fluent.unescapeHTML = unescapeHTML;
+
 win.Fluent = Fluent;
 
 //set $ as constructor alias to global
 win.$ = function(selector, context) {
 	return new Fluent(selector, context);
-};
-
-win.Event = {
-	ready: ready,
-	bind: bind,
-	unbind: unbind,
-	once: once,
-	delegate: delegate,
-	undelegate: undelegate
-};
-win.CommonUtil = {
-	extend: extend,
-	fill: fill,
-	each: each,
-	copy: copy,
-	serialize: serialize,
-	deserialize: deserialize,
-	loadScript: loadScript,
-	is: is,
-	has: has
-};
-win.StringUtil = {
-	camelize: camelize,
-	dasherize: dasherize,
-	format: stringFormat,
-	escapeHTML: escapeHTML,
-	unescapeHTML: unescapeHTML
 };
 
 })(window);

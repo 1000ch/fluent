@@ -2,7 +2,7 @@
 
 ## About
 
-fluent.js is light-weight dom library.
+fluent.js is light-weight dom library.  
 This supports following functions.  
 
 ## API

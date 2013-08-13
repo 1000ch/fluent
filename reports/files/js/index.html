@@ -1,0 +1,1458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title></title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap-3.0.0-wip.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome-ie7.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="brand" href="http://github.com/jsoverson/plato">Plato on Github</a>
+    <ul class="nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="span6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"></i></a></h2>
+      <p class="stat">68.65</p>
+    </div>
+    <div class="span6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC"></i></h2>
+      <p class="stat">1334</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="span6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="span6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="span6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty"></i></a></h2>
+      <p class="stat">119.55</p>
+    </div>
+    <div class="span6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs"></i></a></h2>
+      <p class="stat">10.92</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="span6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="span6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="span12">/**
+ * fluent.js
+ *
+ * Copyright 1000ch&lt;http://1000ch.net/&gt;
+ * licensed under the MIT license.
+ **/
+(function(window, undefined){
+&quot;use strict&quot;;
+var win = window, doc = window.document, loc = window.location;
+
+//cache empty structure
+var emptyArray = [],
+	emptyObject = {},
+	emptyElement = doc.createElement(&quot;div&quot;);
+
+//cache referrence
+var toString = emptyObject.toString,
+	arrayForEach = emptyArray.forEach,
+	arraySlice = emptyArray.slice,
+	arraySplice = emptyArray.splice;
+
+var stringRepeat = function(count) {
+	if((count |= 0 ) &lt;= 0) {
+		throw new RangeError();
+	}
+	var result = &#039;&#039;, self = this;
+	while(count) {
+		if(count &amp; 1) {
+			result += self;
+		}
+		if(count &gt;= 1) {
+			self += self;
+		}
+	}
+	return result;
+};
+var stringStartsWith = function(value, position) {
+	return (this.indexOf(value, position |= 0) === position);
+};
+var stringEndsWith = function(value, position) {
+	return (this.lastIndexOf(value, position) === (position &gt;= 0 ? position | 0 : this.length - 1));
+};
+var stringContains = function(value, index) {
+	return (this.indexOf(value, index | 0) !== -1);
+};
+var stringToArray = function(value) {
+	return this.split(&quot;&quot;);
+};
+
+if(!String.prototype.repeat) {
+	String.prototype.repeat = stringRepeat;
+}
+if(!String.prototype.startsWith) {
+	String.prototype.startsWith = stringStartsWith;
+}
+if(!String.prototype.endsWith) {
+	String.prototype.endsWith = stringEndsWith;
+}
+if(!String.prototype.contains) {
+	String.prototype.contains = stringContains;
+}
+if(!String.prototype.toArray) {
+	String.prototype.toArray = stringToArray;
+}
+
+//regular expression
+var rxConciseSelector = /^(?:#([\w\-]+)|(\w+)|\.([\w\-]+))$/,//filter #id, tagName, .className
+	rxIdSelector = /^#([\w\-]+)$/,
+	rxClassSelector = /^\.([\w\-]+)$/,
+	rxTagSelector = /^[\w\-]+$/,
+	rxReady = /complete|loaded|interactive/;
+
+var qs = &quot;querySelector&quot;, 
+	qsa = &quot;querySelectorAll&quot;,
+	_encode = encodeURIComponent,
+	_decode = decodeURIComponent;
+
+//detect matchesSelector
+var matches = &quot;matchesSelector&quot;;
+if(emptyElement.webkitMatchesSelector) {
+	matches = &quot;webkitMatchesSelector&quot;;
+} else if(emptyElement.mozMatchesSelector) {
+	matches = &quot;mozMatchesSelector&quot;;
+} else if(emptyElement.msMatchesSelector) {
+	matches = &quot;msMatchesSelector&quot;;
+} else if(emptyElement.oMatchesSelector) {
+	matches = &quot;oMatchesSelector&quot;;
+}
+/**
+ * value has key or not.
+ * @param {String} key
+ * @param {Object} value
+ * @return {Boolean}
+ */
+function has(key, value) {
+	return (key in value);
+}
+/**
+ * value is typeof key, or not.
+ * @param {String} key
+ * @param {Object} value
+ * @return {Boolean}
+ */
+function is(key, value) {
+	return (toString.call(value) === &quot;[object &quot; + key + &quot;]&quot;);
+}
+/**
+ * value is string or not
+ * @param {Object} value
+ * @return {Boolean}
+ */
+function isString(value) {
+	return is(&quot;String&quot;, value);
+}
+/**
+ * value is function or not
+ * @param {Object} value
+ * @return {Boolean}
+ */
+function isFunction(value) {
+	return is(&quot;Function&quot;, value);
+}
+/**
+ * value is nodeList or not
+ * @param {Object} value
+ * @return {Boolean}
+ */
+function isNodeList(value) {
+	return is(&quot;NodeList&quot;, value);
+}
+/**
+ * value is like an array or not
+ * @param {Object} value
+ * @return {Boolean}
+ */
+function isLikeArray(value) {
+	return (typeof value.length == &quot;number&quot;);
+}
+/**
+ * is appendable node or not
+ * @param {HTMLElement} element
+ * @return {Boolean}
+ */
+function isAppendable(element) {
+	if(element.nodeType) {
+		var nodeType = element.nodeType;
+		if(nodeType === 1 || nodeType === 11 || nodeType === 9) {
+			return !!element.appendChild;
+		}
+	}
+	return false;
+}
+/**
+ * get computed style of element
+ * @param {HTMLElement} element
+ * @param {String} key
+ * @return {String}
+ */
+function computedStyle(element, key) {
+	if(element.currentStyle) {
+		return element.currentStyle[key];
+	} else if(win.getComputedStyle) {
+		return win.getComputedStyle(element, null).getPropertyValue(key);
+	}
+	return null;
+}
+/**
+ * create element with attributes
+ * @param {String} tagName
+ * @param {Object} attributes
+ */
+function createElement(tagName, attributes) {
+	var element = doc.createElement(tagName);
+	if(attributes) {
+		for(var key in attributes) {
+			element.setAttribute(key, attributes[key]);
+		}
+	}
+	return element;
+}
+
+/**
+ * generic each function
+ * @description if callback function returns false, break loop.
+ * @param {Object} target
+ * @param {Function} callback
+ * @return {Object}
+ */
+function __each(target, callback) {
+	var args = arraySlice.call(arguments, 2);
+	var i, len = target.length, key, result;
+	if(args.length !== 0) {
+		//if args is not &quot;false&quot;
+		if(isLikeArray(target)) {
+			for(i = 0;i &lt; len;i++) {
+				result = callback.apply(target[i], args);
+				if(result === false) {
+					break;
+				}
+			}
+		} else {
+			for(key in target) {
+				result = callback.apply(target[key], args);
+				if(result === false) {
+					break;
+				}
+			}
+		}
+	} else {
+		//if args is null, undefined, 0, &quot;&quot;
+		if(isLikeArray(target)) {
+			for(i = 0;i &lt; len;i++) {
+				result = callback.call(target[i], target[i], i);
+				if(result === false) {
+					break;
+				}
+			}
+		} else {
+			for(key in target) {
+				result = callback.call(target[key], target[key], i);
+				if(result === false) {
+					break;
+				}
+			}
+		}
+	}
+	return target;
+}
+/**
+ * copy object
+ * @param {Object} target
+ * @return {Object}
+ */
+function __copy(target) {
+	var buffer = Object.create(Object.getPropertyOf(target));
+	var propertyNames = Object.getOwnPropertyNames(target);
+
+	arrayForEach.call(propertyNames, function(name) {
+		Object.defineProperty(buffer, name, Object.getOwnPropertyDescriptor(target, name));
+	});
+	return buffer;
+}
+function __defineClass(properties, superClass) {
+	var Constructor = properties.hasOwnProperty(&quot;constructor&quot;) ? properties.constructor : function() {};
+	var Class = function() {};
+	if(superClass) {
+		Class.prototype = Object.create(superClass.prototype);
+	} else {
+		Class.constructor = Constructor;
+	}
+	__extend(Class.prototype, properties);
+	return Class;
+}
+/**
+ * extend object hardly
+ * @description if same property exist, it will be overriden
+ * @param {Object} target
+ * @param {Object} src
+ * @return {Object}
+ */
+function __extend(target, src) {
+	var key, keys = Object.keys(src);
+	for(var i = 0, len = keys.length;i &lt; len;i++) {
+		key = keys[i];
+		//even if &quot;key&quot; property already exist, set into &quot;key&quot;
+		if(src.hasOwnProperty(key)) {
+			target[key] = src[key];
+		}
+	}
+	return target;
+}
+/**
+ * extend object softly
+ * @description if same property exist, it will not be overriden
+ * @param {Object} target
+ * @param {Object} src
+ * @return {Object}
+ */
+function __fill(target, src) {
+	var key, keys = Object.keys(src);
+	for(var i = 0, len = keys.length;i &lt; len;i++) {
+		key = keys[i];
+		//if &quot;key&quot; is not undefined, &quot;key&quot; will not be rewrite
+		if(src.hasOwnProperty(key) &amp;&amp; !(key in target)) {
+			target[key] = src[key];
+		}
+	}
+	return target;
+}
+/**
+ * serialize object to query string
+ * @param {Object} data
+ * @return {String}
+ */
+function serialize(data) {
+	var ret = [], key, value;
+	for(key in data) {
+		if(data.hasOwnProperty(key)) {
+			ret.push(_encode(key) + &quot;=&quot; + _encode(value));
+		}
+	}
+	return ret.join(&quot;&amp;&quot;).replace(&quot;%20&quot;, &quot;+&quot;);
+}
+/**
+ * deserialize query string
+ * @param {String} data
+ * @return {Object}
+ */
+function deserialize(data) {
+	var ret = {}, query = &quot;&quot;;
+	if(data) {
+		query = data;
+	} else {
+		var href = loc.href, index = href.indexOf(&quot;?&quot;);
+		query = href.substring(index + 1);
+	}
+	if(query.charAt(0) == &quot;?&quot;) {
+		query = query.substring(1);
+	}
+	var array = query.split(&quot;&amp;&quot;), buffer = [];
+	for(var i = 0, len = array.length;i &lt; len;i++) {
+		buffer = array[i].split(&quot;=&quot;);
+		if(buffer.length == 2) {
+			ret[_decode(buffer[0])] = _decode(buffer[1]);
+		}
+	}
+	return ret;
+}
+/**
+ * string format
+ * @param {String} str
+ * @param {Object} replacement
+ * @return {String}
+ */
+function stringFormat(str, replacement) {
+	if (typeof replacement != &quot;object&quot;) {
+		replacement = arraySlice.call(arguments);
+	}
+	return str.replace(/\{(.+?)\}/g, function(m, c) {
+		return (replacement[c] !== null) ? replacement[c] : m;
+	});
+}
+/**
+ * camelize
+ * @param {String} str
+ * @return {String}
+ */
+function camelize(str) {
+	return str.replace(/-+(.)?/g, function(match, character){
+		return character ? character.toUpperCase() : &quot;&quot;;
+	});
+}
+/**
+ * dasherize
+ * @param {String} str
+ * @return {String}
+ */
+function dasherize(str) {
+	return str.replace(/::/g, &#039;/&#039;)
+		.replace(/([A-Z]+)([A-Z][a-z])/g, &#039;$1_$2&#039;)
+		.replace(/([a-z\d])([A-Z])/g, &#039;$1_$2&#039;)
+		.replace(/_/g, &#039;-&#039;)
+		.toLowerCase();
+}
+/**
+ * load script immediately or asynchronously
+ * @param {String} path
+ * @param {Function} callback
+ * @param {String} async
+ * @param {String} defer
+ */
+function loadScript(path, callback, async, defer) {
+	var script = createElement(&quot;script&quot;, {
+		src: path,
+		charset: &quot;utf-8&quot;,
+		type: &quot;text/javascript&quot;,
+		async: (async === undefined ? false : async),
+		defer: (defer === undefined ? false : defer)
+	});
+
+	script.onload = script.onreadystatechange = function() {
+		script.onload = script.onreadystatechange = null;
+		if(callback) {
+			callback();
+		}
+	};
+
+	doc[qs](&quot;head&quot;).appendChild(script);
+}
+/**
+ * escape html string
+ * @param {String} value
+ * @return {String}
+ */
+function escapeHTML(value) {
+	value = value + &quot;&quot;;
+	var escapeMap = {
+		&quot;&amp;&quot;: &quot;&amp;amp;&quot;,
+		&#039;&quot;&#039;: &quot;&amp;quot;&quot;,
+		&quot;&lt;&quot;: &quot;&amp;lt;&quot;,
+		&quot;&gt;&quot;: &quot;&amp;gt;&quot;
+	};
+	return value.replace(/(&amp;|&quot;|&lt;|&gt;)/g, function(c) {
+		return escapeMap[c];
+	});
+}
+/**
+ * unescape html string
+ * @param {String} value
+ * @return {String}
+ */
+function unescapeHTML(value) {
+	value = value + &quot;&quot;;
+	var unescapeMap = {
+		&quot;&amp;amp;&quot;: &quot;&amp;&quot;,
+		&quot;&amp;quot;&quot;: &#039;&quot;&#039;,
+		&quot;&amp;lt;&quot;: &quot;&lt;&quot;,
+		&quot;&amp;gt;&quot;: &quot;&gt;&quot;
+	};
+	return value.replace(/(&amp;amp;|&amp;quot;|&amp;lt;|&amp;gt;)/g, function(c) {
+		return unescapeMap[c];
+	});
+}
+/**
+ * execute callback when dom content loaded
+ * @param {Function} callback
+ */
+function __ready(callback) {
+	var args = arraySlice.call(arguments, 1);
+	if (rxReady.test(doc.readyState)) {
+		if(!args) {
+			callback.call(doc);
+		} else {
+			callback.apply(doc, args);
+		}
+	} else {
+		doc.addEventListener(&quot;DOMContentLoaded&quot;, function() {
+			if(!args) {
+				callback.call(doc);
+			} else {
+				callback.apply(doc, args);
+			}
+		}, false);
+	}
+}
+/*
+ * extend and hook querySelectorAll
+ * evaluate selector concisely
+ * if selector is &quot;#id&quot;, call getElementById
+ * if selector is &quot;.className&quot;, call getElementsByClassName
+ * if selector is &quot;tagName&quot;, call getElementsByTagName
+
+ * if context is given, search element with selector
+ * in context (or related condition).
+ * @param {String} selector css selector
+ * @param {HTMLElement} context
+ * @return {Array}
+ */
+function qsaHook(selector, context) {
+	context = context ? context : doc;
+
+	var m = rxConciseSelector.exec(selector);
+
+	if(m) {//regex result is not undefined
+		if(m[1]) {//if selector is &quot;#id&quot;
+			return [doc.getElementById(m[1])];
+		} else if(m[2]) {//if selector is &quot;tagName&quot;
+			return context.getElementsByTagName(m[2]);
+		} else if(m[3]) {//if selector is &quot;.className&quot;
+			return context.getElementsByClassName(m[3]);
+		}
+	}
+
+	//process for case of &quot;#id [any selector]&quot;
+	var token, tokenList = selector.split(&quot; &quot;);
+	var tokenIndex = arrayLastIndexOf.call(tokenList, rxIdSelector);
+	if(tokenIndex &gt; -1) {
+		//last id selector
+		token = tokenList.slice(tokenIndex + 1).join(&quot; &quot;);
+		if(tokenIndex + 1 == tokenList.length) {
+			return [doc.getElementById(tokenList[tokenList + 1])];
+		} else {
+			return qsaHook(token, doc.getElementById(tokenList[tokenIndex]));
+		}
+	}
+
+	return context[qsa](selector);
+}
+/**
+ * merge array or object (like an array) into array
+ * @param {Array} srcList
+ * @param {Array|* which has length property}
+ */
+function mergeArray(srcList, mergeList) {
+	arrayForEach.call(mergeList, function(mergeElement) {
+		if(arrayIndexOf.call(srcList, mergeElement) &lt; 0) {
+			srcList[srcList.length] = mergeElement;
+		}
+	});
+}
+/**
+ * base class
+ * @param {String} obj
+ * @param {String|HTMLElement}
+ */
+var Fluent = function(selector) {
+	var elementList = [], len;
+	if(isString(selector)) {
+		//if selector is string
+		elementList = qsaHook(selector);
+	} else if(selector.nodeType) {
+		//if selector is single dom element
+		elementList = [selector];
+	} else if(isLikeArray(selector)) {
+		//if selector is array,
+		//select only dom element
+		elementList = arrayFilter.call(selector, function(item) {
+			return !!item.nodeType;
+		});
+	}
+	len = this.length = elementList.length;
+	while(len--) {
+		this[len] = elementList[len];
+	}
+};
+/**
+ * base prototype
+ */
+Fluent.fn = { constructor: Fluent };
+
+//mapping fn to prototype
+Fluent.prototype = Fluent.fn;
+
+/**
+ * execute function to all element
+ * @param {Function} callback
+ * @return {Fluent}
+ */
+Fluent.fn.each = function(callback) {
+	var args = arraySlice.call(arguments, 1);
+	return __each(this, callback, args);
+};
+
+/**
+ * get all element
+ * @return {Array&lt;HTMLElement&gt;}
+ */
+Fluent.fn.toArray = function() {
+	return arraySlice.call(this);
+};
+
+/**
+ * create proxy
+ * @param {Function} callback
+ * @param {Object} target
+ */
+function proxy(callback, target) {
+	return function() {
+		return callback.apply(target, arguments);
+	};
+}
+/**
+ * bind
+ * @param {Array} targetList
+ * @param {String} type
+ * @param {Function} eventHandler
+ * @param {Boolean} useCapture
+ */
+function __bind(targetList, type, eventHandler, useCapture) {
+	arrayForEach.call(targetList, function(target) {
+		target.addEventListener(type, eventHandler, useCapture);
+	});
+}
+/**
+ * unbind
+ * @param {Array} targetList
+ * @param {String} type
+ * @param {Function} eventHandler
+ * @param {Boolean} useCapture
+ */
+function __unbind(targetList, type, eventHandler, useCapture) {
+	arrayForEach.call(targetList, function(target) {
+		target.removeEventListener(type, eventHandler, useCapture);
+	});
+}
+/**
+ * once
+ * @param {Array} targetList
+ * @param {String} type
+ * @param {Function} eventHandler
+ * @param {Boolean} useCapture
+ */
+function __once(targetList, type, eventHandler, useCapture) {
+	arrayForEach.call(targetList, function(target) {
+		var wrapOnce = function(e) {
+			eventHandler.call(target, e);
+			target.removeEventListener(type, wrapOnce, useCapture);
+		};
+		target.addEventListener(type, wrapOnce, useCapture);
+	});
+}
+/**
+ * search index
+ * @param {Array} array
+ * @param {String} propertyName
+ * @param {Object} compareData
+ */
+function searchIndex(array, propertyName, compareData) {
+	var data;
+	for(var i = 0, len = array.length;i &lt; len;i++) {
+		data = array[i];
+		if(data[propertyName] == compareData) {
+			return i;
+		}
+	}
+	return -1;
+}
+/**
+ * create callback closure
+ * @param {HTMLElement} parent
+ * @param {String} selector
+ * @param {Function} eventHandler
+ */
+function _createDelegateClosure(parent, selector, eventHandler) {
+	var closure = function(e) {
+		var children = qsaHook(selector, parent);
+		arrayForEach.call(children, function(child) {
+			if(child.compareDocumentPosition(e.target) === 0) {
+				eventHandler.call(child, e);
+			}
+		});
+	};
+	return closure;
+}
+
+//constant
+var CLOSURE = &quot;closure&quot;;
+var EVENT_HANDLER = &quot;eventHandler&quot;;
+var SELECTOR = &quot;selector&quot;;
+
+/**
+ * delegate
+ * @param {Array} targetList
+ * @param {String} type
+ * @param {String} selector
+ * @param {Function} eventHandler
+ */
+function __delegate(targetList, type, selector, eventHandler) {
+	var closure = null;
+	arrayForEach.call(targetList, function(target) {
+		if(!target.closureList) {
+			target.closureList = {};
+		}
+		if(!target.closureList.hasOwnProperty(type)) {
+			target.closureList[type] = [];
+		}
+		closure = _createDelegateClosure(target, selector, eventHandler);
+		if(searchIndex(target.closureList[type], CLOSURE, closure) &lt; 0) {
+			target.closureList[type].push({
+				selector: selector,
+				eventHandler: eventHandler,
+				closure: closure
+			});
+		}
+		target.addEventListener(type, closure);
+	});
+}
+
+/**
+ * undelegate
+ * @param {Array} targetList
+ * @param {String} type
+ * @param {String*} selector
+ * @param {Function*} eventHandler
+ */
+function __undelegate(targetList, type, selector, eventHandler) {
+	var array, index;
+	arrayForEach.call(targetList, function(target) {
+		if(target.closureList &amp;&amp; target.closureList.hasOwnProperty(type)) {
+			if(type &amp;&amp; selector &amp;&amp; eventHandler) {
+				array = target.closureList[type];
+				index = searchIndex(array, EVENT_HANDLER, eventHandler);
+				if(index &gt; -1) {
+					target.removeEventListener(type, array[index][CLOSURE]);
+					target.closureList[type].splice(index, 1);
+				}
+			} else if(type &amp;&amp; selector &amp;&amp; !eventHandler) {
+				array = target.closureList[type];
+				index = searchIndex(array, SELECTOR, selector);
+				if(index &gt; -1) {
+					target.removeEventListener(type, array[index][CLOSURE]);
+					target.closureList[type].splice(index, 1);
+				}
+			} else if(type &amp;&amp; !selector &amp;&amp; !eventHandler) {
+				var itemList = target.closureList[type];
+				arrayForEach.call(itemList, function(item) {
+					target.removeEventListener(type, item[CLOSURE]);
+				});
+				delete target.closureList[type];
+			}
+		}
+	});
+}
+
+var _FluentEvent = {
+	/**
+	 * bind event
+	 * @param {String} type
+	 * @param {Function} eventHandler
+	 * @param {Boolean} useCapture 
+	 * @return {Fluent}
+	 */
+	bind: function(type, eventHandler, useCapture) {
+		__bind(this, type, eventHandler, useCapture);
+		return this;
+	},
+	/**
+	 * unbind event
+	 * @param {String} type
+	 * @param {Function} eventHandler
+	 * @param {Boolean} useCapture
+	 * @return {Fluent}
+	 */
+	unbind: function(type, eventHandler, useCapture) {
+		__unbind(this, type, eventHandler, useCapture);
+		return this;
+	},
+	/**
+	 * bind event once
+	 * @param {String} type
+	 * @param {Function} eventHandler
+	 * @param {Boolean} useCapture
+	 * @return {Fluent}
+	 */
+	once: function(type, eventHandler, useCapture) {
+		__once(this, type, eventHandler, useCapture);
+		return this;
+	},
+	/**
+	 * begin propagation event
+	 * @param {String} type
+	 * @param {Function} eventHandler
+	 * @return {Fluent}
+	 */
+	delegate: function(type, selector, eventHandler) {
+		__delegate(this, type, selector, eventHandler);
+		return this;
+	},
+	/**
+	 * finish propagation event
+	 * @param {String} type
+	 * @param {Function} eventHandler
+	 * @return {Fluent}
+	 */
+	undelegate: function(type, selector, eventHandler) {
+		__undelegate(this, type, selector, eventHandler);
+		return this;
+	}
+};
+var _FluentTraversing = {
+	/**
+	 * get elements by search with callback
+	 * @param {Function} callback
+	 * @return {Fluent}
+	 */
+	filter: function(callback) {
+		return new Fluent(arrayFilter.call(this, callback));
+	},
+	/**
+	 * apply callback and get elements
+	 * @param {Function} callback
+	 * @return {Fluent}
+	 */
+	map: function(callback) {
+		var array = [], element;
+		for(var i = 0, len = this.length;i &lt; len;i++) {
+			element = callback(this[i], i);
+			if(element !== null) {
+				array.push(element);
+			}
+		}
+		return new Fluent(array);
+	},
+	/**
+	 * get unique elements
+	 * @return {Fluent}
+	 */
+	unique: function() {
+		var array = this.toArray();
+		return new Fluent(arrayFilter.call(array, function(item, index){
+			return array.indexOf(item) == index;
+		}));
+	},
+	/**
+	 * get all children
+	 * @return {Fluent}
+	 */
+	children: function() {
+		var array = [];
+		for(var i = 0, len = this.length;i &lt; len;i++) {
+			if(this[i].firstChild) {
+				var childNodes = this[i].childNodes;
+				for(var j = 0, nodeLen = childNodes.length;j &lt; nodeLen;j++) {
+					array.push(childNodes[j]);
+				}
+			}
+		}
+		return new Fluent(array);
+	},
+	/**
+	 * @return {String} selector
+	 */
+	find: function(selector) {
+		var array = [];
+		for(var i = 0, len = this.length;i &lt; len;i++) {
+			mergeArray(array, qsaHook(selector, this[i]));
+		}
+		return new Fluent(array);
+	}
+};
+/**
+ * add class to element
+ * @param {HTMLElement} targetNode
+ * @param {String} value
+ */
+function __addClass(targetNode, value) {
+	var classList = (value + &quot;&quot;).split(&quot; &quot;);
+	var newClass = &quot;&quot;, oldClass = targetNode.className + &quot;&quot;;
+	var arrayBuffer = oldClass.split(&quot; &quot;);
+	var valueIndex = -1;
+	for(var i = 0, len = classList.length;i &lt; len;i++) {
+		valueIndex = arrayBuffer.indexOf(classList[i]);
+		if(valueIndex === -1) {
+			arrayBuffer.push(classList[i]);
+		}
+	}
+	newClass = arrayBuffer.join(&quot; &quot;);
+	if(newClass != oldClass) {
+		//if className is updated
+		targetNode.className = newClass;
+	}
+}
+
+/**
+ * remove class from element
+ * @param {HTMLElement} targetNode
+ * @param {String} value
+ */
+function __removeClass(targetNode, value) {
+	var classList = (value + &quot;&quot;).split(&quot; &quot;);
+	var newClass = &quot;&quot;, oldClass = targetNode.className + &quot;&quot;;
+	var arrayBuffer = oldClass.split(&quot; &quot;);
+	var valueIndex = -1;
+	for(var i = 0, len = classList.length;i &lt; len;i++) {
+		valueIndex = arrayBuffer.indexOf(classList[i]);
+		if(valueIndex !== -1) {
+			arrayBuffer.splice(valueIndex, 1);
+		}
+	}
+	newClass = arrayBuffer.join(&quot; &quot;);
+	if(newClass != oldClass) {
+		//if className is updated
+		targetNode.className = newClass;
+	}
+}
+
+/**
+ * toggle class of element
+ * @param {HTMLElement} targetNode
+ * @param {String} value
+ */
+function __toggleClass(targetNode, value) {
+	var classList = (value + &quot;&quot;).split(&quot; &quot;);
+	var newClass = &quot;&quot;, oldClass = targetNode.className + &quot;&quot;;
+	var arrayBuffer = oldClass.split(&quot; &quot;);
+	var valueIndex = -1;
+	for(var i = 0, len = classList.length;i &lt; len;i++) {
+		valueIndex = arrayBuffer.indexOf(classList[i]);
+		if(valueIndex === -1) {
+			//if does not exist
+			arrayBuffer.push(value);
+		} else {
+			//if exist
+			arrayBuffer.splice(valueIndex, 1);
+		}
+	}
+	newClass = arrayBuffer.join(&quot; &quot;);
+	if(newClass != oldClass) {
+		//if className is updated
+		targetNode.className = newClass;
+	}
+}
+
+/**
+ * target has class or not.
+ * @param {HTMLElement} targetNode
+ * @param {String} value
+ */
+function __hasClass(targetNode, value) {
+	var arrayBuffer = targetNode.className.split(&quot; &quot;);
+	return (arrayBuffer.indexOf(value + &quot;&quot;) != -1);
+}
+
+/**
+ * normalize object to node array.
+ * @param {Fluent|NodeList|Array} value
+ */
+function __normalizeNode(value) {
+	var nodeList = [];
+	if(value.nodeType) {
+		nodeList.push(value);
+	} else if(value instanceof Fluent) {
+		nodeList = value.toArray();
+	} else if(isNodeList(value)) {
+		nodeList = value;
+	} else if(isLikeArray(value)) {
+		for(var i = 0, len = value.length;i &lt; len;i++) {
+			if(value[i].nodeType) {
+				nodeList[nodeList.length] = value[i];
+			}
+		}
+	}
+	return nodeList;
+}
+
+var _FluentManipulation = {
+	/**
+	 * set innerHTML property of element
+	 * @param {String} value
+	 * @return {Fluent}
+	 */
+	html: function(value) {
+		return this.each(function(element, index) {
+			if(element.innerHTML !== undefined) {
+				element.innerHTML = value;
+			}
+		});
+	},
+	/**
+	 * set textContent property of element
+	 * @param {String} value
+	 * @return {Fluent}
+	 */
+	text: function(value) {
+		return this.each(function(element, index) {
+			if(element.textContent !== undefined) {
+				element.textContent = value;
+			}
+		});
+	},
+	/**
+	 * set value property of element
+	 * @param {String} value
+	 * @return {Fluent}
+	 */
+	val: function(value) {
+		return this.each(function(element, index) {
+			if(element.value !== undefined) {
+				element.value = value;
+			}
+		});
+	},
+	/**
+	 * set or add attribute
+	 * @param {String} key
+	 * @param {String} value
+	 * @return {Fluent}
+	 */
+	attr: function(key, value) {
+		return this.each(function(element, index) {
+			element.setAttribute(key, value);
+		});
+	},
+	/**
+	 * set or add dataset
+	 * @param {String} key
+	 * @param {String} value
+	 * @return {Fluent}
+	 */
+	data: function(key, value) {
+		var datasetAttr = camelize(&quot;data-&quot; + key);
+		return this.each(function(element, index) {
+			element.dataset[datasetAttr] = value;
+		});
+	},
+	/**
+	 * set style of element
+	 * @param {String} key
+	 * @param {String} value
+	 * @return {Fluent}
+	 */
+	css: function(key, value) {
+		return this.each(function(element, index) {
+			element.style[key] = value;
+		});
+	},
+	/**
+	 * add class to element
+	 * @param {String} className
+	 * @return {Fluent}
+	 */
+	addClass: function(className) {
+		if(!className) {
+			return this;
+		}
+		var list = className.split(&quot; &quot;);
+		return this.each(function(element, index) {
+			for(var i = 0, len = list.length;i &lt; len;i++) {
+				__addClass(element, list[i]);
+			}
+		});
+	},
+	/**
+	 * remove class from element
+	 * @param {String} className
+	 * @return {Fluent}
+	 */
+	removeClass: function(className) {
+		if(!className){
+			return this;
+		}
+		var list = className.split(&quot; &quot;);
+		return this.each(function(element, index) {
+			for(var i = 0, len = list.length;i &lt; len;i++) {
+				__removeClass(element, list[i]);
+			}
+		});
+	},
+	/**
+	 * toggle class of element
+	 * @param {String} className
+	 * @return {Fluent}
+	 */
+	toggleClass: function(className) {
+		if(!className){
+			return this;
+		}
+		var list = className.split(&quot; &quot;);
+		return this.each(function(element, index) {
+			for(var i = 0, len = list.length;i &lt; len;i++) {
+				__toggleClass(element, list[i]);
+			}
+		});
+	},
+	/**
+	 * append element
+	 * @param {HTMLElement}
+	 * @return {Fluent}
+	 */
+	append: function(value) {
+		var nodeList = __normalizeNode(value);
+		__each(this, function(element) {
+			for(var i = 0, len = nodeList.length;i &lt; len;i++) {
+				if(isAppendable(nodeList[i])) {
+					element.appendChild(nodeList[i]);
+				}
+			}
+		});
+		return this;
+	},
+	/**
+	 * insert element
+	 * @param {HTMLElement}
+	 * @return {Fluent}
+	 */
+	insert: function(value) {
+		var nodeList = __normalizeNode(value);
+		__each(this, function(element) {
+			for(var i = 0, len = nodeList.length;i &lt; len;i++) {
+				element.insertBefore(nodeList[i], element.firstChild);
+			}
+		});
+		return this;
+	},
+	/**
+	 * show all element as computed styles
+	 */
+	show: function() {
+		for(var i = 0, len = this.length;i &lt; len;i++) {
+			this[i].style.display = &quot;&quot;;
+			if(computedStyle(this[i], &quot;display&quot;) === &quot;none&quot;) {
+				this[i].style.display = &quot;block&quot;;
+			}
+		}
+	},
+	/**
+	 * hide all element
+	 */
+	hide: function() {
+		return this.css(&quot;display&quot;, &quot;none&quot;);
+	}
+};
+var _FluentAnimation = {
+	_param: {},
+	_prefix: [&quot;-webkit-&quot;, &quot;-moz-&quot;, &quot;-ms-&quot;, &quot;-o-&quot;, &quot;&quot;],
+	_transform: {
+		key: &quot;transform&quot;,
+		values: [],
+		add: function(value) {
+			if(this.values.indexOf(value) &lt; 0) {
+				this.values.push(value);
+			}
+		}
+	},
+	_transitionProperties: {
+		key: &quot;transition-properties&quot;,
+		values: [],
+		add: function(value) {
+			if(this.values.indexOf(value) &lt; 0) {
+				this.values.push(value);
+			}
+		}
+	},
+	_delay: {
+		key: &quot;transition-delay&quot;,
+		value: &quot;0ms&quot;
+	},
+	_duration: {
+		key: &quot;transition-duration&quot;,
+		value: &quot;1000ms&quot;
+	},
+	_ease: {
+		key: &quot;transition-timing-function&quot;,
+		value: &quot;ease&quot;
+	},
+	_setProperty: function(key, value) {
+		this._param[key] = value;
+	},
+	/**
+	 * set delay
+	 * @param {String} value
+	 * @return {Fluent}
+	 */
+	delay: function(value) {
+		this._delay.value = value;
+		return this;
+	},
+	/**
+	 * set duration
+	 * @param {String} value
+	 * @return {Fluent}
+	 */
+	duration: function(value) {
+		this._duration.value = value;
+		return this;
+	},
+	/**
+	 * set ease
+	 * @param {String} value
+	 * @return {Fluent}
+	 */
+	ease: function(value) {
+		this._ease.value = value;
+		return this;
+	},
+	/**
+	 * set skew
+	 * @param {Number} x
+	 * @param {Number} y
+	 * @return {Fluent}
+	 */
+	skew: function(x, y) {
+		if(x === undefined || y === undefined) {
+			return this;
+		}
+		this._transform.add(stringFormat(&quot;skew({0}deg, {1}deg)&quot;, x, y));
+		return this;
+	},
+	/**
+	 * set skewX
+	 * @param {Number} x
+	 * @return {Fluent}
+	 */
+	skewX: function(x) {
+		if(x === undefined) {
+			return this;
+		}
+		this._transform.add(stringFormat(&quot;skewX({0}deg)&quot;, x));
+		return this;
+	},
+	/**
+	 * set skewY
+	 * @param {Number} y
+	 * @return {Fluent}
+	 */
+	skewY: function(y) {
+		if(y === undefined) {
+			return this;
+		}
+		this._transform.add(stringFormat(&quot;skewY({0}deg)&quot;, y));
+		return this;
+	},
+	/**
+	 * set translate
+	 * @param {Number} x
+	 * @param {Number} y
+	 * @return {Fluent}
+	 */
+	translate: function(x, y) {
+		if(x === undefined || y === undefined) {
+			return this;
+		}
+		this._transform.add(stringFormat(&quot;translate({0}px, {1}px)&quot;, x, y));
+		return this;
+	},
+	/**
+	 * set translateX
+	 * @param {Number} x
+	 * @return {Fluent}
+	 */
+	translateX: function(x) {
+		if(x === undefined) {
+			return this;
+		}
+		this._transform.add(stringFormat(&quot;translateX({0}px)&quot;, x));
+		return this;
+	},
+	/**
+	 * set translateY
+	 * @param {Number} y
+	 * @return {Fluent}
+	 */
+	translateY: function(y) {
+		if(y === undefined) {
+			return this;
+		}
+		this._transform.add(stringFormat(&quot;translateY({0}px)&quot;, y));
+		return this;
+	},
+	/**
+	 * set scale
+	 * @param {Number} x
+	 * @param {Number} y
+	 * @return {Fluent}
+	 */
+	scale: function(x, y) {
+		if(x === undefined || y === undefined) {
+			return this;
+		}
+		this._transform.add(stringFormat(&quot;scale({0}, {1})&quot;, x, y));
+		return this;
+	},
+	/**
+	 * set scaleX
+	 * @param {Number} x
+	 * @return {Fluent}
+	 */
+	scaleX: function(x) {
+		if(x === undefined) {
+			return this;
+		}
+		this._transform.add(stringFormat(&quot;scaleX({0})&quot;, x));
+		return this;
+	},
+	/**
+	 * set scaleY
+	 * @param {Number} y
+	 * @return {Fluent}
+	 */
+	scaleY: function(y) {
+		if(y === undefined) {
+			return this;
+		}
+		this._transform.add(stringFormat(&quot;scaleY({0})&quot;, y));
+		return this;
+	},
+	/**
+	 * set rotate
+	 * @param {Number} n
+	 * @return {Fluent}
+	 */
+	rotate: function(n) {
+		if(n === undefined) {
+			return this;
+		}
+		this._transform.add(stringFormat(&quot;rotate({0}deg)&quot;, n));
+		return this;
+	},
+	/**
+	 * insert animation properties
+	 * @return {Fluent}
+	 */
+	animate: function() {
+		var prefix;
+		for(var i = 0, len = this._prefix.length;i &lt; len;i ++) {
+			prefix = this._prefix[i];
+			this._setProperty(prefix + this._ease.key, this._ease.value);
+			this._setProperty(prefix + this._delay.key, this._delay.value);
+			this._setProperty(prefix + this._duration.key, this._duration.value);
+			this._setProperty(prefix + this._transform.key, this._transform.values.join(&quot; &quot;));
+			this._setProperty(prefix + this._transitionProperties.key, this._transitionProperties.values.join(&quot;, &quot;));
+		}
+		this.each(function(element, index){
+			var key, p = this._param;
+			for(key in p) {
+				element.style[key] = p[key];
+			}
+		});
+		this._param = {};
+	}
+};
+
+//extend Fluent prototype
+__extend(Fluent.fn, _FluentEvent);
+__extend(Fluent.fn, _FluentTraversing);
+__extend(Fluent.fn, _FluentManipulation);
+__extend(Fluent.fn, _FluentAnimation);
+
+Fluent.ready = __ready;
+Fluent.bind = __bind;
+Fluent.unbind = __unbind;
+Fluent.once = __once;
+Fluent.delegate = __delegate;
+Fluent.undelegate = __undelegate;
+
+Fluent.extend = __extend;
+Fluent.fill = __fill;
+Fluent.each = __each;
+Fluent.copy = __copy;
+Fluent.defineClass = __defineClass;
+
+Fluent.serialize = serialize;
+Fluent.deserialize = deserialize;
+Fluent.loadScript = loadScript;
+Fluent.is = is;
+Fluent.has = has;
+Fluent.camelize = camelize;
+Fluent.dasherize = dasherize;
+Fluent.format = stringFormat;
+Fluent.escapeHTML = escapeHTML;
+Fluent.unescapeHTML = unescapeHTML;
+
+win.Fluent = Fluent;
+
+//set $ as constructor alias to global
+win.$ = function(selector, context) {
+	return new Fluent(selector, context);
+};
+
+})(window);</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ complexity.cyclomatic }} <br>
+    Length : {{ complexity.halstead.length }} <br>
+    Difficulty : {{ complexity.halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ complexity.halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>

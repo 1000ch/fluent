@@ -1,6 +1,6 @@
 {
   "name": "fluent",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Lightweight DOM library.",
   "main": "fluent.js",
   "dependencies": {},
@@ -8,10 +8,12 @@
     "grunt": "~0.4.1",
     "grunt-contrib-uglify": "~0.1.2",
     "grunt-contrib-watch": "~0.3.1",
-    "grunt-contrib-jshint": "~0.2.0"
+    "grunt-contrib-jshint": "~0.2.0",
+    "grunt-plato": "~0.2.1",
+    "testem": "~0.3.24"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+	  "test": "./node_modules/testem/testem.js -l PhantomJS ci"
   },
   "repository": {
     "type": "git",

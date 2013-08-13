@@ -13,7 +13,7 @@
     "testem": "~0.3.24"
   },
   "scripts": {
-	  "test": "./node_modules/testem/testem.js -l PhantomJS ci"
+  "test": "./node_modules/testem/testem.js -l PhantomJS ci"
   },
   "repository": {
     "type": "git",

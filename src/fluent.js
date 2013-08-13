@@ -505,7 +505,8 @@ function mergeArray(srcList, mergeList) {
  */
 var Fluent = function(selector) {
 	var elementList = [], len;
-	if(isString(selector)) {
+	if(!selector) {
+	} else if(isString(selector)) {
 		//if selector is string
 		elementList = qsaHook(selector);
 	} else if(selector.nodeType) {

@@ -1,8 +1,8 @@
-# fluent.js
+# fluent.js [![Build Status](https://travis-ci.org/1000ch/fluent.png?branch=master)](https://travis-ci.org/1000ch/fluent)
 
 ## About
 
-This is light-weight dom library.  
+fluent.js is light-weight dom library.
 This supports following functions.  
 
 ## API

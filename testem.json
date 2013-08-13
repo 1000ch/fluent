@@ -1,0 +1,5 @@
+{
+	"framework": "mocha+chai",
+	"src_files": ["./src/fluent.js", "./test/test.js"],
+	"launch_in_dev": ["PhantomJS"]
+}

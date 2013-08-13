@@ -73,7 +73,6 @@ var rxConciseSelector = /^(?:#([\w\-]+)|(\w+)|\.([\w\-]+))$/,//filter #id, tagNa
 
 var qs = "querySelector", 
 	qsa = "querySelectorAll",
-	hop = "hasOwnProperty",
 	_encode = encodeURIComponent,
 	_decode = decodeURIComponent;
 
@@ -188,7 +187,7 @@ function createElement(tagName, attributes) {
  * @param {Function} callback
  * @return {Object}
  */
-function each(target, callback) {
+function __each(target, callback) {
 	var args = arraySlice.call(arguments, 2);
 	var i, len = target.length, key, result;
 	if(args.length !== 0) {
@@ -233,7 +232,7 @@ function each(target, callback) {
  * @param {Object} target
  * @return {Object}
  */
-function copy(target) {
+function __copy(target) {
 	var buffer = Object.create(Object.getPropertyOf(target));
 	var propertyNames = Object.getOwnPropertyNames(target);
 
@@ -242,43 +241,52 @@ function copy(target) {
 	});
 	return buffer;
 }
+function __defineClass(properties, superClass) {
+	var Constructor = properties.hasOwnProperty("constructor") ? properties.constructor : function() {};
+	var Class = function() {};
+	if(superClass) {
+		Class.prototype = Object.create(superClass.prototype);
+	} else {
+		Class.constructor = Constructor;
+	}
+	__extend(Class.prototype, properties);
+	return Class;
+}
 /**
  * extend object hardly
  * @description if same property exist, it will be overriden
- * @param {Object} obj
+ * @param {Object} target
+ * @param {Object} src
  * @return {Object}
  */
-function extend(obj) {
-	var key, arg, args = arraySlice.call(arguments, 1);
-	for(var i = 0, len = args.length;i < len;i++) {
-		arg = args[i];
-		for(key in arg) {
-			//even if "key" property already exist, set into "key"
-			if(arg[hop](key)) {
-				obj[key] = arg[key];
-			}
+function __extend(target, src) {
+	var key, keys = Object.keys(src);
+	for(var i = 0, len = keys.length;i < len;i++) {
+		key = keys[i];
+		//even if "key" property already exist, set into "key"
+		if(src.hasOwnProperty(key)) {
+			target[key] = src[key];
 		}
 	}
-	return obj;
+	return target;
 }
 /**
  * extend object softly
  * @description if same property exist, it will not be overriden
- * @param {Object} obj
+ * @param {Object} target
+ * @param {Object} src
  * @return {Object}
  */
-function fill(obj) {
-	var key, arg, args = arraySlice.call(arguments, 1);
-	for(var i = 0, len = args.length;i < len;i++) {
-		arg = args[i];
-		for(key in arg) {
-			//if "key" is not undefined, "key" will not be rewrite
-			if(arg[hop](key) && !(key in obj)) {
-				obj[key] = arg[key];
-			}
+function __fill(target, src) {
+	var key, keys = Object.keys(src);
+	for(var i = 0, len = keys.length;i < len;i++) {
+		key = keys[i];
+		//if "key" is not undefined, "key" will not be rewrite
+		if(src.hasOwnProperty(key) && !(key in target)) {
+			target[key] = src[key];
 		}
 	}
-	return obj;
+	return target;
 }
 /**
  * serialize object to query string
@@ -288,7 +296,7 @@ function fill(obj) {
 function serialize(data) {
 	var ret = [], key, value;
 	for(key in data) {
-		if(data[hop](key)) {
+		if(data.hasOwnProperty(key)) {
 			ret.push(_encode(key) + "=" + _encode(value));
 		}
 	}
@@ -418,7 +426,7 @@ function unescapeHTML(value) {
  * execute callback when dom content loaded
  * @param {Function} callback
  */
-function ready(callback) {
+function __ready(callback) {
 	var args = arraySlice.call(arguments, 1);
 	if (rxReady.test(doc.readyState)) {
 		if(!args) {
@@ -531,7 +539,7 @@ Fluent.prototype = Fluent.fn;
  */
 Fluent.fn.each = function(callback) {
 	var args = arraySlice.call(arguments, 1);
-	return each(this, callback, args);
+	return __each(this, callback, args);
 };
 
 /**
@@ -559,7 +567,7 @@ function proxy(callback, target) {
  * @param {Function} eventHandler
  * @param {Boolean} useCapture
  */
-function bind(targetList, type, eventHandler, useCapture) {
+function __bind(targetList, type, eventHandler, useCapture) {
 	arrayForEach.call(targetList, function(target) {
 		target.addEventListener(type, eventHandler, useCapture);
 	});
@@ -571,7 +579,7 @@ function bind(targetList, type, eventHandler, useCapture) {
  * @param {Function} eventHandler
  * @param {Boolean} useCapture
  */
-function unbind(targetList, type, eventHandler, useCapture) {
+function __unbind(targetList, type, eventHandler, useCapture) {
 	arrayForEach.call(targetList, function(target) {
 		target.removeEventListener(type, eventHandler, useCapture);
 	});
@@ -583,7 +591,7 @@ function unbind(targetList, type, eventHandler, useCapture) {
  * @param {Function} eventHandler
  * @param {Boolean} useCapture
  */
-function once(targetList, type, eventHandler, useCapture) {
+function __once(targetList, type, eventHandler, useCapture) {
 	arrayForEach.call(targetList, function(target) {
 		var wrapOnce = function(e) {
 			eventHandler.call(target, e);
@@ -638,13 +646,13 @@ var SELECTOR = "selector";
  * @param {String} selector
  * @param {Function} eventHandler
  */
-function delegate(targetList, type, selector, eventHandler) {
+function __delegate(targetList, type, selector, eventHandler) {
 	var closure = null;
 	arrayForEach.call(targetList, function(target) {
 		if(!target.closureList) {
 			target.closureList = {};
 		}
-		if(!target.closureList[hop](type)) {
+		if(!target.closureList.hasOwnProperty(type)) {
 			target.closureList[type] = [];
 		}
 		closure = _createDelegateClosure(target, selector, eventHandler);
@@ -666,10 +674,10 @@ function delegate(targetList, type, selector, eventHandler) {
  * @param {String*} selector
  * @param {Function*} eventHandler
  */
-function undelegate(targetList, type, selector, eventHandler) {
+function __undelegate(targetList, type, selector, eventHandler) {
 	var array, index;
 	arrayForEach.call(targetList, function(target) {
-		if(target.closureList && target.closureList[hop](type)) {
+		if(target.closureList && target.closureList.hasOwnProperty(type)) {
 			if(type && selector && eventHandler) {
 				array = target.closureList[type];
 				index = searchIndex(array, EVENT_HANDLER, eventHandler);
@@ -704,7 +712,7 @@ var _FluentEvent = {
 	 * @return {Fluent}
 	 */
 	bind: function(type, eventHandler, useCapture) {
-		bind(this, type, eventHandler, useCapture);
+		__bind(this, type, eventHandler, useCapture);
 		return this;
 	},
 	/**
@@ -715,7 +723,7 @@ var _FluentEvent = {
 	 * @return {Fluent}
 	 */
 	unbind: function(type, eventHandler, useCapture) {
-		unbind(this, type, eventHandler, useCapture);
+		__unbind(this, type, eventHandler, useCapture);
 		return this;
 	},
 	/**
@@ -726,7 +734,7 @@ var _FluentEvent = {
 	 * @return {Fluent}
 	 */
 	once: function(type, eventHandler, useCapture) {
-		once(this, type, eventHandler, useCapture);
+		__once(this, type, eventHandler, useCapture);
 		return this;
 	},
 	/**
@@ -736,7 +744,7 @@ var _FluentEvent = {
 	 * @return {Fluent}
 	 */
 	delegate: function(type, selector, eventHandler) {
-		delegate(this, type, selector, eventHandler);
+		__delegate(this, type, selector, eventHandler);
 		return this;
 	},
 	/**
@@ -746,7 +754,7 @@ var _FluentEvent = {
 	 * @return {Fluent}
 	 */
 	undelegate: function(type, selector, eventHandler) {
-		undelegate(this, type, selector, eventHandler);
+		__undelegate(this, type, selector, eventHandler);
 		return this;
 	}
 };
@@ -816,7 +824,7 @@ var _FluentTraversing = {
  * @param {HTMLElement} targetNode
  * @param {String} value
  */
-function addClass(targetNode, value) {
+function __addClass(targetNode, value) {
 	var classList = (value + "").split(" ");
 	var newClass = "", oldClass = targetNode.className + "";
 	var arrayBuffer = oldClass.split(" ");
@@ -839,7 +847,7 @@ function addClass(targetNode, value) {
  * @param {HTMLElement} targetNode
  * @param {String} value
  */
-function removeClass(targetNode, value) {
+function __removeClass(targetNode, value) {
 	var classList = (value + "").split(" ");
 	var newClass = "", oldClass = targetNode.className + "";
 	var arrayBuffer = oldClass.split(" ");
@@ -862,7 +870,7 @@ function removeClass(targetNode, value) {
  * @param {HTMLElement} targetNode
  * @param {String} value
  */
-function toggleClass(targetNode, value) {
+function __toggleClass(targetNode, value) {
 	var classList = (value + "").split(" ");
 	var newClass = "", oldClass = targetNode.className + "";
 	var arrayBuffer = oldClass.split(" ");
@@ -889,7 +897,7 @@ function toggleClass(targetNode, value) {
  * @param {HTMLElement} targetNode
  * @param {String} value
  */
-function _hasClass(targetNode, value) {
+function __hasClass(targetNode, value) {
 	var arrayBuffer = targetNode.className.split(" ");
 	return (arrayBuffer.indexOf(value + "") != -1);
 }
@@ -898,7 +906,7 @@ function _hasClass(targetNode, value) {
  * normalize object to node array.
  * @param {Fluent|NodeList|Array} value
  */
-function _normalizeNode(value) {
+function __normalizeNode(value) {
 	var nodeList = [];
 	if(value.nodeType) {
 		nodeList.push(value);
@@ -999,7 +1007,7 @@ var _FluentManipulation = {
 		var list = className.split(" ");
 		return this.each(function(element, index) {
 			for(var i = 0, len = list.length;i < len;i++) {
-				addClass(element, list[i]);
+				__addClass(element, list[i]);
 			}
 		});
 	},
@@ -1015,7 +1023,7 @@ var _FluentManipulation = {
 		var list = className.split(" ");
 		return this.each(function(element, index) {
 			for(var i = 0, len = list.length;i < len;i++) {
-				removeClass(element, list[i]);
+				__removeClass(element, list[i]);
 			}
 		});
 	},
@@ -1031,18 +1039,18 @@ var _FluentManipulation = {
 		var list = className.split(" ");
 		return this.each(function(element, index) {
 			for(var i = 0, len = list.length;i < len;i++) {
-				toggleClass(element, list[i]);
+				__toggleClass(element, list[i]);
 			}
 		});
 	},
 	/**
 	 * append element
-	 * @param 
+	 * @param {HTMLElement}
 	 * @return {Fluent}
 	 */
 	append: function(value) {
-		var nodeList = _normalizeNode(value);
-		each(this, function(element) {
+		var nodeList = __normalizeNode(value);
+		__each(this, function(element) {
 			for(var i = 0, len = nodeList.length;i < len;i++) {
 				if(isAppendable(nodeList[i])) {
 					element.appendChild(nodeList[i]);
@@ -1053,12 +1061,12 @@ var _FluentManipulation = {
 	},
 	/**
 	 * insert element
-	 * @param
+	 * @param {HTMLElement}
 	 * @return {Fluent}
 	 */
 	insert: function(value) {
-		var nodeList = _normalizeNode(value);
-		each(this, function(element) {
+		var nodeList = __normalizeNode(value);
+		__each(this, function(element) {
 			for(var i = 0, len = nodeList.length;i < len;i++) {
 				element.insertBefore(nodeList[i], element.firstChild);
 			}
@@ -1294,22 +1302,23 @@ var _FluentAnimation = {
 };
 
 //extend Fluent prototype
-extend(Fluent.fn, _FluentEvent);
-extend(Fluent.fn, _FluentTraversing);
-extend(Fluent.fn, _FluentManipulation);
-extend(Fluent.fn, _FluentAnimation);
+__extend(Fluent.fn, _FluentEvent);
+__extend(Fluent.fn, _FluentTraversing);
+__extend(Fluent.fn, _FluentManipulation);
+__extend(Fluent.fn, _FluentAnimation);
 
-Fluent.ready = ready;
-Fluent.bind = bind;
-Fluent.unbind = unbind;
-Fluent.once = once;
-Fluent.delegate = delegate;
-Fluent.undelegate = undelegate;
+Fluent.ready = __ready;
+Fluent.bind = __bind;
+Fluent.unbind = __unbind;
+Fluent.once = __once;
+Fluent.delegate = __delegate;
+Fluent.undelegate = __undelegate;
 
-Fluent.extend = extend;
-Fluent.fill = fill;
-Fluent.each = each;
-Fluent.copy = copy;
+Fluent.extend = __extend;
+Fluent.fill = __fill;
+Fluent.each = __each;
+Fluent.copy = __copy;
+Fluent.defineClass = __defineClass;
 
 Fluent.serialize = serialize;
 Fluent.deserialize = deserialize;

@@ -11,7 +11,6 @@ var win = window, doc = window.document, loc = window.location;
 //cache empty structure
 var emptyArray = [],
 	emptyObject = {},
-	emptyFunction = function() {},
 	emptyElement = doc.createElement("div");
 
 //cache referrence

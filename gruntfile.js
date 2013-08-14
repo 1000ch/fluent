@@ -19,7 +19,7 @@ module.exports = function(grunt) {
 		},
 		watch: {
 			files: ["./src/fluent.js"],
-			tasks: ["jshint", "uglify", "plato"]
+			tasks: ["jshint"]
 		}
 	});
 
@@ -29,4 +29,5 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-plato');
 
 	grunt.registerTask("default", "watch");
+	grunt.registerTask("build", ["uglify", "plato"]);
 };

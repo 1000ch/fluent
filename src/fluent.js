@@ -17,7 +17,8 @@ var emptyArray = [],
 var toString = emptyObject.toString,
 	arrayForEach = emptyArray.forEach,
 	arraySlice = emptyArray.slice,
-	arraySplice = emptyArray.splice;
+	arraySplice = emptyArray.splice,
+	arrayLastIndexOf = emptyArray.lastIndexOf;
 
 var stringRepeat = function(count) {
 	if((count |= 0 ) <= 0) {
@@ -392,7 +393,7 @@ function loadScript(path, callback, async, defer) {
  * @param {String} value
  * @return {String}
  */
-function escapeHTML(value) {
+function __escapeHTML(value) {
 	value = value + "";
 	var escapeMap = {
 		"&": "&amp;",
@@ -409,7 +410,7 @@ function escapeHTML(value) {
  * @param {String} value
  * @return {String}
  */
-function unescapeHTML(value) {
+function __unescapeHTML(value) {
 	value = value + "";
 	var unescapeMap = {
 		"&amp;": "&",
@@ -1328,8 +1329,8 @@ Fluent.has = has;
 Fluent.camelize = camelize;
 Fluent.dasherize = dasherize;
 Fluent.format = stringFormat;
-Fluent.escapeHTML = escapeHTML;
-Fluent.unescapeHTML = unescapeHTML;
+Fluent.escapeHTML = __escapeHTML;
+Fluent.unescapeHTML = __unescapeHTML;
 
 win.Fluent = Fluent;
 

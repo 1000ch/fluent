@@ -1,7 +1,8 @@
 {
 	"framework": "mocha+chai",
 	"before_tests": "./node_modules/coffee-script/bin/coffee -c ./test/*.coffee",
-	"on_exit": "rm test/*.js",
+	"after_tests": "rm test/*.js",
 	"src_files": ["./src/fluent.js", "./test/*.coffee"],
+	"serve_files": ["./src/fluent.js", "./test/*.js"],
 	"launch_in_dev": ["PhantomJS"]
 }

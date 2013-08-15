@@ -18,6 +18,7 @@ var toString = emptyObject.toString,
 	arrayForEach = emptyArray.forEach,
 	arraySlice = emptyArray.slice,
 	arraySplice = emptyArray.splice,
+	arrayIndexOf = emptyArray.indexOf,
 	arrayLastIndexOf = emptyArray.lastIndexOf;
 
 var stringRepeat = function(count) {

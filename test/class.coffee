@@ -3,64 +3,76 @@ expect = chai.expect
 describe 'Fluent Class', ->
 
   it 'has Fluent.ready', ->
-    expect(!!Fluent.ready).to.equal true
+    expect(!!$.ready).to.equal true
 
   it 'has Fluent.bind', ->
-    expect(!!Fluent.bind).to.equal true
+    expect(!!$.bind).to.equal true
 
   it 'has Fluent.unbind', ->
-    expect(!!Fluent.unbind).to.equal true
+    expect(!!$.unbind).to.equal true
 
   it 'has Fluent.once', ->
-    expect(!!Fluent.once).to.equal true
+    expect(!!$.once).to.equal true
 
   it 'has Fluent.delegate', ->
-    expect(!!Fluent.delegate).to.equal true
+    expect(!!$.delegate).to.equal true
 
   it 'has Fluent.undelegate', ->
-    expect(!!Fluent.undelegate).to.equal true
+    expect(!!$.undelegate).to.equal true
 
   it 'has Fluent.extend', ->
-    expect(!!Fluent.extend).to.equal true
+    expect(!!$.extend).to.equal true
 
   it 'has Fluent.fill', ->
-    expect(!!Fluent.fill).to.equal true
+    expect(!!$.fill).to.equal true
 
   it 'has Fluent.each', ->
-    expect(!!Fluent.each).to.equal true
+    expect(!!$.each).to.equal true
 
   it 'has Fluent.copy', ->
-    expect(!!Fluent.copy).to.equal true
+    expect(!!$.copy).to.equal true
 
   it 'has Fluent.defineClass', ->
-    expect(!!Fluent.defineClass).to.equal true
+    expect(!!$.defineClass).to.equal true
+
+  it 'has Fluent.addClass', ->
+    expect(!!$.addClass).to.equal true
+
+  it 'has Fluent.removeClass', ->
+    expect(!!$.removeClass).to.equal true
+
+  it 'has Fluent.toggleClass', ->
+    expect(!!$.toggleClass).to.equal true
+
+  it 'has Fluent.hasClass', ->
+    expect(!!$.hasClass).to.equal true
 
   it 'has Fluent.serialize', ->
-    expect(!!Fluent.serialize).to.equal true
+    expect(!!$.serialize).to.equal true
 
   it 'has Fluent.deserialize', ->
-    expect(!!Fluent.deserialize).to.equal true
+    expect(!!$.deserialize).to.equal true
 
   it 'has Fluent.loadScript', ->
-    expect(!!Fluent.loadScript).to.equal true
+    expect(!!$.loadScript).to.equal true
 
   it 'has Fluent.is', ->
-    expect(!!Fluent.is).to.equal true
+    expect(!!$.is).to.equal true
 
   it 'has Fluent.has', ->
-    expect(!!Fluent.has).to.equal true
+    expect(!!$.has).to.equal true
 
   it 'has Fluent.camelize', ->
-    expect(!!Fluent.camelize).to.equal true
+    expect(!!$.camelize).to.equal true
 
   it 'has Fluent.dasherize', ->
-    expect(!!Fluent.dasherize).to.equal true
+    expect(!!$.dasherize).to.equal true
 
   it 'has Fluent.format', ->
-    expect(!!Fluent.format).to.equal true
+    expect(!!$.format).to.equal true
 
   it 'has Fluent.escapeHTML', ->
-    expect(!!Fluent.escapeHTML).to.equal true
+    expect(!!$.escapeHTML).to.equal true
 
   it 'has Fluent.unescapeHTML', ->
-    expect(!!Fluent.unescapeHTML).to.equal true
+    expect(!!$.unescapeHTML).to.equal true

@@ -474,15 +474,19 @@ function qsaHook(selector, context) {
 	}
 
 	//process for case of "#id [any selector]"
-	var token, tokenList = selector.split(" ");
-	var tokenIndex = arrayLastIndexOf.call(tokenList, rxIdSelector);
-	if(tokenIndex > -1) {
-		//last id selector
-		token = tokenList.slice(tokenIndex + 1).join(" ");
-		if(tokenIndex + 1 == tokenList.length) {
-			return [doc.getElementById(tokenList[tokenList + 1])];
+	var tokenIndex = -1, tokenList = selector.split(" ");
+	tokenList.some(function(token, index, array) {
+		if(rxIdSelector.test(token)) {
+			tokenIndex = index;
+			return true;
+		}
+	});
+	if(tokenIndex !== -1) {
+		var idSelector = tokenList[tokenIndex];
+		if(tokenIndex == tokenList.length - 1) {
+			return [doc.querySelector(idSelector)];
 		} else {
-			return qsaHook(token, doc.getElementById(tokenList[tokenIndex]));
+			return qsaHook(tokenList.slice(tokenIndex + 1).join(" "), doc.querySelector(idSelector));
 		}
 	}
 

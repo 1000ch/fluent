@@ -510,62 +510,56 @@ function mergeArray(srcList, mergeList) {
  * @param {String|HTMLElement}
  */
 var Fluent = function(selector) {
-	var elementList = [], len;
-	if(!selector) {
-	} else if(isString(selector)) {
-		//if selector is string
-		elementList = qsaHook(selector);
-	} else if(selector.nodeType) {
-		//if selector is single dom element
-		elementList = [selector];
-	} else if(isLikeArray(selector)) {
-		//if selector is array,
-		//select only dom element
-		elementList = arrayFilter.call(selector, function(item) {
-			return !!item.nodeType;
-		});
-	}
-	len = this.length = elementList.length;
-	while(len--) {
-		this[len] = elementList[len];
-	}
+	return Fluent.prototype.initialize(selector);
 };
 /**
  * base prototype
  */
-Fluent.fn = { constructor: Fluent };
-
-//mapping fn to prototype
-Fluent.prototype = Fluent.fn;
-
-/**
- * execute function to all element
- * @param {Function} callback
- * @return {Fluent}
- */
-Fluent.fn.each = function(callback) {
-	var args = arraySlice.call(arguments, 1);
-	return __each(this, callback, args);
+Fluent.fn = Fluent.prototype = {
+	constructor: Fluent,
+	length: 0,
+	/**
+	 * Fluent initializer
+	 * @param {String} selector
+	 * @returns {Fluent}
+	 */
+	initialize: function(selector) {
+		var elementList = []
+		if(!selector) {
+			return this;
+		} else if(isString(selector)) {
+			//if selector is string
+			elementList = qsaHook(selector);
+		} else if(selector.nodeType) {
+			//if selector is single dom element
+			elementList = [selector];
+		} else if(isLikeArray(selector)) {
+			//if selector is array,
+			//select only dom element
+			elementList = arrayFilter.call(selector, function(item) {
+				return !!item.nodeType;
+			});
+		}
+		var len = this.length = elementList.length;
+		while(len--) {
+			this[len] = elementList[len];
+		}
+		return this;
+	},
+	/**
+	 * execute function to all element
+	 * @param {Function} callback
+	 * @return {Fluent}
+	 */
+	each: function(callback) {
+		var args = arraySlice.call(arguments, 1);
+		for(var i = 0, len = this.length;i < len;i++) {
+			callback(this[i], i);
+		}
+		return this;
+	}
 };
 
-/**
- * get all element
- * @return {Array<HTMLElement>}
- */
-Fluent.fn.toArray = function() {
-	return arraySlice.call(this);
-};
-
-/**
- * create proxy
- * @param {Function} callback
- * @param {Object} target
- */
-function proxy(callback, target) {
-	return function() {
-		return callback.apply(target, arguments);
-	};
-}
 /**
  * bind
  * @param {Array} targetList
@@ -628,7 +622,7 @@ function searchIndex(array, propertyName, compareData) {
  * @param {String} selector
  * @param {Function} eventHandler
  */
-function _createDelegateClosure(parent, selector, eventHandler) {
+function __createDelegateClosure(parent, selector, eventHandler) {
 	var closure = function(e) {
 		var children = qsaHook(selector, parent);
 		arrayForEach.call(children, function(child) {
@@ -661,7 +655,7 @@ function __delegate(targetList, type, selector, eventHandler) {
 		if(!target.closureList.hasOwnProperty(type)) {
 			target.closureList[type] = [];
 		}
-		closure = _createDelegateClosure(target, selector, eventHandler);
+		closure = __createDelegateClosure(target, selector, eventHandler);
 		if(searchIndex(target.closureList[type], CLOSURE, closure) < 0) {
 			target.closureList[type].push({
 				selector: selector,
@@ -1326,6 +1320,11 @@ Fluent.each = __each;
 Fluent.copy = __copy;
 Fluent.defineClass = __defineClass;
 
+Fluent.addClass = __addClass;
+Fluent.removeClass = __removeClass;
+Fluent.toggleClass = __toggleClass;
+Fluent.hasClass = __hasClass;
+
 Fluent.serialize = serialize;
 Fluent.deserialize = deserialize;
 Fluent.loadScript = loadScript;
@@ -1337,11 +1336,6 @@ Fluent.format = stringFormat;
 Fluent.escapeHTML = __escapeHTML;
 Fluent.unescapeHTML = __unescapeHTML;
 
-win.Fluent = Fluent;
-
-//set $ as constructor alias to global
-win.$ = function(selector, context) {
-	return new Fluent(selector, context);
-};
+win.$ = win.Fluent = Fluent;
 
 })(window);

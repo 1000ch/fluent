@@ -45,11 +45,11 @@
   <div class="row">
     <div class="span6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"></i></a></h2>
-      <p class="stat">68.65</p>
+      <p class="stat">68.19</p>
     </div>
     <div class="span6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC"></i></h2>
-      <p class="stat">1334</p>
+      <p class="stat">1125</p>
     </div>
   </div>
   <div class="row historical">
@@ -63,11 +63,11 @@
   <div class="row">
     <div class="span6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty"></i></a></h2>
-      <p class="stat">119.55</p>
+      <p class="stat">116.57</p>
     </div>
     <div class="span6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs"></i></a></h2>
-      <p class="stat">10.92</p>
+      <p class="stat">9.18</p>
     </div>
   </div>
 </div>
@@ -96,7 +96,7 @@
  * Copyright 1000ch&lt;http://1000ch.net/&gt;
  * licensed under the MIT license.
  **/
-(function(window, undefined){
+(function(window, undefined) {
 &quot;use strict&quot;;
 var win = window, doc = window.document, loc = window.location;
 
@@ -105,11 +105,13 @@ var emptyArray = [],
 	emptyObject = {},
 	emptyElement = doc.createElement(&quot;div&quot;);
 
-//cache referrence
+//cache reference
 var toString = emptyObject.toString,
 	arrayForEach = emptyArray.forEach,
 	arraySlice = emptyArray.slice,
-	arraySplice = emptyArray.splice;
+	arraySplice = emptyArray.splice,
+	arrayIndexOf = emptyArray.indexOf,
+	arrayLastIndexOf = emptyArray.lastIndexOf;
 
 var stringRepeat = function(count) {
 	if((count |= 0 ) &lt;= 0) {
@@ -484,7 +486,7 @@ function loadScript(path, callback, async, defer) {
  * @param {String} value
  * @return {String}
  */
-function escapeHTML(value) {
+function __escapeHTML(value) {
 	value = value + &quot;&quot;;
 	var escapeMap = {
 		&quot;&amp;&quot;: &quot;&amp;amp;&quot;,
@@ -501,7 +503,7 @@ function escapeHTML(value) {
  * @param {String} value
  * @return {String}
  */
-function unescapeHTML(value) {
+function __unescapeHTML(value) {
 	value = value + &quot;&quot;;
 	var unescapeMap = {
 		&quot;&amp;amp;&quot;: &quot;&amp;&quot;,
@@ -564,15 +566,19 @@ function qsaHook(selector, context) {
 	}
 
 	//process for case of &quot;#id [any selector]&quot;
-	var token, tokenList = selector.split(&quot; &quot;);
-	var tokenIndex = arrayLastIndexOf.call(tokenList, rxIdSelector);
-	if(tokenIndex &gt; -1) {
-		//last id selector
-		token = tokenList.slice(tokenIndex + 1).join(&quot; &quot;);
-		if(tokenIndex + 1 == tokenList.length) {
-			return [doc.getElementById(tokenList[tokenList + 1])];
+	var tokenIndex = -1, tokenList = selector.split(&quot; &quot;);
+	tokenList.some(function(token, index, array) {
+		if(rxIdSelector.test(token)) {
+			tokenIndex = index;
+			return true;
+		}
+	});
+	if(tokenIndex !== -1) {
+		var idSelector = tokenList[tokenIndex];
+		if(tokenIndex == tokenList.length - 1) {
+			return [doc.querySelector(idSelector)];
 		} else {
-			return qsaHook(token, doc.getElementById(tokenList[tokenIndex]));
+			return qsaHook(tokenList.slice(tokenIndex + 1).join(&quot; &quot;), doc.querySelector(idSelector));
 		}
 	}
 
@@ -596,61 +602,56 @@ function mergeArray(srcList, mergeList) {
  * @param {String|HTMLElement}
  */
 var Fluent = function(selector) {
-	var elementList = [], len;
-	if(isString(selector)) {
-		//if selector is string
-		elementList = qsaHook(selector);
-	} else if(selector.nodeType) {
-		//if selector is single dom element
-		elementList = [selector];
-	} else if(isLikeArray(selector)) {
-		//if selector is array,
-		//select only dom element
-		elementList = arrayFilter.call(selector, function(item) {
-			return !!item.nodeType;
-		});
-	}
-	len = this.length = elementList.length;
-	while(len--) {
-		this[len] = elementList[len];
-	}
+	return Fluent.prototype.initialize(selector);
 };
 /**
  * base prototype
  */
-Fluent.fn = { constructor: Fluent };
-
-//mapping fn to prototype
-Fluent.prototype = Fluent.fn;
-
-/**
- * execute function to all element
- * @param {Function} callback
- * @return {Fluent}
- */
-Fluent.fn.each = function(callback) {
-	var args = arraySlice.call(arguments, 1);
-	return __each(this, callback, args);
+Fluent.fn = Fluent.prototype = {
+	constructor: Fluent,
+	length: 0,
+	/**
+	 * Fluent initializer
+	 * @param {String} selector
+	 * @returns {Fluent}
+	 */
+	initialize: function(selector) {
+		var elementList = [];
+		if(!selector) {
+			return this;
+		} else if(isString(selector)) {
+			//if selector is string
+			elementList = qsaHook(selector);
+		} else if(selector.nodeType) {
+			//if selector is single dom element
+			elementList = [selector];
+		} else if(isLikeArray(selector)) {
+			//if selector is array,
+			//select only dom element
+			elementList = arrayFilter.call(selector, function(item) {
+				return !!item.nodeType;
+			});
+		}
+		var len = this.length = elementList.length;
+		while(len--) {
+			this[len] = elementList[len];
+		}
+		return this;
+	},
+	/**
+	 * execute function to all element
+	 * @param {Function} callback
+	 * @return {Fluent}
+	 */
+	each: function(callback) {
+		var args = arraySlice.call(arguments, 1);
+		for(var i = 0, len = this.length;i &lt; len;i++) {
+			callback(this[i], i);
+		}
+		return this;
+	}
 };
 
-/**
- * get all element
- * @return {Array&lt;HTMLElement&gt;}
- */
-Fluent.fn.toArray = function() {
-	return arraySlice.call(this);
-};
-
-/**
- * create proxy
- * @param {Function} callback
- * @param {Object} target
- */
-function proxy(callback, target) {
-	return function() {
-		return callback.apply(target, arguments);
-	};
-}
 /**
  * bind
  * @param {Array} targetList
@@ -713,7 +714,7 @@ function searchIndex(array, propertyName, compareData) {
  * @param {String} selector
  * @param {Function} eventHandler
  */
-function _createDelegateClosure(parent, selector, eventHandler) {
+function __createDelegateClosure(parent, selector, eventHandler) {
 	var closure = function(e) {
 		var children = qsaHook(selector, parent);
 		arrayForEach.call(children, function(child) {
@@ -746,7 +747,7 @@ function __delegate(targetList, type, selector, eventHandler) {
 		if(!target.closureList.hasOwnProperty(type)) {
 			target.closureList[type] = [];
 		}
-		closure = _createDelegateClosure(target, selector, eventHandler);
+		closure = __createDelegateClosure(target, selector, eventHandler);
 		if(searchIndex(target.closureList[type], CLOSURE, closure) &lt; 0) {
 			target.closureList[type].push({
 				selector: selector,
@@ -1182,221 +1183,11 @@ var _FluentManipulation = {
 		return this.css(&quot;display&quot;, &quot;none&quot;);
 	}
 };
-var _FluentAnimation = {
-	_param: {},
-	_prefix: [&quot;-webkit-&quot;, &quot;-moz-&quot;, &quot;-ms-&quot;, &quot;-o-&quot;, &quot;&quot;],
-	_transform: {
-		key: &quot;transform&quot;,
-		values: [],
-		add: function(value) {
-			if(this.values.indexOf(value) &lt; 0) {
-				this.values.push(value);
-			}
-		}
-	},
-	_transitionProperties: {
-		key: &quot;transition-properties&quot;,
-		values: [],
-		add: function(value) {
-			if(this.values.indexOf(value) &lt; 0) {
-				this.values.push(value);
-			}
-		}
-	},
-	_delay: {
-		key: &quot;transition-delay&quot;,
-		value: &quot;0ms&quot;
-	},
-	_duration: {
-		key: &quot;transition-duration&quot;,
-		value: &quot;1000ms&quot;
-	},
-	_ease: {
-		key: &quot;transition-timing-function&quot;,
-		value: &quot;ease&quot;
-	},
-	_setProperty: function(key, value) {
-		this._param[key] = value;
-	},
-	/**
-	 * set delay
-	 * @param {String} value
-	 * @return {Fluent}
-	 */
-	delay: function(value) {
-		this._delay.value = value;
-		return this;
-	},
-	/**
-	 * set duration
-	 * @param {String} value
-	 * @return {Fluent}
-	 */
-	duration: function(value) {
-		this._duration.value = value;
-		return this;
-	},
-	/**
-	 * set ease
-	 * @param {String} value
-	 * @return {Fluent}
-	 */
-	ease: function(value) {
-		this._ease.value = value;
-		return this;
-	},
-	/**
-	 * set skew
-	 * @param {Number} x
-	 * @param {Number} y
-	 * @return {Fluent}
-	 */
-	skew: function(x, y) {
-		if(x === undefined || y === undefined) {
-			return this;
-		}
-		this._transform.add(stringFormat(&quot;skew({0}deg, {1}deg)&quot;, x, y));
-		return this;
-	},
-	/**
-	 * set skewX
-	 * @param {Number} x
-	 * @return {Fluent}
-	 */
-	skewX: function(x) {
-		if(x === undefined) {
-			return this;
-		}
-		this._transform.add(stringFormat(&quot;skewX({0}deg)&quot;, x));
-		return this;
-	},
-	/**
-	 * set skewY
-	 * @param {Number} y
-	 * @return {Fluent}
-	 */
-	skewY: function(y) {
-		if(y === undefined) {
-			return this;
-		}
-		this._transform.add(stringFormat(&quot;skewY({0}deg)&quot;, y));
-		return this;
-	},
-	/**
-	 * set translate
-	 * @param {Number} x
-	 * @param {Number} y
-	 * @return {Fluent}
-	 */
-	translate: function(x, y) {
-		if(x === undefined || y === undefined) {
-			return this;
-		}
-		this._transform.add(stringFormat(&quot;translate({0}px, {1}px)&quot;, x, y));
-		return this;
-	},
-	/**
-	 * set translateX
-	 * @param {Number} x
-	 * @return {Fluent}
-	 */
-	translateX: function(x) {
-		if(x === undefined) {
-			return this;
-		}
-		this._transform.add(stringFormat(&quot;translateX({0}px)&quot;, x));
-		return this;
-	},
-	/**
-	 * set translateY
-	 * @param {Number} y
-	 * @return {Fluent}
-	 */
-	translateY: function(y) {
-		if(y === undefined) {
-			return this;
-		}
-		this._transform.add(stringFormat(&quot;translateY({0}px)&quot;, y));
-		return this;
-	},
-	/**
-	 * set scale
-	 * @param {Number} x
-	 * @param {Number} y
-	 * @return {Fluent}
-	 */
-	scale: function(x, y) {
-		if(x === undefined || y === undefined) {
-			return this;
-		}
-		this._transform.add(stringFormat(&quot;scale({0}, {1})&quot;, x, y));
-		return this;
-	},
-	/**
-	 * set scaleX
-	 * @param {Number} x
-	 * @return {Fluent}
-	 */
-	scaleX: function(x) {
-		if(x === undefined) {
-			return this;
-		}
-		this._transform.add(stringFormat(&quot;scaleX({0})&quot;, x));
-		return this;
-	},
-	/**
-	 * set scaleY
-	 * @param {Number} y
-	 * @return {Fluent}
-	 */
-	scaleY: function(y) {
-		if(y === undefined) {
-			return this;
-		}
-		this._transform.add(stringFormat(&quot;scaleY({0})&quot;, y));
-		return this;
-	},
-	/**
-	 * set rotate
-	 * @param {Number} n
-	 * @return {Fluent}
-	 */
-	rotate: function(n) {
-		if(n === undefined) {
-			return this;
-		}
-		this._transform.add(stringFormat(&quot;rotate({0}deg)&quot;, n));
-		return this;
-	},
-	/**
-	 * insert animation properties
-	 * @return {Fluent}
-	 */
-	animate: function() {
-		var prefix;
-		for(var i = 0, len = this._prefix.length;i &lt; len;i ++) {
-			prefix = this._prefix[i];
-			this._setProperty(prefix + this._ease.key, this._ease.value);
-			this._setProperty(prefix + this._delay.key, this._delay.value);
-			this._setProperty(prefix + this._duration.key, this._duration.value);
-			this._setProperty(prefix + this._transform.key, this._transform.values.join(&quot; &quot;));
-			this._setProperty(prefix + this._transitionProperties.key, this._transitionProperties.values.join(&quot;, &quot;));
-		}
-		this.each(function(element, index){
-			var key, p = this._param;
-			for(key in p) {
-				element.style[key] = p[key];
-			}
-		});
-		this._param = {};
-	}
-};
 
 //extend Fluent prototype
 __extend(Fluent.fn, _FluentEvent);
 __extend(Fluent.fn, _FluentTraversing);
 __extend(Fluent.fn, _FluentManipulation);
-__extend(Fluent.fn, _FluentAnimation);
 
 Fluent.ready = __ready;
 Fluent.bind = __bind;
@@ -1411,6 +1202,11 @@ Fluent.each = __each;
 Fluent.copy = __copy;
 Fluent.defineClass = __defineClass;
 
+Fluent.addClass = __addClass;
+Fluent.removeClass = __removeClass;
+Fluent.toggleClass = __toggleClass;
+Fluent.hasClass = __hasClass;
+
 Fluent.serialize = serialize;
 Fluent.deserialize = deserialize;
 Fluent.loadScript = loadScript;
@@ -1419,15 +1215,10 @@ Fluent.has = has;
 Fluent.camelize = camelize;
 Fluent.dasherize = dasherize;
 Fluent.format = stringFormat;
-Fluent.escapeHTML = escapeHTML;
-Fluent.unescapeHTML = unescapeHTML;
+Fluent.escapeHTML = __escapeHTML;
+Fluent.unescapeHTML = __unescapeHTML;
 
-win.Fluent = Fluent;
-
-//set $ as constructor alias to global
-win.$ = function(selector, context) {
-	return new Fluent(selector, context);
-};
+win.$ = win.Fluent = Fluent;
 
 })(window);</textarea>
   </div>

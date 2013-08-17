@@ -5,10 +5,7 @@ describe "Fluent Instance", ->
   it "can initialize with document", ->
     expect($(document).length).to.equal 1
     expect(Fluent(document).length).to.equal 1
-    expect(new Fluent(document).length).to.equal 1
-
-  it "can initialize with document", ->
-    expect($(document.body).length).to.equal 1
+    expect(Fluent.prototype.initialize(document).length).to.equal 1
 
   it "can initialize without arguments", ->
     expect($().length).to.equal new Fluent().length

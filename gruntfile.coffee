@@ -3,17 +3,18 @@ module.exports = (grunt) ->
   grunt.initConfig
     pkg: grunt.file.readJSON 'package.json'
     jshint:
-      all: ["./src/fluent.js"]
+      all: ["./src/fluent.js", "./src/fluent.animation.js"]
     uglify:
       js:
         files:
-          "./src/fluent.min.js": ["./src/fluent.js"]
+          "./src/fluent.min.js": ["./src/fluent.js"],
+          "./src/fluent.animation.min.js": ["./src/fluent.animation.js"]
     plato:
       dist:
         src: ['src/**/*.js']
         dest: 'reports'
     watch:
-      files: ["./src/fluent.js"]
+      files: ["./src/fluent.js", "./src/fluent.animation.js"]
       tasks: ["jshint"]
 
   grunt.loadNpmTasks 'grunt-contrib-jshint'

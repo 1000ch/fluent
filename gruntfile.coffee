@@ -7,11 +7,11 @@ module.exports = (grunt) ->
     uglify:
       js:
         files:
-          "./src/fluent.min.js": ["./src/fluent.js"],
-          "./src/fluent.animation.min.js": ["./src/fluent.animation.js"]
+          "./dist/fluent.min.js": ["./src/fluent.js"],
+          "./dist/fluent.animation.min.js": ["./src/fluent.animation.js"]
     plato:
       dist:
-        src: ['src/**/*.js']
+        src: ['src/*.js']
         dest: 'reports'
     watch:
       files: ["./src/fluent.js", "./src/fluent.animation.js"]

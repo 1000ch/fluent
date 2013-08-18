@@ -1,18 +1,18 @@
 {
-	"framework": "/lib/mocha/mocha.js",
-	"dev_dependencies": [
-		"lib/chai/chai.js"
-	],
-	"test_page": "./test/tests.mustache",
-	"before_tests": "./node_modules/coffee-script/bin/coffee -c ./test/*.coffee",
-	"after_tests": "rm test/*.js",
-	"src_files": [
-		"./src/fluent.js",
-		"./test/*.coffee"
-	],
-	"serve_files": [
-		"./src/fluent.js",
-		"./test/*.js"
-	],
-	"launch_in_dev": ["PhantomJS"]
+  "framework": "/lib/mocha/mocha.js",
+  "dev_dependencies": [
+    "lib/chai/chai.js"
+  ],
+  "test_page": "./spec/runner.mustache",
+  "before_tests": "./node_modules/coffee-script/bin/coffee -c ./spec/*.coffee",
+  "after_tests": "rm spec/*.js",
+  "src_files": [
+    "./src/fluent.js",
+    "./spec/*.coffee"
+  ],
+  "serve_files": [
+    "./src/fluent.js",
+    "./spec/*.js"
+  ],
+  "launch_in_dev": ["PhantomJS"]
 }

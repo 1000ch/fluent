@@ -1,7 +1,8 @@
 {
   "framework": "/lib/mocha/mocha.js",
   "dev_dependencies": [
-    "lib/chai/chai.js"
+    "lib/chai/chai.js",
+    "lib/sinon/index.js"
   ],
   "test_page": "./spec/runner.mustache",
   "before_tests": "./node_modules/coffee-script/bin/coffee -c ./spec/*.coffee",

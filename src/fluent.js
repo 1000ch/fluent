@@ -677,7 +677,7 @@ function __delegate(targetList, type, selector, eventHandler) {
 function __undelegate(targetList, type, selector, eventHandler) {
 	var array, index;
 	arrayForEach.call(targetList, function(target) {
-		if(target.closureList && target.closureList.hasOwnProperty(type)) {
+		if(target.closureList) {
 			if(type && selector && eventHandler) {
 				array = target.closureList[type];
 				index = searchIndex(array, EVENT_HANDLER, eventHandler);
@@ -698,6 +698,15 @@ function __undelegate(targetList, type, selector, eventHandler) {
 					target.removeEventListener(type, item[CLOSURE]);
 				});
 				delete target.closureList[type];
+			} else {
+				var typeArray = Object.keys(target.closureList);
+				for(var i = 0, len = typeArray.length;i < len;i++) {
+					var itemList = target.closureList[typeArray[i]];
+					arrayForEach.call(itemList, function(item) {
+						target.removeEventListener(typeArray[i], item[CLOSURE]);
+					});
+					delete target.closureList[typeArray[i]];
+				}
 			}
 		}
 	});

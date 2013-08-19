@@ -85,90 +85,70 @@ This supports following functions.
 
 ### Manipulation
 
-    [FluentObject].html(value);
+#### html(value)
+
+    $(".className").html("<div>12345</div>");
     //set value to innerHTML property
-    
-    [FluentObject].text(value);
+
+#### text(value)
+
+    $("li").text("setText");
     //set value to textContent property
-    
-    [FluentObject].val(value);
+
+#### val(value)
+
+    $("input").val("value");
     //set value to value property
-    
-    [FluentObject].attr(key, value);
+
+#### attr(key, value)
+
+    $("img").attr("src", "http://.../hoge.png");
     //set value to attribute
-    
-    [FluentObject].data(key, value);
+
+#### data(data, value)
+
+    $("span").data("tmp", "keepvalue");
     //set value to dataset
-    
-    [FluentObject].css(key, value);
+
+#### css(key, value)
+
+    $("div").css("color", "red");
     //set value to key of style structure
-    
-    [FluentObject].addClass(value);
+
+#### addClass(value)
+
+    $(".testClass").addClass("addClass");
     //add class to elements
-    
-    [FluentObject].removeClass(value);
+
+#### removeClass(value)
+
+    $(".testClass").removeClass("removeClass");
     //remove class from elements
-    
-    [FluentObject].toggleClass(value);
+
+#### toggleClass(value)
+
+    $(".testClass").toggleClass("toggleClass");
     //toggle class of elements
-    
-    [FluentObject].show()
-    //show elements
-    
-    [FluentObject].append();
+
+#### append()
+
+    $("#container").append(elements);
     //append element
-    
-    [FluentObject].prepend();
+
+#### prepend()
+
+    $("#container").prepend(elements);
     //insert element
-    
-    [FluentObject].hide()
+
+#### show()
+
+    $(".testClass").show();
+    //show elements
+
+#### hide()
+
+    $(".testClass").hide();
     //hide elements
-
----
-
-### Animation
-
-    [FluentObject].delay(value);
-    //set delay of animation
-    
-    [FluentObject].duration(value);
-    //set duration of animation
-    
-    [FluentObject].ease(value);
-    //set ease type of animation
-    
-    [FluentObject].skew(x, y);
-    //add skew property for animation
-    
-    [FluentObject].skewX(x);
-    //add skewX property for animation
-    
-    [FluentObject].skewY(y);
-    //add skewY property for animation
-    
-    [FluentObject].translate(x, y);
-    //add translate property for animation
-    
-    [FluentObject].translateX(x);
-    //add translateX property for animation
-    
-    [FluentObject].translateY(y);
-    //add translateY property for animation
-    
-    [FluentObject].scale(x, y);
-    //add scale property for animation
-    
-    [FluentObject].scaleX(x);
-    //add scaleX property for animation
-    
-    [FluentObject].scaleY(y);
-    //add scaleY property for animation
-    
-    [FluentObject].rotate(n);
-    //add rotate property for animation
-    
-    [FluentObject].animate();
-    //execute animation basis of stacked properties
 
 ---
 

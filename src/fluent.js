@@ -19,6 +19,7 @@ var emptyArray = [],
 //cache reference
 var toString = emptyObject.toString,
 	arrayForEach = emptyArray.forEach,
+	arrayMap = emptyArray.map,
 	arraySlice = emptyArray.slice,
 	arraySplice = emptyArray.splice,
 	arrayIndexOf = emptyArray.indexOf,
@@ -222,6 +223,18 @@ function __each(target, callback) {
 	}
 	return target;
 }
+
+/**
+ *
+ * @param {Array} array
+ * @param {String} key
+ * @return {Array}
+ */
+function __pluck(array, key) {
+	return arrayMap.call(array, function(value) {
+		return value[key];
+	})
+}
 /**
  * copy object
  * @param {Object} target
@@ -295,7 +308,7 @@ function __fill(target, src) {
  * @param {Object} data
  * @return {String}
  */
-function serialize(data) {
+function __serialize(data) {
 	var ret = [], key, value;
 	for(key in data) {
 		if(data.hasOwnProperty(key)) {
@@ -305,11 +318,11 @@ function serialize(data) {
 	return ret.join("&").replace("%20", "+");
 }
 /**
- * deserialize query string
+ * deserialize from query string
  * @param {String} data
  * @return {Object}
  */
-function deserialize(data) {
+function __deserialize(data) {
 	var ret = {}, query = "";
 	if(data) {
 		query = data;
@@ -335,7 +348,7 @@ function deserialize(data) {
  * @param {Object} replacement
  * @return {String}
  */
-function stringFormat(str, replacement) {
+function __stringFormat(str, replacement) {
 	if (typeof replacement != "object") {
 		replacement = arraySlice.call(arguments);
 	}
@@ -348,7 +361,7 @@ function stringFormat(str, replacement) {
  * @param {String} str
  * @return {String}
  */
-function camelize(str) {
+function __camelize(str) {
 	return str.replace(/-+(.)?/g, function(match, character){
 		return character ? character.toUpperCase() : "";
 	});
@@ -358,7 +371,7 @@ function camelize(str) {
  * @param {String} str
  * @return {String}
  */
-function dasherize(str) {
+function __dasherize(str) {
 	return str.replace(/::/g, '/')
 		.replace(/([A-Z]+)([A-Z][a-z])/g, '$1_$2')
 		.replace(/([a-z\d])([A-Z])/g, '$1_$2')
@@ -372,7 +385,7 @@ function dasherize(str) {
  * @param {String} async
  * @param {String} defer
  */
-function loadScript(path, callback, async, defer) {
+function __loadScript(path, callback, async, defer) {
 	var script = createElement("script", {
 		src: path,
 		charset: "utf-8",
@@ -602,22 +615,6 @@ function __once(targetList, type, eventHandler, useCapture) {
 	});
 }
 /**
- * search index
- * @param {Array} array
- * @param {String} propertyName
- * @param {Object} compareData
- */
-function searchIndex(array, propertyName, compareData) {
-	var data;
-	for(var i = 0, len = array.length;i < len;i++) {
-		data = array[i];
-		if(data[propertyName] == compareData) {
-			return i;
-		}
-	}
-	return -1;
-}
-/**
  * create callback closure
  * @param {HTMLElement} parent
  * @param {String} selector
@@ -635,33 +632,30 @@ function __createDelegateClosure(parent, selector, eventHandler) {
 	return closure;
 }
 
-//constant
-var CLOSURE = "closure";
-var EVENT_HANDLER = "eventHandler";
-var SELECTOR = "selector";
-
 /**
  * delegate
  * @param {Array} targetList
  * @param {String} type
  * @param {String} selector
- * @param {Function} eventHandler
+ * @param {Function} callback
  */
-function __delegate(targetList, type, selector, eventHandler) {
+function __delegate(targetList, type, selector, callback) {
 	var closure = null;
+	var closures = null;
 	arrayForEach.call(targetList, function(target) {
-		if(!target.closureList) {
-			target.closureList = {};
+		if(!target.eventStore) {
+			target.eventStore = {};
 		}
-		if(!target.closureList.hasOwnProperty(type)) {
-			target.closureList[type] = [];
+		if(!target.eventStore.hasOwnProperty(type)) {
+			target.eventStore[type] = [];
 		}
-		closure = __createDelegateClosure(target, selector, eventHandler);
-		if(searchIndex(target.closureList[type], CLOSURE, closure) < 0) {
-			target.closureList[type].push({
-				selector: selector,
-				eventHandler: eventHandler,
-				closure: closure
+		closure = __createDelegateClosure(target, selector, callback);
+		closures = __pluck(target.eventStore[type], "closure");
+		if(closures.indexOf(closure) === -1) {
+			target.eventStore[type].push({
+				"selector": selector,
+				"callback": callback,
+				"closure": closure
 			});
 		}
 		target.addEventListener(type, closure);
@@ -671,42 +665,44 @@ function __delegate(targetList, type, selector, eventHandler) {
 /**
  * undelegate
  * @param {Array} targetList
- * @param {String} type
+ * @param {String*} type
  * @param {String*} selector
- * @param {Function*} eventHandler
+ * @param {Function*} callback
  */
-function __undelegate(targetList, type, selector, eventHandler) {
-	var array, index;
+function __undelegate(targetList, type, selector, callback) {
+	var storedData, callbacks, selectors, index;
 	arrayForEach.call(targetList, function(target) {
-		if(target.closureList) {
-			if(type && selector && eventHandler) {
-				array = target.closureList[type];
-				index = searchIndex(array, EVENT_HANDLER, eventHandler);
+		if(target.eventStore) {
+			if(type && selector && callback) {
+				storedData = target.eventStore[type];
+				callbacks = __pluck(storedData, "callback");
+				index = callbacks.indexOf(callback);
 				if(index > -1) {
-					target.removeEventListener(type, array[index][CLOSURE]);
-					target.closureList[type].splice(index, 1);
+					target.removeEventListener(type, storedData[index].closure);
+					target.eventStore[type].splice(index, 1);
 				}
-			} else if(type && selector && !eventHandler) {
-				array = target.closureList[type];
-				index = searchIndex(array, SELECTOR, selector);
+			} else if(type && selector && !callback) {
+				storedData = target.eventStore[type];
+				selectors = __pluck(storedData, "selector");
+				index = selectors.indexOf(selector);
 				if(index > -1) {
-					target.removeEventListener(type, array[index][CLOSURE]);
-					target.closureList[type].splice(index, 1);
+					target.removeEventListener(type, storedData[index].closure);
+					target.eventStore[type].splice(index, 1);
 				}
-			} else if(type && !selector && !eventHandler) {
-				var itemList = target.closureList[type];
-				arrayForEach.call(itemList, function(item) {
-					target.removeEventListener(type, item[CLOSURE]);
+			} else if(type && !selector && !callback) {
+				storedData = target.eventStore[type];
+				arrayForEach.call(storedData, function(item) {
+					target.removeEventListener(type, item.closure);
 				});
-				delete target.closureList[type];
+				delete target.eventStore[type];
 			} else {
-				var typeArray = Object.keys(target.closureList);
+				var typeArray = Object.keys(target.eventStore);
 				for(var i = 0, len = typeArray.length;i < len;i++) {
-					var itemList = target.closureList[typeArray[i]];
-					arrayForEach.call(itemList, function(item) {
-						target.removeEventListener(typeArray[i], item[CLOSURE]);
+					storedData = target.eventStore[typeArray[i]];
+					arrayForEach.call(storedData, function(item) {
+						target.removeEventListener(typeArray[i], item.closure);
 					});
-					delete target.closureList[typeArray[i]];
+					delete target.eventStore[typeArray[i]];
 				}
 			}
 		}
@@ -967,7 +963,7 @@ var _FluentManipulation = {
 	 * @return {Fluent}
 	 */
 	data: function(key, value) {
-		var datasetAttr = camelize("data-" + key);
+		var datasetAttr = __camelize("data-" + key);
 		return this.each(function(element, index) {
 			element.dataset[datasetAttr] = value;
 		});
@@ -1103,14 +1099,14 @@ Fluent.removeClass = __removeClass;
 Fluent.toggleClass = __toggleClass;
 Fluent.hasClass = __hasClass;
 
-Fluent.serialize = serialize;
-Fluent.deserialize = deserialize;
-Fluent.loadScript = loadScript;
+Fluent.serialize = __serialize;
+Fluent.deserialize = __deserialize;
+Fluent.loadScript = __loadScript;
 Fluent.is = is;
 Fluent.has = has;
-Fluent.camelize = camelize;
-Fluent.dasherize = dasherize;
-Fluent.format = stringFormat;
+Fluent.camelize = __camelize;
+Fluent.dasherize = __dasherize;
+Fluent.format = __stringFormat;
 Fluent.escapeHTML = __escapeHTML;
 Fluent.unescapeHTML = __unescapeHTML;
 

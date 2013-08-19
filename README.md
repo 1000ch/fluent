@@ -9,13 +9,15 @@ This supports following functions.
 
 ### Core
 
+#### Constructor
+
     $([selector][, context])
-    
-    [FluentObject].each(function(element, index) {
+
+#### each(callback)
+
+    $("div").each(function(element, index) {
     	//any process
     });
-    
-    var domArray = [FluentObject].toArray();
 
 ---
 
@@ -60,14 +62,24 @@ This supports following functions.
 
 ### Traversing
 
-    [FluentObject].filter(callback);
+#### filter(callback)
+
+    var filtered = $("article").filter(function() {
+        return element.classList.contains("hoge");
+    });
     //filter elements with callback function
-    
-    [FluentObject].map(callback);
+
+#### map(callback)
+
+    var mapped = $("section").map(function(element) {
+        return element.classList.add("hoge")
+    });
     //execute callback to elements,
     //and return affected elements as Fluent object
-    
-    var foundElements = [FluentObject].find("selector");
+
+#### find(selector)
+
+    var foundElements = $("body").find(".className");
 
 ---
 

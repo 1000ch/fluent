@@ -10,10 +10,10 @@ describe "Fluent Instance", ->
       expect(Fluent.prototype.initialize(document).length).to.equal 1
 
     it "can initialize without arguments", ->
-      expect($().length).to.equal new Fluent().length
+      expect($().length).to.equal Fluent().length
 
     it "can initialize by id selector", ->
-      expect($("#id3")[0]).to.equal document.getElementById("id3")
+      expect($("#id3")[0]).to.equal document.getElementById "id3"
 
     it "can initialize by class selector", ->
       expect($(".class2").length).to.equal document.getElementsByClassName("class2").length

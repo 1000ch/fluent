@@ -3,6 +3,7 @@ expect = chai.expect
 describe "Fluent Event", ->
 
   describe "#bind", ->
+
     it "bind function", ->
       spy = sinon.spy()
       $element = $("#id3")
@@ -13,6 +14,7 @@ describe "Fluent Event", ->
       expect(spy.callCount).to.equal 2
 
   describe "#unbind", ->
+
     it "unbind function", ->
       spy = sinon.spy()
       $element = $("#id3")
@@ -27,6 +29,7 @@ describe "Fluent Event", ->
       expect(spy.callCount).to.equal 2
 
   describe "#once", ->
+
     it "bind function which will called once", ->
       spy = sinon.spy()
       $element = $("#id3")
@@ -50,8 +53,14 @@ describe "Fluent Event", ->
     afterEach ->
       $element.undelegate()
 
-    it "delegate function", ->
+    it "delegate function 1", ->
       $element.delegate "click", "button", spy
+      element.click()
+      element.click()
+      expect(spy.callCount).to.equal 2
+
+    it "delegate function 2", ->
+      $element.delegate "click", ".class1", spy
       element.click()
       element.click()
       expect(spy.callCount).to.equal 2

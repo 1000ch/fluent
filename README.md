@@ -9,8 +9,6 @@ This supports following functions.
 
 ### Core
 
-#### Base
-
     $([selector][, context])
     
     [FluentObject].each(function(element, index) {
@@ -19,21 +17,46 @@ This supports following functions.
     
     var domArray = [FluentObject].toArray();
 
+---
+
 ### Event
 
-    [FluentObject].bind(type, callback);
+#### bind(type, callback)
+
+    var clickCallback = function(e) {
+        console.log(e);
+    };
+    $("#id").bind("click", clickCallback);
     //bind event to element
-    
-    [FluentObject].unbind(type, callback);
+
+#### unbind(type, callback)
+
+    var clickCallback = function(e) {
+        console.log(e);
+    };
+    $(".class").unbind("click", clickCallback);
     //unbind event from element
-    
-    [FluentObject].delegate(type, selector, callback);
+
+
+#### delegate(type, selector, callback)
+
+    var touchstartCallback = function(e) {
+        console.log(e);
+    }
+    $("#parentId").delegate("touchstart", ".childClass", touchstartCallback);
     //start to delegate event
     //elements will be searched by selector and fired 
     //in context which Fluent object contains
-    
-    [FluentObject].undelegate(type, selector, callback);
+
+#### undelegate(type, selector, callback)
+
+    var touchendCallback = function(e) {
+        console.log(e);
+    };
+    $(".parentClass").undelegate("touchend", ".childClass", touchendCallback);
     //end to delegate event
+
+---
 
 ### Traversing
 
@@ -44,11 +67,9 @@ This supports following functions.
     //execute callback to elements,
     //and return affected elements as Fluent object
     
-    var uniqueElements = [FluentObject].unique();
-    
-    var childElements = [FluentObject].children();
-
     var foundElements = [FluentObject].find("selector");
+
+---
 
 ### Manipulation
 
@@ -90,6 +111,8 @@ This supports following functions.
     
     [FluentObject].hide()
     //hide elements
+
+---
 
 ### Animation
 
@@ -134,6 +157,8 @@ This supports following functions.
     
     [FluentObject].animate();
     //execute animation basis of stacked properties
+
+---
 
 others are to be announced...
 

@@ -6,7 +6,10 @@
  **/
 (function(window, undefined) {
 "use strict";
-var win = window, doc = window.document, loc = window.location;
+var win = window,
+	doc = window.document,
+	docElem = doc.documentElement,
+	loc = window.location;
 
 //cache empty structure
 var emptyArray = [],
@@ -72,22 +75,13 @@ var rxConciseSelector = /^(?:#([\w\-]+)|(\w+)|\.([\w\-]+))$/,//filter #id, tagNa
 	rxTagSelector = /^[\w\-]+$/,
 	rxReady = /complete|loaded|interactive/;
 
-var qs = "querySelector", 
-	qsa = "querySelectorAll",
-	_encode = encodeURIComponent,
-	_decode = decodeURIComponent;
-
 //detect matchesSelector
-var matches = "matchesSelector";
-if(emptyElement.webkitMatchesSelector) {
-	matches = "webkitMatchesSelector";
-} else if(emptyElement.mozMatchesSelector) {
-	matches = "mozMatchesSelector";
-} else if(emptyElement.msMatchesSelector) {
-	matches = "msMatchesSelector";
-} else if(emptyElement.oMatchesSelector) {
-	matches = "oMatchesSelector";
-}
+var matches = docElem.matchesSelector ||
+	docElem.webkitMatchesSelector ||
+	docElem.mozMatchesSelector ||
+	docElem.msMatchesSelector ||
+	docElem.oMatchesSelector;
+
 /**
  * value has key or not.
  * @param {String} key
@@ -242,6 +236,13 @@ function __copy(target) {
 	});
 	return buffer;
 }
+
+/**
+ * define function
+ * @param {Object} properties
+ * @param {Function} superClass
+ * @returns {Function}
+ */
 function __defineClass(properties, superClass) {
 	var Constructor = properties.hasOwnProperty("constructor") ? properties.constructor : function() {};
 	var Class = function() {};
@@ -298,7 +299,7 @@ function serialize(data) {
 	var ret = [], key, value;
 	for(key in data) {
 		if(data.hasOwnProperty(key)) {
-			ret.push(_encode(key) + "=" + _encode(value));
+			ret.push(encodeURIComponent(key) + "=" + encodeURIComponent(value));
 		}
 	}
 	return ret.join("&").replace("%20", "+");
@@ -323,7 +324,7 @@ function deserialize(data) {
 	for(var i = 0, len = array.length;i < len;i++) {
 		buffer = array[i].split("=");
 		if(buffer.length == 2) {
-			ret[_decode(buffer[0])] = _decode(buffer[1]);
+			ret[decodeURIComponent(buffer[0])] = decodeURIComponent(buffer[1]);
 		}
 	}
 	return ret;
@@ -387,7 +388,7 @@ function loadScript(path, callback, async, defer) {
 		}
 	};
 
-	doc[qs]("head").appendChild(script);
+	doc.querySelector("head").appendChild(script);
 }
 /**
  * escape html string
@@ -490,7 +491,7 @@ function qsaHook(selector, context) {
 		}
 	}
 
-	return context[qsa](selector);
+	return context.querySelectorAll(selector);
 }
 /**
  * merge array or object (like an array) into array
@@ -792,40 +793,18 @@ var _FluentTraversing = {
 		return new Fluent(array);
 	},
 	/**
-	 * get unique elements
+	 * find elements which matches selector
+	 * @param {String} selector
 	 * @return {Fluent}
-	 */
-	unique: function() {
-		var array = this.toArray();
-		return new Fluent(arrayFilter.call(array, function(item, index){
-			return array.indexOf(item) == index;
-		}));
-	},
-	/**
-	 * get all children
-	 * @return {Fluent}
-	 */
-	children: function() {
-		var array = [];
-		for(var i = 0, len = this.length;i < len;i++) {
-			if(this[i].firstChild) {
-				var childNodes = this[i].childNodes;
-				for(var j = 0, nodeLen = childNodes.length;j < nodeLen;j++) {
-					array.push(childNodes[j]);
-				}
-			}
-		}
-		return new Fluent(array);
-	},
-	/**
-	 * @return {String} selector
 	 */
 	find: function(selector) {
 		var array = [];
 		for(var i = 0, len = this.length;i < len;i++) {
-			mergeArray(array, qsaHook(selector, this[i]));
+			if(matches.call(this[i], selector)) {
+				mergeArray(array, this[i]);
+			}
 		}
-		return new Fluent(array);
+		return Fluent(array);
 	}
 };
 /**

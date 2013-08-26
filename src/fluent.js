@@ -143,7 +143,9 @@
          * @return {Fluent}
          */
         bind: function(type, eventHandler, useCapture) {
-            __bind(this, type, eventHandler, useCapture);
+            return this.each(function(element, index) {
+                element.addEventListener(type, eventHandler, useCapture);
+            });
             return this;
         },
         /**
@@ -154,8 +156,9 @@
          * @return {Fluent}
          */
         unbind: function(type, eventHandler, useCapture) {
-            __unbind(this, type, eventHandler, useCapture);
-            return this;
+            return this.each(function(element, index) {
+                element.removeEventListener(type, eventHandler, useCapture);
+            });
         },
         /**
          * bind event once
@@ -165,7 +168,9 @@
          * @return {Fluent}
          */
         once: function(type, eventHandler, useCapture) {
-            __once(this, type, eventHandler, useCapture);
+            this.each(function(element, index) {
+                __once(element, type, eventHandler, useCapture);
+            });
             return this;
         },
         /**
@@ -175,8 +180,9 @@
          * @return {Fluent}
          */
         delegate: function(type, selector, eventHandler) {
-            __delegate(this, type, selector, eventHandler);
-            return this;
+            return this.each(function(element, index) {
+                __delegate(element, type, selector, eventHandler);
+            });
         },
         /**
          * finish propagation event
@@ -185,8 +191,9 @@
          * @return {Fluent}
          */
         undelegate: function(type, selector, eventHandler) {
-            __undelegate(this, type, selector, eventHandler);
-            return this;
+            return this.each(function(element, index) {
+                __undelegate(element, type, selector, eventHandler);
+            });
         }
     };
 
@@ -856,60 +863,32 @@
     }
 
     /**
-     * bind
-     * @param {Array} targetList
-     * @param {String} type
-     * @param {Function} eventHandler
-     * @param {Boolean} useCapture
-     */
-    function __bind(targetList, type, eventHandler, useCapture) {
-        arrayForEach.call(targetList, function(target) {
-            target.addEventListener(type, eventHandler, useCapture);
-        });
-    }
-
-    /**
-     * unbind
-     * @param {Array} targetList
-     * @param {String} type
-     * @param {Function} eventHandler
-     * @param {Boolean} useCapture
-     */
-    function __unbind(targetList, type, eventHandler, useCapture) {
-        arrayForEach.call(targetList, function(target) {
-            target.removeEventListener(type, eventHandler, useCapture);
-        });
-    }
-
-    /**
      * once
-     * @param {Array} targetList
+     * @param {HTMLElement} targetNode
      * @param {String} type
-     * @param {Function} eventHandler
+     * @param {Function} callback
      * @param {Boolean} useCapture
      */
-    function __once(targetList, type, eventHandler, useCapture) {
-        arrayForEach.call(targetList, function(target) {
-            var wrapOnce = function(e) {
-                eventHandler.call(target, e);
-                target.removeEventListener(type, wrapOnce, useCapture);
-            };
-            target.addEventListener(type, wrapOnce, useCapture);
-        });
+    function __once(targetNode, type, callback, useCapture) {
+        var wrapOnce = function(e) {
+            callback.call(targetNode, e);
+            targetNode.removeEventListener(type, wrapOnce, useCapture);
+        };
+        targetNode.addEventListener(type, wrapOnce, useCapture);
     }
 
     /**
      * create callback closure
-     * @param {HTMLElement} parent
+     * @param {HTMLElement} parentNode
      * @param {String} selector
-     * @param {Function} eventHandler
+     * @param {Function} callback
      */
-    function __createDelegateClosure(parent, selector, eventHandler) {
+    function __createDelegateClosure(parentNode, selector, callback) {
         var closure = function(e) {
-            var children = __qsaHook(selector, parent);
+            var children = __qsaHook(selector, parentNode);
             arrayForEach.call(children, function(child) {
                 if(child.compareDocumentPosition(e.target) === 0) {
-                    eventHandler.call(child, e);
+                    callback.call(child, e);
                 }
             });
         };
@@ -918,78 +897,72 @@
 
     /**
      * delegate
-     * @param {Array} targetList
+     * @param {HTMLElement} targetNode
      * @param {String} type
      * @param {String} selector
      * @param {Function} callback
      */
-    function __delegate(targetList, type, selector, callback) {
-        var closure = null;
-        var closures = null;
-        arrayForEach.call(targetList, function(target) {
-            if(!target.eventStore) {
-                target.eventStore = {};
-            }
-            if(!target.eventStore.hasOwnProperty(type)) {
-                target.eventStore[type] = [];
-            }
-            closure = __createDelegateClosure(target, selector, callback);
-            closures = __pluck(target.eventStore[type], "closure");
-            if(closures.indexOf(closure) === -1) {
-                target.eventStore[type].push({
-                    "selector": selector,
-                    "callback": callback,
-                    "closure": closure
-                });
-            }
-            target.addEventListener(type, closure);
-        });
+    function __delegate(targetNode, type, selector, callback) {
+        if(!targetNode.eventStore) {
+            targetNode.eventStore = {};
+        }
+        if(!targetNode.eventStore.hasOwnProperty(type)) {
+            targetNode.eventStore[type] = [];
+        }
+        var closure = __createDelegateClosure(targetNode, selector, callback);
+        var closures = __pluck(targetNode.eventStore[type], "closure");
+        if(closures.indexOf(closure) === -1) {
+            targetNode.eventStore[type].push({
+                "selector": selector,
+                "callback": callback,
+                "closure": closure
+            });
+        }
+        targetNode.addEventListener(type, closure);
     }
 
     /**
      * undelegate
-     * @param {Array} targetList
+     * @param {HTMLElement} targetNode
      * @param {String*} type
      * @param {String*} selector
      * @param {Function*} callback
      */
-    function __undelegate(targetList, type, selector, callback) {
+    function __undelegate(targetNode, type, selector, callback) {
         var storedData, callbacks, selectors, index;
-        arrayForEach.call(targetList, function(target) {
-            if(target.eventStore) {
-                if(type && selector && callback) {
-                    storedData = target.eventStore[type];
-                    callbacks = __pluck(storedData, "callback");
-                    index = callbacks.indexOf(callback);
-                    if(index > -1) {
-                        target.removeEventListener(type, storedData[index].closure);
-                        target.eventStore[type].splice(index, 1);
-                    }
-                } else if(type && selector && !callback) {
-                    storedData = target.eventStore[type];
-                    selectors = __pluck(storedData, "selector");
-                    index = selectors.indexOf(selector);
-                    if(index > -1) {
-                        target.removeEventListener(type, storedData[index].closure);
-                        target.eventStore[type].splice(index, 1);
-                    }
-                } else if(type && !selector && !callback) {
-                    storedData = target.eventStore[type];
-                    arrayForEach.call(storedData, function(item) {
-                        target.removeEventListener(type, item.closure);
-                    });
-                    delete target.eventStore[type];
-                } else {
-                    Object.keys(target.eventStore).forEach(function(key) {
-                        storedData = target.eventStore[key];
-                        arrayForEach.call(storedData, function(item) {
-                            target.removeEventListener(key, item.closure);
-                        });
-                        delete target.eventStore[key];
-                    });
+        if(targetNode.eventStore) {
+            if(type && selector && callback) {
+                storedData = targetNode.eventStore[type];
+                callbacks = __pluck(storedData, "callback");
+                index = callbacks.indexOf(callback);
+                if(index > -1) {
+                    targetNode.removeEventListener(type, storedData[index].closure);
+                    targetNode.eventStore[type].splice(index, 1);
                 }
+            } else if(type && selector && !callback) {
+                storedData = targetNode.eventStore[type];
+                selectors = __pluck(storedData, "selector");
+                index = selectors.indexOf(selector);
+                if(index > -1) {
+                    targetNode.removeEventListener(type, storedData[index].closure);
+                    targetNode.eventStore[type].splice(index, 1);
+                }
+            } else if(type && !selector && !callback) {
+                storedData = targetNode.eventStore[type];
+                arrayForEach.call(storedData, function(item) {
+                    targetNode.removeEventListener(type, item.closure);
+                });
+                delete targetNode.eventStore[type];
+            } else {
+                Object.keys(targetNode.eventStore).forEach(function(key) {
+                    storedData = targetNode.eventStore[key];
+                    arrayForEach.call(storedData, function(item) {
+                        targetNode.removeEventListener(key, item.closure);
+                    });
+                    delete targetNode.eventStore[key];
+                });
             }
-        });
+        }
     }
 
     /**
@@ -999,7 +972,7 @@
      */
     function __addClass(targetNode, value) {
         var classList = (value + "").split(" ");
-        var newClass = "", oldClass = targetNode.className + "";
+        var oldClass = targetNode.className + "";
         var arrayBuffer = oldClass.split(" ");
         var valueIndex = -1;
         for(var i = 0, len = classList.length;i < len;i++) {
@@ -1008,7 +981,7 @@
                 arrayBuffer.push(classList[i]);
             }
         }
-        newClass = arrayBuffer.join(" ");
+        var newClass = arrayBuffer.join(" ");
         if(newClass != oldClass) {
             //if className is updated
             targetNode.className = newClass;
@@ -1022,7 +995,7 @@
      */
     function __removeClass(targetNode, value) {
         var classList = (value + "").split(" ");
-        var newClass = "", oldClass = targetNode.className + "";
+        var oldClass = targetNode.className + "";
         var arrayBuffer = oldClass.split(" ");
         var valueIndex = -1;
         for(var i = 0, len = classList.length;i < len;i++) {
@@ -1031,7 +1004,7 @@
                 arrayBuffer.splice(valueIndex, 1);
             }
         }
-        newClass = arrayBuffer.join(" ");
+        var newClass = arrayBuffer.join(" ");
         if(newClass != oldClass) {
             //if className is updated
             targetNode.className = newClass;
@@ -1045,7 +1018,7 @@
      */
     function __toggleClass(targetNode, value) {
         var classList = (value + "").split(" ");
-        var newClass = "", oldClass = targetNode.className + "";
+        var oldClass = targetNode.className + "";
         var arrayBuffer = oldClass.split(" ");
         var valueIndex = -1;
         for(var i = 0, len = classList.length;i < len;i++) {
@@ -1058,7 +1031,7 @@
                 arrayBuffer.splice(valueIndex, 1);
             }
         }
-        newClass = arrayBuffer.join(" ");
+        var newClass = arrayBuffer.join(" ");
         if(newClass != oldClass) {
             //if className is updated
             targetNode.className = newClass;
@@ -1103,8 +1076,16 @@
     __extend(Fluent.fn, _FluentManipulation);
 
     Fluent.ready = __ready;
-    Fluent.bind = __bind;
-    Fluent.unbind = __unbind;
+    Fluent.bind = function(element, type, callback, useCapture) {
+        if(element && element.addEventListener) {
+            element.addEventListener(type, callback, useCapture);
+        }
+    };
+    Fluent.unbind = function(element, type, callback, useCapture) {
+        if(element && element.removeEventListener) {
+            element.removeEventListener(type, callback, useCapture);
+        }
+    };
     Fluent.once = __once;
     Fluent.delegate = __delegate;
     Fluent.undelegate = __undelegate;

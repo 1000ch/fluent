@@ -83,7 +83,7 @@
      * @param {String|HTMLElement}
      */
     function Fluent(selector) {
-        return Fluent.prototype.initialize(selector);
+        return new Fluent.fn.initialize(selector);
     }
 
     /**
@@ -134,6 +134,8 @@
         }
     };
 
+    Fluent.fn.initialize.prototype = Fluent.fn;
+
     var _FluentEvent = {
         /**
          * bind event
@@ -158,6 +160,19 @@
         unbind: function(type, eventHandler, useCapture) {
             return this.each(function(element, index) {
                 element.removeEventListener(type, eventHandler, useCapture);
+            });
+        },
+        /**
+         * dispatch event
+         * @param {String} type
+         * @returns {Fluent}
+         */
+        trigger: function(type) {
+            return this.each(function(element, index) {
+                var event = __createEvent(type, {
+                    target: element
+                });
+                element.dispatchEvent(event);
             });
         },
         /**
@@ -196,7 +211,6 @@
             });
         }
     };
-
 
     var _FluentTraversing = {
         /**
@@ -885,7 +899,8 @@
      */
     function __createDelegateClosure(parentNode, selector, callback) {
         var closure = function(e) {
-            var children = __qsaHook(selector, parentNode);
+            var parent = parentNode;
+            var children = __qsaHook(selector, parent);
             arrayForEach.call(children, function(child) {
                 if(child.compareDocumentPosition(e.target) === 0) {
                     callback.call(child, e);

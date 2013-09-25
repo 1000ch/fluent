@@ -1,4 +1,4 @@
-# fluent.js [![Build Status](https://travis-ci.org/1000ch/fluent.png?branch=master)](https://travis-ci.org/1000ch/fluent)
+# fluent [![Build Status](https://travis-ci.org/1000ch/fluent.png?branch=master)](https://travis-ci.org/1000ch/fluent)
 
 ## About
 
@@ -11,13 +11,17 @@ This supports following functions.
 
 #### Constructor
 
-    $([selector][, context])
+```js
+$([selector][, context])
+```
 
 #### each(callback)
 
-    $("div").each(function(element, index) {
-    	//any process
-    });
+```js
+$("div").each(function(element, index) {
+    //any process
+});
+```
 
 ---
 
@@ -25,38 +29,45 @@ This supports following functions.
 
 #### bind(type, callback)
 
-    var clickCallback = function(e) {
-        console.log(e);
-    };
-    $("#id").bind("click", clickCallback);
-    //bind event to element
+```js
+var clickCallback = function(e) {
+    console.log(e);
+};
+$("#id").bind("click", clickCallback);
+//bind event to element
+```
 
 #### unbind(type, callback)
 
-    var clickCallback = function(e) {
-        console.log(e);
-    };
-    $(".class").unbind("click", clickCallback);
-    //unbind event from element
-
+```js
+var clickCallback = function(e) {
+    console.log(e);
+};
+$(".class").unbind("click", clickCallback);
+//unbind event from element
+```
 
 #### delegate(type, selector, callback)
 
-    var touchstartCallback = function(e) {
-        console.log(e);
-    }
-    $("#parentId").delegate("touchstart", ".childClass", touchstartCallback);
-    //start to delegate event
-    //elements will be searched by selector and fired 
-    //in context which Fluent object contains
+```js
+var touchstartCallback = function(e) {
+    console.log(e);
+}
+$("#parentId").delegate("touchstart", ".childClass", touchstartCallback);
+//start to delegate event
+//elements will be searched by selector and fired 
+//in context which Fluent object contains
+```
 
 #### undelegate(type, selector, callback)
 
-    var touchendCallback = function(e) {
-        console.log(e);
-    };
-    $(".parentClass").undelegate("touchend", ".childClass", touchendCallback);
-    //end to delegate event
+```js
+var touchendCallback = function(e) {
+    console.log(e);
+};
+$(".parentClass").undelegate("touchend", ".childClass", touchendCallback);
+//end to delegate event
+```
 
 ---
 
@@ -64,22 +75,28 @@ This supports following functions.
 
 #### filter(callback)
 
-    var filtered = $("article").filter(function() {
-        return element.classList.contains("hoge");
-    });
-    //filter elements with callback function
+```js
+var filtered = $("article").filter(function() {
+    return element.classList.contains("hoge");
+});
+//filter elements with callback function
+```
 
 #### map(callback)
 
-    var mapped = $("section").map(function(element) {
-        return element.classList.add("hoge")
-    });
-    //execute callback to elements,
-    //and return affected elements as Fluent object
+```js
+var mapped = $("section").map(function(element) {
+    return element.classList.add("hoge")
+});
+//execute callback to elements,
+//and return affected elements as Fluent object
+```
 
 #### find(selector)
 
-    var foundElements = $("body").find(".className");
+```js
+var foundElements = $("body").find(".className");
+```
 
 ---
 
@@ -87,68 +104,94 @@ This supports following functions.
 
 #### html(value)
 
-    $(".className").html("<div>12345</div>");
-    //set value to innerHTML property
+```js
+$(".className").html("<div>12345</div>");
+//set value to innerHTML property
+```
 
 #### text(value)
 
-    $("li").text("setText");
-    //set value to textContent property
+```js
+$("li").text("setText");
+//set value to textContent property
+```
 
 #### val(value)
 
-    $("input").val("value");
-    //set value to value property
+```js
+$("input").val("value");
+//set value to value property
+```
 
 #### attr(key, value)
 
-    $("img").attr("src", "http://.../hoge.png");
-    //set value to attribute
+```js
+$("img").attr("src", "http://.../hoge.png");
+//set value to attribute
+```
 
 #### data(data, value)
 
-    $("span").data("tmp", "keepvalue");
-    //set value to dataset
+```js
+$("span").data("tmp", "keepvalue");
+//set value to dataset
+```
 
 #### css(key, value)
 
-    $("div").css("color", "red");
-    //set value to key of style structure
+```js
+$("div").css("color", "red");
+//set value to key of style structure
+```
 
 #### addClass(value)
 
-    $(".testClass").addClass("addClass");
-    //add class to elements
+```js
+$(".testClass").addClass("addClass");
+//add class to elements
+```
 
 #### removeClass(value)
 
-    $(".testClass").removeClass("removeClass");
-    //remove class from elements
+```js
+$(".testClass").removeClass("removeClass");
+//remove class from elements
+```
 
 #### toggleClass(value)
 
-    $(".testClass").toggleClass("toggleClass");
-    //toggle class of elements
+```js
+$(".testClass").toggleClass("toggleClass");
+//toggle class of elements
+```
 
 #### append()
 
-    $("#container").append(elements);
-    //append element
+```js
+$("#container").append(elements);
+//append element
+```
 
 #### prepend()
 
-    $("#container").prepend(elements);
-    //insert element
+```js
+$("#container").prepend(elements);
+//insert element
+```
 
 #### show()
 
-    $(".testClass").show();
-    //show elements
+```js
+$(".testClass").show();
+//show elements
+```
 
 #### hide()
 
-    $(".testClass").hide();
-    //hide elements
+```js
+$(".testClass").hide();
+//hide elements
+```
 
 ---
 

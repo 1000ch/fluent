@@ -1,35 +1,35 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
   <head>
-    <meta charset="utf-8">
+    <meta charset='utf-8'>
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>Fluent by 1000ch</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
 
-    <link rel="stylesheet" href="stylesheets/styles.css">
-    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
     <!--[if lt IE 9]>
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
+
+    <title>Fluent by 1000ch</title>
   </head>
+
   <body>
-    <div class="wrapper">
-      <header>
+    <header>
+      <div class="inner">
         <h1>Fluent</h1>
-        <p>Lightweight DOM llibrary.</p>
+        <h2>Lightweight DOM llibrary.</h2>
+        <a href="https://github.com/1000ch/fluent" class="button"><small>View project on</small>GitHub</a>
+      </div>
+    </header>
 
-        <p class="view"><a href="https://github.com/1000ch/fluent">View the Project on GitHub <small>1000ch/fluent</small></a></p>
-
-
-        <ul>
-          <li><a href="https://github.com/1000ch/fluent/zipball/master">Download <strong>ZIP File</strong></a></li>
-          <li><a href="https://github.com/1000ch/fluent/tarball/master">Download <strong>TAR Ball</strong></a></li>
-          <li><a href="https://github.com/1000ch/fluent">View On <strong>GitHub</strong></a></li>
-        </ul>
-      </header>
-      <section>
-        <h1>
-<a name="fluentjs-" class="anchor" href="#fluentjs-"><span class="octicon octicon-link"></span></a>fluent.js <a href="https://travis-ci.org/1000ch/fluent"><img src="https://travis-ci.org/1000ch/fluent.png?branch=master" alt="Build Status"></a>
+    <div id="content-wrapper">
+      <div class="inner clearfix">
+        <section id="main-content">
+          <h1>
+<a name="fluent-" class="anchor" href="#fluent-"><span class="octicon octicon-link"></span></a>fluent <a href="https://travis-ci.org/1000ch/fluent"><img src="https://travis-ci.org/1000ch/fluent.png?branch=master" alt="Build Status"></a>
 </h1>
 
 <h2>
@@ -47,16 +47,16 @@ This supports following functions.  </p>
 <h4>
 <a name="constructor" class="anchor" href="#constructor"><span class="octicon octicon-link"></span></a>Constructor</h4>
 
-<pre><code>$([selector][, context])
-</code></pre>
+<div class="highlight highlight-js"><pre><span class="nx">$</span><span class="p">([</span><span class="nx">selector</span><span class="p">][,</span> <span class="nx">context</span><span class="p">])</span>
+</pre></div>
 
 <h4>
 <a name="eachcallback" class="anchor" href="#eachcallback"><span class="octicon octicon-link"></span></a>each(callback)</h4>
 
-<pre><code>$("div").each(function(element, index) {
-    //any process
-});
-</code></pre>
+<div class="highlight highlight-js"><pre><span class="nx">$</span><span class="p">(</span><span class="s2">"div"</span><span class="p">).</span><span class="nx">each</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">element</span><span class="p">,</span> <span class="nx">index</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">//any process</span>
+<span class="p">});</span>
+</pre></div>
 
 <hr><h3>
 <a name="event" class="anchor" href="#event"><span class="octicon octicon-link"></span></a>Event</h3>
@@ -64,44 +64,44 @@ This supports following functions.  </p>
 <h4>
 <a name="bindtype-callback" class="anchor" href="#bindtype-callback"><span class="octicon octicon-link"></span></a>bind(type, callback)</h4>
 
-<pre><code>var clickCallback = function(e) {
-    console.log(e);
-};
-$("#id").bind("click", clickCallback);
-//bind event to element
-</code></pre>
+<div class="highlight highlight-js"><pre><span class="kd">var</span> <span class="nx">clickCallback</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">e</span><span class="p">);</span>
+<span class="p">};</span>
+<span class="nx">$</span><span class="p">(</span><span class="s2">"#id"</span><span class="p">).</span><span class="nx">bind</span><span class="p">(</span><span class="s2">"click"</span><span class="p">,</span> <span class="nx">clickCallback</span><span class="p">);</span>
+<span class="c1">//bind event to element</span>
+</pre></div>
 
 <h4>
 <a name="unbindtype-callback" class="anchor" href="#unbindtype-callback"><span class="octicon octicon-link"></span></a>unbind(type, callback)</h4>
 
-<pre><code>var clickCallback = function(e) {
-    console.log(e);
-};
-$(".class").unbind("click", clickCallback);
-//unbind event from element
-</code></pre>
+<div class="highlight highlight-js"><pre><span class="kd">var</span> <span class="nx">clickCallback</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">e</span><span class="p">);</span>
+<span class="p">};</span>
+<span class="nx">$</span><span class="p">(</span><span class="s2">".class"</span><span class="p">).</span><span class="nx">unbind</span><span class="p">(</span><span class="s2">"click"</span><span class="p">,</span> <span class="nx">clickCallback</span><span class="p">);</span>
+<span class="c1">//unbind event from element</span>
+</pre></div>
 
 <h4>
 <a name="delegatetype-selector-callback" class="anchor" href="#delegatetype-selector-callback"><span class="octicon octicon-link"></span></a>delegate(type, selector, callback)</h4>
 
-<pre><code>var touchstartCallback = function(e) {
-    console.log(e);
-}
-$("#parentId").delegate("touchstart", ".childClass", touchstartCallback);
-//start to delegate event
-//elements will be searched by selector and fired 
-//in context which Fluent object contains
-</code></pre>
+<div class="highlight highlight-js"><pre><span class="kd">var</span> <span class="nx">touchstartCallback</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">e</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="nx">$</span><span class="p">(</span><span class="s2">"#parentId"</span><span class="p">).</span><span class="nx">delegate</span><span class="p">(</span><span class="s2">"touchstart"</span><span class="p">,</span> <span class="s2">".childClass"</span><span class="p">,</span> <span class="nx">touchstartCallback</span><span class="p">);</span>
+<span class="c1">//start to delegate event</span>
+<span class="c1">//elements will be searched by selector and fired </span>
+<span class="c1">//in context which Fluent object contains</span>
+</pre></div>
 
 <h4>
 <a name="undelegatetype-selector-callback" class="anchor" href="#undelegatetype-selector-callback"><span class="octicon octicon-link"></span></a>undelegate(type, selector, callback)</h4>
 
-<pre><code>var touchendCallback = function(e) {
-    console.log(e);
-};
-$(".parentClass").undelegate("touchend", ".childClass", touchendCallback);
-//end to delegate event
-</code></pre>
+<div class="highlight highlight-js"><pre><span class="kd">var</span> <span class="nx">touchendCallback</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">e</span><span class="p">);</span>
+<span class="p">};</span>
+<span class="nx">$</span><span class="p">(</span><span class="s2">".parentClass"</span><span class="p">).</span><span class="nx">undelegate</span><span class="p">(</span><span class="s2">"touchend"</span><span class="p">,</span> <span class="s2">".childClass"</span><span class="p">,</span> <span class="nx">touchendCallback</span><span class="p">);</span>
+<span class="c1">//end to delegate event</span>
+</pre></div>
 
 <hr><h3>
 <a name="traversing" class="anchor" href="#traversing"><span class="octicon octicon-link"></span></a>Traversing</h3>
@@ -109,27 +109,27 @@ $(".parentClass").undelegate("touchend", ".childClass", touchendCallback);
 <h4>
 <a name="filtercallback" class="anchor" href="#filtercallback"><span class="octicon octicon-link"></span></a>filter(callback)</h4>
 
-<pre><code>var filtered = $("article").filter(function() {
-    return element.classList.contains("hoge");
-});
-//filter elements with callback function
-</code></pre>
+<div class="highlight highlight-js"><pre><span class="kd">var</span> <span class="nx">filtered</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="s2">"article"</span><span class="p">).</span><span class="nx">filter</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">element</span><span class="p">.</span><span class="nx">classList</span><span class="p">.</span><span class="nx">contains</span><span class="p">(</span><span class="s2">"hoge"</span><span class="p">);</span>
+<span class="p">});</span>
+<span class="c1">//filter elements with callback function</span>
+</pre></div>
 
 <h4>
 <a name="mapcallback" class="anchor" href="#mapcallback"><span class="octicon octicon-link"></span></a>map(callback)</h4>
 
-<pre><code>var mapped = $("section").map(function(element) {
-    return element.classList.add("hoge")
-});
-//execute callback to elements,
-//and return affected elements as Fluent object
-</code></pre>
+<div class="highlight highlight-js"><pre><span class="kd">var</span> <span class="nx">mapped</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="s2">"section"</span><span class="p">).</span><span class="nx">map</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">element</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">element</span><span class="p">.</span><span class="nx">classList</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="s2">"hoge"</span><span class="p">)</span>
+<span class="p">});</span>
+<span class="c1">//execute callback to elements,</span>
+<span class="c1">//and return affected elements as Fluent object</span>
+</pre></div>
 
 <h4>
 <a name="findselector" class="anchor" href="#findselector"><span class="octicon octicon-link"></span></a>find(selector)</h4>
 
-<pre><code>var foundElements = $("body").find(".className");
-</code></pre>
+<div class="highlight highlight-js"><pre><span class="kd">var</span> <span class="nx">foundElements</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="s2">"body"</span><span class="p">).</span><span class="nx">find</span><span class="p">(</span><span class="s2">".className"</span><span class="p">);</span>
+</pre></div>
 
 <hr><h3>
 <a name="manipulation" class="anchor" href="#manipulation"><span class="octicon octicon-link"></span></a>Manipulation</h3>
@@ -137,93 +137,93 @@ $(".parentClass").undelegate("touchend", ".childClass", touchendCallback);
 <h4>
 <a name="htmlvalue" class="anchor" href="#htmlvalue"><span class="octicon octicon-link"></span></a>html(value)</h4>
 
-<pre><code>$(".className").html("&lt;div&gt;12345&lt;/div&gt;");
-//set value to innerHTML property
-</code></pre>
+<div class="highlight highlight-js"><pre><span class="nx">$</span><span class="p">(</span><span class="s2">".className"</span><span class="p">).</span><span class="nx">html</span><span class="p">(</span><span class="s2">"&lt;div&gt;12345&lt;/div&gt;"</span><span class="p">);</span>
+<span class="c1">//set value to innerHTML property</span>
+</pre></div>
 
 <h4>
 <a name="textvalue" class="anchor" href="#textvalue"><span class="octicon octicon-link"></span></a>text(value)</h4>
 
-<pre><code>$("li").text("setText");
-//set value to textContent property
-</code></pre>
+<div class="highlight highlight-js"><pre><span class="nx">$</span><span class="p">(</span><span class="s2">"li"</span><span class="p">).</span><span class="nx">text</span><span class="p">(</span><span class="s2">"setText"</span><span class="p">);</span>
+<span class="c1">//set value to textContent property</span>
+</pre></div>
 
 <h4>
 <a name="valvalue" class="anchor" href="#valvalue"><span class="octicon octicon-link"></span></a>val(value)</h4>
 
-<pre><code>$("input").val("value");
-//set value to value property
-</code></pre>
+<div class="highlight highlight-js"><pre><span class="nx">$</span><span class="p">(</span><span class="s2">"input"</span><span class="p">).</span><span class="nx">val</span><span class="p">(</span><span class="s2">"value"</span><span class="p">);</span>
+<span class="c1">//set value to value property</span>
+</pre></div>
 
 <h4>
 <a name="attrkey-value" class="anchor" href="#attrkey-value"><span class="octicon octicon-link"></span></a>attr(key, value)</h4>
 
-<pre><code>$("img").attr("src", "http://.../hoge.png");
-//set value to attribute
-</code></pre>
+<div class="highlight highlight-js"><pre><span class="nx">$</span><span class="p">(</span><span class="s2">"img"</span><span class="p">).</span><span class="nx">attr</span><span class="p">(</span><span class="s2">"src"</span><span class="p">,</span> <span class="s2">"http://.../hoge.png"</span><span class="p">);</span>
+<span class="c1">//set value to attribute</span>
+</pre></div>
 
 <h4>
 <a name="datadata-value" class="anchor" href="#datadata-value"><span class="octicon octicon-link"></span></a>data(data, value)</h4>
 
-<pre><code>$("span").data("tmp", "keepvalue");
-//set value to dataset
-</code></pre>
+<div class="highlight highlight-js"><pre><span class="nx">$</span><span class="p">(</span><span class="s2">"span"</span><span class="p">).</span><span class="nx">data</span><span class="p">(</span><span class="s2">"tmp"</span><span class="p">,</span> <span class="s2">"keepvalue"</span><span class="p">);</span>
+<span class="c1">//set value to dataset</span>
+</pre></div>
 
 <h4>
 <a name="csskey-value" class="anchor" href="#csskey-value"><span class="octicon octicon-link"></span></a>css(key, value)</h4>
 
-<pre><code>$("div").css("color", "red");
-//set value to key of style structure
-</code></pre>
+<div class="highlight highlight-js"><pre><span class="nx">$</span><span class="p">(</span><span class="s2">"div"</span><span class="p">).</span><span class="nx">css</span><span class="p">(</span><span class="s2">"color"</span><span class="p">,</span> <span class="s2">"red"</span><span class="p">);</span>
+<span class="c1">//set value to key of style structure</span>
+</pre></div>
 
 <h4>
 <a name="addclassvalue" class="anchor" href="#addclassvalue"><span class="octicon octicon-link"></span></a>addClass(value)</h4>
 
-<pre><code>$(".testClass").addClass("addClass");
-//add class to elements
-</code></pre>
+<div class="highlight highlight-js"><pre><span class="nx">$</span><span class="p">(</span><span class="s2">".testClass"</span><span class="p">).</span><span class="nx">addClass</span><span class="p">(</span><span class="s2">"addClass"</span><span class="p">);</span>
+<span class="c1">//add class to elements</span>
+</pre></div>
 
 <h4>
 <a name="removeclassvalue" class="anchor" href="#removeclassvalue"><span class="octicon octicon-link"></span></a>removeClass(value)</h4>
 
-<pre><code>$(".testClass").removeClass("removeClass");
-//remove class from elements
-</code></pre>
+<div class="highlight highlight-js"><pre><span class="nx">$</span><span class="p">(</span><span class="s2">".testClass"</span><span class="p">).</span><span class="nx">removeClass</span><span class="p">(</span><span class="s2">"removeClass"</span><span class="p">);</span>
+<span class="c1">//remove class from elements</span>
+</pre></div>
 
 <h4>
 <a name="toggleclassvalue" class="anchor" href="#toggleclassvalue"><span class="octicon octicon-link"></span></a>toggleClass(value)</h4>
 
-<pre><code>$(".testClass").toggleClass("toggleClass");
-//toggle class of elements
-</code></pre>
+<div class="highlight highlight-js"><pre><span class="nx">$</span><span class="p">(</span><span class="s2">".testClass"</span><span class="p">).</span><span class="nx">toggleClass</span><span class="p">(</span><span class="s2">"toggleClass"</span><span class="p">);</span>
+<span class="c1">//toggle class of elements</span>
+</pre></div>
 
 <h4>
 <a name="append" class="anchor" href="#append"><span class="octicon octicon-link"></span></a>append()</h4>
 
-<pre><code>$("#container").append(elements);
-//append element
-</code></pre>
+<div class="highlight highlight-js"><pre><span class="nx">$</span><span class="p">(</span><span class="s2">"#container"</span><span class="p">).</span><span class="nx">append</span><span class="p">(</span><span class="nx">elements</span><span class="p">);</span>
+<span class="c1">//append element</span>
+</pre></div>
 
 <h4>
 <a name="prepend" class="anchor" href="#prepend"><span class="octicon octicon-link"></span></a>prepend()</h4>
 
-<pre><code>$("#container").prepend(elements);
-//insert element
-</code></pre>
+<div class="highlight highlight-js"><pre><span class="nx">$</span><span class="p">(</span><span class="s2">"#container"</span><span class="p">).</span><span class="nx">prepend</span><span class="p">(</span><span class="nx">elements</span><span class="p">);</span>
+<span class="c1">//insert element</span>
+</pre></div>
 
 <h4>
 <a name="show" class="anchor" href="#show"><span class="octicon octicon-link"></span></a>show()</h4>
 
-<pre><code>$(".testClass").show();
-//show elements
-</code></pre>
+<div class="highlight highlight-js"><pre><span class="nx">$</span><span class="p">(</span><span class="s2">".testClass"</span><span class="p">).</span><span class="nx">show</span><span class="p">();</span>
+<span class="c1">//show elements</span>
+</pre></div>
 
 <h4>
 <a name="hide" class="anchor" href="#hide"><span class="octicon octicon-link"></span></a>hide()</h4>
 
-<pre><code>$(".testClass").hide();
-//hide elements
-</code></pre>
+<div class="highlight highlight-js"><pre><span class="nx">$</span><span class="p">(</span><span class="s2">".testClass"</span><span class="p">).</span><span class="nx">hide</span><span class="p">();</span>
+<span class="c1">//hide elements</span>
+</pre></div>
 
 <hr><p>others are to be announced...</p>
 
@@ -232,14 +232,26 @@ $(".parentClass").undelegate("touchend", ".childClass", touchendCallback);
 
 <p>Copyright <a href="http://twitter.com/1000ch">1000ch</a><br>
 Lisenced under the GPL Lisence version 3.  </p>
-      </section>
-      <footer>
-        <p>This project is maintained by <a href="https://github.com/1000ch">1000ch</a></p>
-        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
-      </footer>
+        </section>
+
+        <aside id="sidebar">
+          <a href="https://github.com/1000ch/fluent/zipball/master" class="button">
+            <small>Download</small>
+            .zip file
+          </a>
+          <a href="https://github.com/1000ch/fluent/tarball/master" class="button">
+            <small>Download</small>
+            .tar.gz file
+          </a>
+
+          <p class="repo-owner"><a href="https://github.com/1000ch/fluent"></a> is maintained by <a href="https://github.com/1000ch">1000ch</a>.</p>
+
+          <p>This page was generated by <a href="pages.github.com">GitHub Pages</a> using the Architect theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.</p>
+        </aside>
+      </div>
     </div>
-    <script src="javascripts/scale.fix.js"></script>
-              <script type="text/javascript">
+
+            <script type="text/javascript">
             var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
             document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
           </script>

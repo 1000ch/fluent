@@ -56,12 +56,6 @@ describe 'Fluent Class', ->
   it 'has Fluent.loadScript', ->
     expect(!!$.loadScript).to.equal true
 
-  it 'has Fluent.is', ->
-    expect(!!$.is).to.equal true
-
-  it 'has Fluent.has', ->
-    expect(!!$.has).to.equal true
-
   it 'has Fluent.camelize', ->
     expect(!!$.camelize).to.equal true
 

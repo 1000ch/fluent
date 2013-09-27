@@ -101,13 +101,13 @@
       var elementList = [];
       if(!selector) {
         return this;
-      } else if(isString(selector)) {
+      } else if(Fluent.isString(selector)) {
         //if selector is string
         elementList = __qsaHook(selector);
       } else if(selector.nodeType) {
         //if selector is single dom element
         elementList.push(selector);
-      } else if(__isLikeArray(selector)) {
+      } else if(__likeArray(selector)) {
         //if selector is array,
         //select only dom element
         elementList = arrayFilter.call(selector, function(item) {
@@ -125,13 +125,7 @@
      * @param {Function} callback
      * @return {Fluent}
      */
-    each: function(callback) {
-      var args = arraySlice.call(arguments, 1);
-      for(var i = 0, len = this.length;i < len;i++) {
-        callback(this[i], i);
-      }
-      return this;
-    }
+    each: arrayForEach
   };
 
   Fluent.fn.initialize.prototype = Fluent.fn;
@@ -142,8 +136,8 @@
    * @param {Object} value
    * @return {Boolean}
    */
-  function __is(key, value) {
-    return (toString.call(value) === "[object " + key + "]");
+  function __is(type, value) {
+    return (toString.call(value) === "[object " + type + "]");
   }
 
   /**
@@ -151,10 +145,9 @@
    * @param {Object} value
    * @return {Boolean}
    */
-  function isString(value) {
+  Fluent.isString = function(value) {
     return __is("String", value);
-  }
-
+  };
   /**
    * value is function or not
    * @param {Object} value
@@ -163,21 +156,12 @@
   Fluent.isFunction = function(value) {
     return __is("Function", value);
   };
-
-  /**
-   * value is nodeList or not
-   * @param {Object} value
-   * @return {Boolean}
-   */
-  function __isNodeList(value) {
-    return __is("NodeList", value);
-  }
   /**
    * value is like an array or not
    * @param {Object} value
    * @return {Boolean}
    */
-  function __isLikeArray(value) {
+  function __likeArray(value) {
     return (typeof value.length == "number");
   }
   /**
@@ -290,16 +274,13 @@
   /**
    * normalize object to node array.
    * @param {Fluent|NodeList|Array} value
+   * @return {Array}
    */
   function __normalizeNode(value) {
     var nodeList = [];
     if(value.nodeType) {
       nodeList.push(value);
-    } else if(value instanceof Fluent) {
-      nodeList = value.toArray();
-    } else if(__isNodeList(value)) {
-      nodeList = value;
-    } else if(__isLikeArray(value)) {
+    } else if(__likeArray(value)) {
       for(var i = 0, len = value.length;i < len;i++) {
         if(value[i].nodeType) {
           nodeList[nodeList.length] = value[i];
@@ -320,7 +301,7 @@
     var i, len = target.length, key, result;
     if(args.length !== 0) {
       //if args is not "false"
-      if(__isLikeArray(target)) {
+      if(__likeArray(target)) {
         for(i = 0;i < len;i++) {
           result = callback.apply(target[i], args);
           if(result === false) {
@@ -337,7 +318,7 @@
       }
     } else {
       //if args is null, undefined, 0, ""
-      if(__isLikeArray(target)) {
+      if(__likeArray(target)) {
         for(i = 0;i < len;i++) {
           result = callback.call(target[i], target[i], i);
           if(result === false) {

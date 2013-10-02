@@ -141,20 +141,20 @@
   }
 
   /**
-   * value is string or not
-   * @param {Object} value
-   * @return {Boolean}
-   */
-  Fluent.isString = function(value) {
-    return __is("String", value);
-  };
-  /**
    * value is function or not
    * @param {Object} value
    * @return {Boolean}
    */
   Fluent.isFunction = function(value) {
     return __is("Function", value);
+  };
+  /**
+   * value is string or not
+   * @param {Object} value
+   * @return {Boolean}
+   */
+  Fluent.isString = function(value) {
+    return __is("String", value);
   };
   /**
    * value is like an array or not

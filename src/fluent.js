@@ -20,6 +20,7 @@
   var toString = emptyObject.toString,
       arrayForEach = emptyArray.forEach,
       arrayMap = emptyArray.map,
+      arrayFilter = emptyArray.filter,
       arraySlice = emptyArray.slice,
       arraySplice = emptyArray.splice,
       arrayIndexOf = emptyArray.indexOf,
@@ -120,12 +121,11 @@
       }
       return this;
     },
-    /**
-     * execute function to all element
-     * @param {Function} callback
-     * @return {Fluent}
-     */
-    each: arrayForEach
+    each: arrayForEach,
+    map: arrayMap,
+    filter: arrayFilter,
+    indexOf: arrayIndexOf,
+    lastIndexOf: arrayLastIndexOf
   };
 
   Fluent.fn.initialize.prototype = Fluent.fn;
@@ -291,7 +291,7 @@
   }
   /**
    * generic each function
-   * @description if callback function returns false, break loop.
+   * if callback function returns false, break loop.
    * @param {Object} target
    * @param {Function} callback
    * @return {Object}
@@ -338,7 +338,7 @@
   };
   /**
    * extend object hardly
-   * @description if same property exist, it will be overriden
+   * if same property exist, it will be overridden
    * @param {Object} target
    * @param {Object} src
    * @return {Object}
@@ -356,7 +356,7 @@
   };
   /**
    * extend object softly
-   * @description if same property exist, it will not be overriden
+   * if same property exist, it will not be overridden
    * @param {Object} target
    * @param {Object} src
    * @return {Object}
@@ -375,7 +375,7 @@
   /**
    * merge array or object (like an array) into array
    * @param {Array} srcList
-   * @param {Array|* which has length property}
+   * @param {Array} mergeList
    */
   Fluent.merge = function(srcList, mergeList) {
     arrayForEach.call(mergeList, function(mergeElement) {
@@ -514,9 +514,9 @@
   /**
    * undelegate
    * @param {HTMLElement} targetNode
-   * @param {String*} type
-   * @param {String*} selector
-   * @param {Function*} callback
+   * @param {String} type
+   * @param {String} selector
+   * @param {Function} callback
    */
   Fluent.undelegate = function(targetNode, type, selector, callback) {
     var storedData, callbacks, selectors, index;
@@ -845,29 +845,6 @@
 
   var _FluentTraversing = {
     /**
-     * get elements by search with callback
-     * @param {Function} callback
-     * @return {Fluent}
-     */
-    filter: function(callback) {
-      return new Fluent(arrayFilter.call(this, callback));
-    },
-    /**
-     * apply callback and get elements
-     * @param {Function} callback
-     * @return {Fluent}
-     */
-    map: function(callback) {
-      var array = [], element;
-      for(var i = 0, len = this.length;i < len;i++) {
-        element = callback(this[i], i);
-        if(element !== null) {
-          array.push(element);
-        }
-      }
-      return new Fluent(array);
-    },
-    /**
      * find elements which matches selector
      * @param {String} selector
      * @return {Fluent}
@@ -1004,7 +981,7 @@
     },
     /**
      * append element
-     * @param {HTMLElement}
+     * @param {HTMLElement} value
      * @return {Fluent}
      */
     append: function(value) {
@@ -1020,7 +997,7 @@
     },
     /**
      * insert element
-     * @param {HTMLElement}
+     * @param {HTMLElement} value
      * @return {Fluent}
      */
     insert: function(value) {

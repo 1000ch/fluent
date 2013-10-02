@@ -348,9 +348,7 @@
     for(var i = 0, len = keys.length;i < len;i++) {
       key = keys[i];
       //even if "key" property already exist, set into "key"
-      if(src.hasOwnProperty(key)) {
-        target[key] = src[key];
-      }
+      target[key] = src[key];
     }
     return target;
   };
@@ -366,7 +364,7 @@
     for(var i = 0, len = keys.length;i < len;i++) {
       key = keys[i];
       //if "key" is not undefined, "key" will not be rewrite
-      if(src.hasOwnProperty(key) && !(key in target)) {
+      if(target[key] === undefined) {
         target[key] = src[key];
       }
     }
@@ -733,21 +731,34 @@
     };
     doc.querySelector("head").appendChild(script);
   };
+  var escapeMap = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#x27;'
+  };
+  var unescapeMap = {
+    '&amp;': '&',
+    '&lt;': '<',
+    '&gt;': '>',
+    '&quot;': '"',
+    '&#x27;': "'"
+  };
+  var escapeRegex = new RegExp('[' + Object.keys(escapeMap).join('') + ']', 'g');
+  var unescapeRegex = new RegExp('(' + Object.keys(unescapeMap).join('|') + ')', 'g');
   /**
    * escape html string
    * @param {String} value
    * @return {String}
    */
   Fluent.escapeHTML = function(value) {
-    value = value + "";
-    var escapeMap = {
-      "&": "&amp;",
-      '"': "&quot;",
-      "<": "&lt;",
-      ">": "&gt;"
-    };
-    return value.replace(/(&|"|<|>)/g, function(c) {
-      return escapeMap[c];
+    if(value == null) {
+      return '';
+    }
+    value = value + '';
+    return value.replace(escapeRegex, function(match) {
+      return escapeMap[match];
     });
   };
   /**
@@ -756,15 +767,12 @@
    * @return {String}
    */
   Fluent.unescapeHTML = function(value) {
-    value = value + "";
-    var unescapeMap = {
-      "&amp;": "&",
-      "&quot;": '"',
-      "&lt;": "<",
-      "&gt;": ">"
-    };
-    return value.replace(/(&amp;|&quot;|&lt;|&gt;)/g, function(c) {
-      return unescapeMap[c];
+    if(value == null) {
+      return '';
+    }
+    value = value + '';
+    return value.replace(unescapeRegex, function(match) {
+      return unescapeMap[match];
     });
   };
 

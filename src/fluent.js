@@ -104,7 +104,7 @@
         return this;
       } else if(Fluent.isString(selector)) {
         //if selector is string
-        elementList = __qsaHook(selector);
+        elementList = __qsa(selector);
       } else if(selector.nodeType) {
         //if selector is single dom element
         elementList.push(selector);
@@ -219,7 +219,7 @@
    * @param {HTMLElement} context
    * @return {Array}
    */
-  function __qsaHook(selector, context) {
+  function __qsa(selector, context) {
     context = context ? context : doc;
 
     var m = rxConciseSelector.exec(selector);
@@ -247,12 +247,15 @@
       if(tokenIndex == tokenList.length - 1) {
         return [doc.querySelector(idSelector)];
       } else {
-        return __qsaHook(tokenList.slice(tokenIndex + 1).join(" "), doc.querySelector(idSelector));
+        return __qsa(tokenList.slice(tokenIndex + 1).join(" "), doc.querySelector(idSelector));
       }
     }
 
     return context.querySelectorAll(selector);
   }
+
+  Fluent.qsa = __qsa;
+
   /**
    * create callback closure
    * @param {HTMLElement} parentNode
@@ -262,7 +265,7 @@
   function __createDelegateClosure(parentNode, selector, callback) {
     var closure = function(e) {
       var parent = parentNode;
-      var children = __qsaHook(selector, parent);
+      var children = __qsa(selector, parent);
       arrayForEach.call(children, function(child) {
         if(child.compareDocumentPosition(e.target) === 0) {
           callback.call(child, e);
@@ -612,7 +615,7 @@
       valueIndex = arrayBuffer.indexOf(classList[i]);
       if(valueIndex === -1) {
         //if does not exist
-        arrayBuffer.push(value);
+        arrayBuffer.push(classList[i]);
       } else {
         //if exist
         arrayBuffer.splice(valueIndex, 1);

@@ -7,7 +7,7 @@ describe "Fluent Manipulation", ->
     $element = null
 
     beforeEach ->
-      $element = $("#id1")
+      $element = $("#id4")
 
     it "add class to a element", ->
       expect($.hasClass($element[0], "classTest")).to.equal false
@@ -26,7 +26,7 @@ describe "Fluent Manipulation", ->
     $element = null
 
     beforeEach ->
-      $element = $("#id2")
+      $element = $("#id5")
 
     it "remove class from a element", ->
       $element.addClass "classTest"
@@ -47,7 +47,7 @@ describe "Fluent Manipulation", ->
     $element = null
 
     beforeEach ->
-      $element = $("#id3")
+      $element = $("#id6")
 
     it "toggle class of a element", ->
       $element.toggleClass "classTest"

@@ -57,6 +57,14 @@ describe 'Fluent Class', ->
     it 'return false when the argument is undefined', ->
       expect($.isString(undefined)).to.equal false
 
+  describe 'Fluent.qsa', ->
+
+    it 'exists', ->
+      expect(!!$.qsa).to.equal true
+
+    it 'is function', ->
+      expect($.isFunction($.qsa)).to.equal true
+
   describe 'Fluent.each', ->
 
     it 'exists', ->

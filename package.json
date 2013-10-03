@@ -1,6 +1,6 @@
 {
   "name": "fluent",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Lightweight DOM library.",
   "main": "fluent.js",
   "dependencies": {},

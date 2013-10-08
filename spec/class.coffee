@@ -7,25 +7,13 @@ describe 'Fluent Class', ->
     it 'exists', ->
       expect(!!$.isFunction).to.equal true
 
-    it 'return true when the argument is function', ->
+    it 'return appropriate value with any argument', ->
       expect($.isFunction(()->)).to.equal true
-
-    it 'return false when the argument is string', ->
       expect($.isFunction("")).to.equal false
-
-    it 'return false when the argument is number', ->
       expect($.isFunction(1)).to.equal false
-
-    it 'return false when the argument is array', ->
       expect($.isFunction([])).to.equal false
-
-    it 'return false when the argument is object', ->
       expect($.isFunction({})).to.equal false
-
-    it 'return false when the argument is null', ->
       expect($.isFunction(null)).to.equal false
-
-    it 'return false when the argument is undefined', ->
       expect($.isFunction(undefined)).to.equal false
 
   describe 'Fluent.isString', ->
@@ -36,25 +24,13 @@ describe 'Fluent Class', ->
     it 'is function', ->
       expect($.isFunction($.isString)).to.equal true
 
-    it 'return false when the argument is function', ->
+    it 'return appropriate value with any argument', ->
       expect($.isString(()->)).to.equal false
-
-    it 'return true when the argument is string', ->
       expect($.isString("")).to.equal true
-
-    it 'return false when the argument is number', ->
       expect($.isString(1)).to.equal false
-
-    it 'return false when the argument is array', ->
       expect($.isString([])).to.equal false
-
-    it 'return false when the argument is object', ->
       expect($.isString({})).to.equal false
-
-    it 'return false when the argument is null', ->
       expect($.isString(null)).to.equal false
-
-    it 'return false when the argument is undefined', ->
       expect($.isString(undefined)).to.equal false
 
   describe 'Fluent.qsa', ->
@@ -198,7 +174,6 @@ describe 'Fluent Class', ->
       array2 = [1, 2, 3]
       array3 = [4, 5]
       array4 = [1, 2, 3, 4, 5]
-
 
     it 'exists', ->
       expect(!!$.merge).to.equal true
@@ -422,16 +397,10 @@ describe 'Fluent Class', ->
     it 'is function', ->
       expect($.isFunction($.camelize)).to.equal true
 
-    it 'camerize pattern1', ->
+    it 'camerize', ->
       expect($.camelize('hello')).to.equal 'hello'
-
-    it 'camerize pattern2', ->
       expect($.camelize('HELLO')).to.equal 'HELLO'
-
-    it 'camerize pattern3', ->
       expect($.camelize('hello-world-test')).to.equal 'helloWorldTest'
-
-    it 'camerize pattern4', ->
       expect($.camelize('helloWorld')).to.equal 'helloWorld'
 
   describe 'Fluent.dasherize', ->
@@ -442,16 +411,10 @@ describe 'Fluent Class', ->
     it 'is function', ->
       expect($.isFunction($.dasherize)).to.equal true
 
-    it 'dasherize pattern1', ->
+    it 'dasherize', ->
       expect($.dasherize('hello')).to.equal 'hello'
-
-    it 'dasherize pattern2', ->
       expect($.dasherize('HELLO')).to.equal 'hello'
-
-    it 'dasherize pattern3', ->
       expect($.dasherize('helloWorldTest')).to.equal 'hello-world-test'
-
-    it 'dasherize pattern4', ->
       expect($.dasherize('hello-world')).to.equal 'hello-world'
 
   describe 'Fluent.loadScript', ->
@@ -470,16 +433,10 @@ describe 'Fluent Class', ->
     it 'is function', ->
       expect($.isFunction($.escapeHTML)).to.equal true
 
-    it 'escape pattern1', ->
+    it 'escape', ->
       expect($.escapeHTML("Curly & Moe")).to.equal "Curly &amp; Moe"
-
-    it 'escape pattern2', ->
       expect($.escapeHTML('<a href="http://moe.com">Curly & Moe\'s</a>')).to.equal '&lt;a href=&quot;http://moe.com&quot;&gt;Curly &amp; Moe&#x27;s&lt;/a&gt;'
-
-    it 'escape pattern3', ->
       expect($.escapeHTML("Curly &amp; Moe")).to.equal "Curly &amp;amp; Moe"
-
-    it 'escape pattern4', ->
       expect($.escapeHTML(null)).to.equal ""
 
   describe 'Fluent.unescapeHTML', ->
@@ -490,14 +447,8 @@ describe 'Fluent Class', ->
     it 'is function', ->
       expect($.isFunction($.unescapeHTML)).to.equal true
 
-    it 'unescape pattern1', ->
+    it 'unescape', ->
       expect($.unescapeHTML("Curly &amp; Moe")).to.equal "Curly & Moe"
-
-    it 'unescape pattern2', ->
       expect($.unescapeHTML('&lt;a href=&quot;http://moe.com&quot;&gt;Curly &amp; Moe&#x27;s&lt;/a&gt;')).to.equal '<a href="http://moe.com">Curly & Moe\'s</a>'
-
-    it 'unescape pattern3', ->
       expect($.unescapeHTML("Curly &amp;amp; Moe")).to.equal "Curly &amp; Moe"
-
-    it 'unescape pattern4', ->
       expect($.unescapeHTML(null)).to.equal ''

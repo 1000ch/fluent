@@ -18,6 +18,7 @@
   },
   "testling": {
     "files": "spec/*.coffee",
+    "harness" : "mocha",
     "browsers": [
       "ie/8..latest",
       "firefox/16..latest",

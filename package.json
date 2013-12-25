@@ -11,28 +11,10 @@
     "grunt-contrib-jshint": "~0.7.2",
     "grunt-plato": "~0.2.1",
     "testem": "~0.6.2",
-    "coffee-script": "~1.6.3",
-    "mocha": "~1.16.2"
+    "coffee-script": "~1.6.3"
   },
   "scripts": {
     "test": "./node_modules/testem/testem.js -l PhantomJS ci"
-  },
-  "testling": {
-    "files": "spec/*.coffee",
-    "harness": "mocha",
-    "browsers": [
-      "ie/8..latest",
-      "firefox/16..latest",
-      "firefox/nightly",
-      "chrome/22..latest",
-      "chrome/canary",
-      "opera/12..latest",
-      "opera/next",
-      "safari/5.1..latest",
-      "ipad/6.0..latest",
-      "iphone/6.0..latest",
-      "android-browser/4.2..latest"
-    ]
   },
   "repository": {
     "type": "git",

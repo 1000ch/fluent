@@ -29,7 +29,7 @@
       "safari/5.1..latest",
       "ipad/6.0..latest",
       "iphone/6.0..latest",
-      "android-browser/4.0..latest"
+      "android-browser/4.2..latest"
     ]
   },
   "repository": {

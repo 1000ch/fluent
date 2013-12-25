@@ -5,6 +5,8 @@
 fluent.js is light-weight dom library.  
 This supports following functions.  
 
+[![testling badge](https://ci.testling.com/1000ch/fluent.png)](https://ci.testling.com/1000ch/fluent)
+
 ## API
 
 ### Core

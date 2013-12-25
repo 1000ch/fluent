@@ -16,6 +16,22 @@
   "scripts": {
     "test": "./node_modules/testem/testem.js -l PhantomJS ci"
   },
+  "testling": {
+    "files": "spec/*.coffee",
+    "browsers": [
+      "ie/8..latest",
+      "firefox/16..latest",
+      "firefox/nightly",
+      "chrome/22..latest",
+      "chrome/canary",
+      "opera/12..latest",
+      "opera/next",
+      "safari/5.0..latest",
+      "ipad/6.0..latest",
+      "iphone/6.0..latest",
+      "android-browser/4.0..latest"
+    ]
+  },
   "repository": {
     "type": "git",
     "url": "git://github.com/1000ch/fluent.git"

@@ -5,20 +5,21 @@
   "main": "fluent.js",
   "dependencies": {},
   "devDependencies": {
-    "grunt": "~0.4.1",
-    "grunt-contrib-uglify": "~0.2.2",
-    "grunt-contrib-watch": "~0.5.1",
-    "grunt-contrib-jshint": "~0.6.2",
+    "grunt": "~0.4.2",
+    "grunt-contrib-uglify": "~0.2.7",
+    "grunt-contrib-watch": "~0.5.3",
+    "grunt-contrib-jshint": "~0.7.2",
     "grunt-plato": "~0.2.1",
-    "testem": "~0.3.24",
-    "coffee-script": "~1.6.3"
+    "testem": "~0.6.2",
+    "coffee-script": "~1.6.3",
+    "mocha": "~1.16.2"
   },
   "scripts": {
     "test": "./node_modules/testem/testem.js -l PhantomJS ci"
   },
   "testling": {
     "files": "spec/*.coffee",
-    "harness" : "mocha",
+    "harness": "mocha",
     "browsers": [
       "ie/8..latest",
       "firefox/16..latest",

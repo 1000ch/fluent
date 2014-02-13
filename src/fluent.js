@@ -26,6 +26,8 @@
       arrayIndexOf = emptyArray.indexOf,
       arrayLastIndexOf = emptyArray.lastIndexOf;
 
+  function _doNothing() {}
+  
   //string polyfills
   if (!String.prototype.repeat) {
     String.prototype.repeat = function (count) {
@@ -104,7 +106,7 @@
         return this;
       } else if (Fluent.isString(selector)) {
         //if selector is string
-        elementList = query(selector);
+        elementList = _query(selector);
       } else if (selector.nodeType) {
         //if selector is single dom element
         elementList.push(selector);
@@ -138,7 +140,7 @@
    */
   Fluent.isType = function (type, value) {
     return (toString.call(value) === "[object " + type + "]");
-  }
+  };
 
   /**
    * value is function or not
@@ -201,7 +203,7 @@
 
    * if context is given, search element with selector
    * in context (or related condition).
-   * @param {String} selector css selector
+   * @param {String} selector
    * @param {HTMLElement} context
    * @return {Array}
    */
@@ -241,6 +243,24 @@
   }
 
   Fluent.query = _query;
+
+  /**
+   * extend and hook querySelectorAll
+   * evaluate selector concisely
+   * @param {String} selector
+   * @param {HTMLElement} context
+   * @returns {HTMLElement}
+   */
+  Fluent.one = function (selector, context) {
+    context = context ? context : doc;
+    
+    var m;
+    if ((m = rxIdSelector.exec(selector))) {
+      return doc.getElementById(m[1]);
+    } else {
+      return context.querySelector(selector);
+    }
+  };
 
   /**
    * create callback closure
@@ -742,7 +762,7 @@
    * @return {String}
    */
   Fluent.escapeHTML = function (value) {
-    if (value == null) {
+    if (value === null) {
       return '';
     }
     value = value + '';
@@ -756,7 +776,7 @@
    * @return {String}
    */
   Fluent.unescapeHTML = function (value) {
-    if (value == null) {
+    if (value === null) {
       return '';
     }
     value = value + '';
@@ -777,7 +797,6 @@
       return this.each(function (element, index) {
         element.addEventListener(type, eventHandler, useCapture);
       });
-      return this;
     },
     /**
      * unbind event
@@ -1145,6 +1164,28 @@
   };
 
   /**
+   * Fulfill proxy
+   * @param {Fluent.Promise} promise
+   * @returns {Function}
+   */
+  Fluent.Promise.fulfillProxy = function (promise) {
+    return function (value) {
+      promise.change(Fluent.Promise.FULFILLED, value);
+    };
+  };
+
+  /**
+   * Reject proxy
+   * @param {Fluent.Promise} promise
+   * @returns {Function}
+   */
+  Fluent.Promise.rejectProxy = function (promise) {
+    return function (reason) {
+      promise.change(Fluent.Promise.REJECTED, reason);
+    };
+  };
+
+  /**
    * Resolve
    * @returns {Boolean}
    */
@@ -1164,7 +1205,7 @@
           callback = item.reject;
           break;
         default:
-          callback = function () {};
+          callback = _doNothing;
           break;
       }
       if (Fluent.isFunction(callback)) {
@@ -1175,16 +1216,14 @@
               var typeError = new TypeError("Promise objects refer to same object.");
               item.promise.change(REJECTED, typeError);
             }
-            value.then(function (value) {
-              item.promise.change(Fluent.Promise.FULFILLED, value);
-            }, function (reason) {
-              item.promise.change(Fluent.Promise.REJECTED, reason);
-            });
+            var onFulfilled = Fluent.Promise.fulfillProxy(item.promise);
+            var onRejected = Fluent.Promise.rejectProxy(item.promise);
+            value.then(onFulfilled, onRejected);
           } else {
             item.promise.change(Fluent.Promise.FULFILLED, value);
           }
         } catch (e) {
-          item.promise.change(Fluent.Promise.FULFILLED, value);
+          item.promise.change(Fluent.Promise.FULFILLED, e);
         }
       } else {
         item.promise.change(this.state, this.value);

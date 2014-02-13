@@ -33,13 +33,13 @@ describe 'Fluent Class', ->
       expect($.isString(null)).to.equal false
       expect($.isString(undefined)).to.equal false
 
-  describe 'Fluent.qsa', ->
+  describe 'Fluent.query', ->
 
     it 'exists', ->
-      expect(!!$.qsa).to.equal true
+      expect(!!$.query).to.equal true
 
     it 'is function', ->
-      expect($.isFunction($.qsa)).to.equal true
+      expect($.isFunction($.query)).to.equal true
 
   describe 'Fluent.each', ->
 
@@ -282,7 +282,7 @@ describe 'Fluent Class', ->
     elements = null
 
     beforeEach ->
-      elements = $.qsa("#id1")
+      elements = $.query("#id1")
 
     it 'exists', ->
       expect(!!$.addClass).to.equal true
@@ -308,7 +308,7 @@ describe 'Fluent Class', ->
     elements = null
 
     beforeEach ->
-      elements = $.qsa("#id2")
+      elements = $.query("#id2")
 
     it 'exists', ->
       expect(!!$.removeClass).to.equal true
@@ -335,7 +335,7 @@ describe 'Fluent Class', ->
     elements = null
 
     beforeEach ->
-      elements = $.qsa("#id3")
+      elements = $.query("#id3")
 
     it 'exists', ->
       expect(!!$.toggleClass).to.equal true

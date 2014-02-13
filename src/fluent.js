@@ -136,7 +136,7 @@
    * @param {Object} value
    * @return {Boolean}
    */
-  function _is(type, value) {
+  Fluent.isType = function (type, value) {
     return (toString.call(value) === "[object " + type + "]");
   }
 
@@ -146,7 +146,7 @@
    * @return {Boolean}
    */
   Fluent.isFunction = function (value) {
-    return _is("Function", value);
+    return Fluent.isType("Function", value);
   };
   /**
    * value is string or not
@@ -154,7 +154,7 @@
    * @return {Boolean}
    */
   Fluent.isString = function (value) {
-    return _is("String", value);
+    return Fluent.isType("String", value);
   };
   /**
    * value is like an array or not
@@ -163,20 +163,6 @@
    */
   function _likeArray(value) {
     return (typeof value.length == "number");
-  }
-  /**
-   * is appendable node or not
-   * @param {HTMLElement} element
-   * @return {Boolean}
-   */
-  function _isAppendable(element) {
-    if (element.nodeType) {
-      var nodeType = element.nodeType;
-      if (nodeType === 1 || nodeType === 11 || nodeType === 9) {
-        return !!element.appendChild;
-      }
-    }
-    return false;
   }
   /**
    * get computed style of element
@@ -996,11 +982,14 @@
      * @return {Fluent}
      */
     append: function (value) {
+      var APPEND = [1, 9, 11];
       var nodeList = _normalizeNode(value);
       Fluent.each(this, function (element) {
+        var node;
         for (var i = 0, len = nodeList.length;i < len;i++) {
-          if (_isAppendable(nodeList[i])) {
-            element.appendChild(nodeList[i]);
+          node = nodeList[i];
+          if (APPEND.indexOf(node) !== -1) {
+            element.appendChild(node);
           }
         }
       });
@@ -1037,6 +1026,199 @@
     hide: function () {
       return this.css("display", "none");
     }
+  };
+
+  /**
+   * Fluent.Promise object
+   * @constructor
+   */
+  Fluent.Promise = function () {
+    this.isPromise = true;
+    this.state = Fluent.Promise.PENDING;
+    this.value = null;
+    this.queue = [];
+  };
+
+  // promise status
+  Fluent.Promise.PENDING = 0;
+  Fluent.Promise.FULFILLED = 1;
+  Fluent.Promise.REJECTED = 2;
+
+  /**
+   * 
+   * @returns {Object}
+   *   {
+   *     promise: Fluent.Promise,
+   *     resolve: resolve,
+   *     reject: reject
+   *   }
+   * @constructor
+   */
+  Fluent.Promise.Deferred = function () {
+    var promise = new Fluent.Promise();
+    var deferred = {
+      promise: promise,
+      resolve: function (value) {
+        promise.fullfill(value);
+      },
+      reject: function (reason) {
+        promise.reject(reason);
+      }
+    };
+    return deferred;
+  };
+
+  Fluent.Promise.Rejected = function (value) {
+    var promise = new Fluent.Promise();
+    promise.fullfill(value);
+    return promise;
+  };
+
+  Fluent.Promise.Rejected = function (reason) {
+    var promise = new Fluent.Promise();
+    promise.reject(reason);
+    return promise;
+  };
+
+  /**
+   * Change promise state.
+   *
+   * 1.Promise object can't transition to same state.
+   *     PENDING -> PENDING
+   *     FULFILLED -> FULFILLED
+   *     REJECTED -> REJECTED
+   * 2.Promise object can't transition from FULFILLED or REJECTED.
+   *     FULFILLED -> *
+   *     REJECTED -> *
+   * 3.Promise object can't transition to FULFILLED with a null value.
+   * 4.Promise object can't transition to REJECTED without a reason.
+   *
+   * @param state
+   * @param value
+   * @returns {String}
+   */
+  Fluent.Promise.prototype.change = function (state, value) {
+    if (this.state === state) {
+      // Cannot transition to same state
+      return this.state;
+    }
+    if (this.state === Fluent.Promise.FULFILLED ||
+        this.state === Fluent.Promise.REJECTED) {
+      // Cannot transition from FULFILLED or REJECTED
+      return this.state;
+    }
+    if (state === Fluent.Promise.FULFILLED ||
+        state === Fluent.Promise.REJECTED) {
+      if (arguments.length < 2) {
+        // Cannot transition to FULFILLED and REJECTED without value or reason
+        return this.state;
+      }
+    }
+    this.state = state;
+    this.value = value;
+    this.resolve();
+    return this.state;
+  };
+
+  /**
+   * Execute asynchronously
+   * @param {Function} fn
+   */
+  Fluent.Promise.prototype.async = function (fn) {
+    setTimeout(fn, 5);
+  };
+
+  /**
+   * Change state to fulfilled
+   * @param value
+   */
+  Fluent.Promise.prototype.fulfill = function (value) {
+    this.change(Fluent.Promise.FULFILLED, value);
+  };
+
+  /**
+   * Change state to rejected
+   * @param reason
+   */
+  Fluent.Promise.prototype.reject = function (reason) {
+    this.change(Fluent.Promise.REJECTED, reason);
+  };
+
+  /**
+   * Resolve
+   * @returns {Boolean}
+   */
+  Fluent.Promise.prototype.resolve = function () {
+    if (this.state === Fluent.Promise.PENDING) {
+      // Cannot resolve on PENDING state
+      return false;
+    }
+    while (this.queue.length) {
+      var item = this.queue.shift();
+      var callback;
+      switch (this.state) {
+        case Fluent.Promise.FULFILLED:
+          callback = item.fullfill;
+          break;
+        case Fluent.Promise.REJECTED:
+          callback = item.reject;
+          break;
+        default:
+          callback = function () {};
+          break;
+      }
+      if (Fluent.isFunction(callback)) {
+        try {
+          var value = callback(this.value);
+          if (value.isPromise) {
+            if (item.promise == value) {
+              var typeError = new TypeError("Promise objects refer to same object.");
+              item.promise.change(REJECTED, typeError);
+            }
+            value.then(function (value) {
+              item.promise.change(Fluent.Promise.FULFILLED, value);
+            }, function (reason) {
+              item.promise.change(Fluent.Promise.REJECTED, reason);
+            });
+          } else {
+            item.promise.change(Fluent.Promise.FULFILLED, value);
+          }
+        } catch (e) {
+          item.promise.change(Fluent.Promise.FULFILLED, value);
+        }
+      } else {
+        item.promise.change(this.state, this.value);
+      }
+    }
+  };
+
+  /**
+   * Access to current or eventual value or reason
+   * @param {Function} onFulfilled
+   * @param {Function} onRejected
+   * @returns {Fluent.Promise}
+   */
+  Fluent.Promise.prototype.then = function (onFulfilled, onRejected) {
+    
+    // initialize queue
+    this.queue = this.queue || [];
+    
+    // create new promise
+    var promise = new Fluent.Promise();
+    
+    var that = this;
+    
+    // queue
+    this.async(function () {
+      that.queue.push({
+        fullfill: onFulfilled,
+        reject: onRejected,
+        promise: promise
+      });
+      that.resolve();
+    });
+    
+    return promise;
   };
 
   //extend Fluent prototype

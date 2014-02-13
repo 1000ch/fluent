@@ -4,6 +4,14 @@ module.exports = (grunt) ->
     pkg: grunt.file.readJSON 'package.json'
     jshint:
       all: ["./src/fluent.js", "./src/fluent.animation.js"]
+    jsvalidate:
+      options:
+        globals: {}
+        esprimaOptions: {}
+        verbose: false
+      all:
+        files:
+          src: ['<%=jshint.all%>']
     uglify:
       js:
         files:
@@ -15,12 +23,12 @@ module.exports = (grunt) ->
         dest: 'reports'
     watch:
       files: ["./src/fluent.js", "./src/fluent.animation.js"]
-      tasks: ["jshint"]
+      tasks: ["jshint", "jsvalidate"]
 
   grunt.loadNpmTasks 'grunt-contrib-jshint'
+  grunt.loadNpmTasks 'grunt-jsvalidate'
   grunt.loadNpmTasks 'grunt-contrib-uglify'
   grunt.loadNpmTasks 'grunt-contrib-watch'
-  grunt.loadNpmTasks 'grunt-plato'
 
   grunt.registerTask "default", "watch"
-  grunt.registerTask "build", ["uglify", "plato"]
+  grunt.registerTask "build", ["jshint", "jsvalidate", "uglify"]

@@ -253,14 +253,6 @@ describe 'Fluent Class', ->
     it 'is function', ->
       expect($.isFunction($.unbind)).to.equal true
 
-  describe 'Fluent.once', ->
-
-    it 'exists', ->
-      expect(!!$.once).to.equal true
-
-    it 'is function', ->
-      expect($.isFunction($.once)).to.equal true
-
   describe 'Fluent.delegate', ->
 
     it 'exists', ->
@@ -276,6 +268,14 @@ describe 'Fluent Class', ->
 
     it 'is function', ->
       expect($.isFunction($.undelegate)).to.equal true
+
+  describe 'Fluent.once', ->
+
+    it 'exists', ->
+      expect(!!$.once).to.equal true
+
+    it 'is function', ->
+      expect($.isFunction($.once)).to.equal true
 
   describe 'Fluent.addClass', ->
 

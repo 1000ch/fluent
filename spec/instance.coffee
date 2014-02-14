@@ -29,13 +29,13 @@ describe "Fluent Instance", ->
       expect(!!$element.lastIndexOf).to.equal true
       expect($.isFunction($element.lastIndexOf)).to.equal true
 
-    it "has bind()", ->
-      expect(!!$element.bind).to.equal true
-      expect($.isFunction($element.bind)).to.equal true
+    it "has on()", ->
+      expect(!!$element.on).to.equal true
+      expect($.isFunction($element.on)).to.equal true
 
-    it "has unbind()", ->
-      expect(!!$element.unbind).to.equal true
-      expect($.isFunction($element.unbind)).to.equal true
+    it "has off()", ->
+      expect(!!$element.off).to.equal true
+      expect($.isFunction($element.off)).to.equal true
 
     it "has trigger()", ->
       expect(!!$element.trigger).to.equal true
@@ -44,14 +44,6 @@ describe "Fluent Instance", ->
     it "has once()", ->
       expect(!!$element.once).to.equal true
       expect($.isFunction($element.once)).to.equal true
-
-    it "has delegate()", ->
-      expect(!!$element.delegate).to.equal true
-      expect($.isFunction($element.delegate)).to.equal true
-
-    it "has undelegate()", ->
-      expect(!!$element.undelegate).to.equal true
-      expect($.isFunction($element.undelegate)).to.equal true
 
     it "has filter()", ->
       expect(!!$element.filter).to.equal true

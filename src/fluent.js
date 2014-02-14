@@ -159,6 +159,14 @@
     return Fluent.isType("String", value);
   };
   /**
+   * value is number or not
+   * @param {Object} value
+   * @return {Boolean}
+   */
+  Fluent.isNumber = function () {
+    return Fluent.isType("Number", value);
+  };
+  /**
    * value is like an array or not
    * @param {Object} value
    * @return {Boolean}
@@ -551,7 +559,7 @@
         });
         delete targetNode.eventStore[type];
       } else {
-        Object.keys(targetNode.eventStore).forEach(function (key) {
+        Object.keys(targetNode.eventStore).forEach(function (key) {console.log(key);
           storedData = targetNode.eventStore[key];
           arrayForEach.call(storedData, function (item) {
             targetNode.removeEventListener(key, item.closure);
@@ -787,28 +795,60 @@
 
   var _FluentEvent = {
     /**
-     * bind event
+     * Bind or delegate event
      * @param {String} type
-     * @param {Function} eventHandler
-     * @param {Boolean} useCapture
-     * @return {Fluent}
+     * @param {String|Function} callbackOrSelector
+     * @param {Function} delegateCallback
+     * @returns {Fluent}
      */
-    bind: function (type, eventHandler, useCapture) {
-      return this.each(function (element, index) {
-        element.addEventListener(type, eventHandler, useCapture);
-      });
+    on: function (type, callbackOrSelector, delegateCallback) {
+      if (!Fluent.isString(type)) {
+        return this;
+      }
+      var callback;
+      var selector;
+      if (Fluent.isFunction(callbackOrSelector)) {
+        callback = callbackOrSelector;
+        return this.each(function (element, index) {
+          element.addEventListener(type, callback);
+        });
+      } else if (Fluent.isString(callbackOrSelector) && Fluent.isFunction(delegateCallback)) {
+        selector = callbackOrSelector;
+        callback = delegateCallback;
+        return this.each(function (element, index) {
+          Fluent.delegate(element, type, selector, callback);
+        });
+      }
     },
     /**
-     * unbind event
+     * Unbind or undelegate event
      * @param {String} type
-     * @param {Function} eventHandler
-     * @param {Boolean} useCapture
-     * @return {Fluent}
+     * @param {String|Function} callbackOrSelector
+     * @param {Function} delegateCallback
+     * @returns {Fluent}
      */
-    unbind: function (type, eventHandler, useCapture) {
-      return this.each(function (element, index) {
-        element.removeEventListener(type, eventHandler, useCapture);
-      });
+    off: function (type, callbackOrSelector, delegateCallback) {
+      if (!Fluent.isString(type)) {
+        return this;
+      }
+      var callback;
+      var selector;
+      if (Fluent.isFunction(callbackOrSelector)) {
+        callback = callbackOrSelector;
+        return this.each(function (element, index) {
+          element.removeEventListener(type, callback);
+        });
+      } else if (Fluent.isString(callbackOrSelector) && Fluent.isFunction(delegateCallback)) {
+        selector = callbackOrSelector;
+        callback = delegateCallback;
+        return this.each(function (element, index) {
+          Fluent.undelegate(element, type, selector, callback);
+        });
+      } else {
+        return this.each(function (element, index) {
+          Fluent.undelegate(element, type);
+        });
+      }
     },
     /**
      * dispatch event
@@ -834,28 +874,6 @@
         Fluent.once(element, type, eventHandler, useCapture);
       });
       return this;
-    },
-    /**
-     * begin propagation event
-     * @param {String} type
-     * @param {Function} eventHandler
-     * @return {Fluent}
-     */
-    delegate: function (type, selector, eventHandler) {
-      return this.each(function (element, index) {
-        Fluent.delegate(element, type, selector, eventHandler);
-      });
-    },
-    /**
-     * finish propagation event
-     * @param {String} type
-     * @param {Function} eventHandler
-     * @return {Fluent}
-     */
-    undelegate: function (type, selector, eventHandler) {
-      return this.each(function (element, index) {
-        Fluent.undelegate(element, type, selector, eventHandler);
-      });
     }
   };
 
@@ -1256,6 +1274,119 @@
       });
       that.resolve();
     });
+    
+    return promise;
+  };
+  
+  Fluent.XML = {
+    parse: function (data) {
+      if (!data || !Fluent.isString(data)) {
+        return null;
+      }
+
+      var xml;
+      try {
+        var tmp = new DOMParser();
+        xml = tmp.parseFromString(data, "text/xml");
+      } catch (e) {
+        xml = null;
+      }
+
+      if (!xml || xml.getElementsByTagName("parsererror").length) {
+        throw new Error("Invalid XML: " + data);
+      }
+      return xml;
+    }
+  };
+  
+  Fluent.Ajax = {};
+  Fluent.Ajax.defaultHeaders = {
+    contentType: 'application/x-www-form-urlencoded',
+    requestedWith: 'XMLHttpRequest',
+    accept: {
+      '*':  'text/javascript, text/html, application/xml, text/xml, */*',
+      xml:  'application/xml, text/xml',
+      html: 'text/html',
+      text: 'text/plain',
+      json: 'application/json, text/javascript',
+      js:   'application/javascript, text/javascript'
+    }
+  };
+  
+  Fluent.Ajax.responseConverters = {
+    "* text": String,
+    "text html": true,
+    "text json": JSON.parse,
+    "text xml": Fluent.XML.parse
+  };
+  Fluent.Ajax.responseFields = {
+    xml: 'responseXML',
+    text: 'responseText',
+    json: 'responseJSON'
+  };
+  Fluent.Ajax.defaultParameters = {};
+  Fluent.Ajax.methodTypes = {
+    GET: 'get',
+    POST: 'post',
+    PUT: 'put',
+    DELETE: 'delete'
+  };
+
+  /**
+   * Send XMLHttpRequest
+   * @param options
+   * @returns {Fluent.Promise}
+   */
+  Fluent.ajax = function (options) {
+    // force options to be object
+    options = options || {};
+    
+    if (!Fluent.isString(options.url)) {
+      throw new Error('url is not string:' + options.url);
+    }
+    
+    // build default options
+    Fluent.fill(options, Fluent.Ajax.defaultParameters);
+    
+    // create XMLHttpRequest
+    var xhr = new XMLHttpRequest();
+    var promise = new Fluent.Promise();
+
+    // initialize XMLHttpRequest
+    xhr.open(
+      options.type || Fluent.Ajax.methodTypes.GET,
+      options.url,
+      options.async || true,
+      options.user || '',
+      options.password || ''
+    );
+    
+    xhr.onerror = options.error;
+    
+    function processCallback(fn, text) {
+      
+    }
+    
+    xhr.onreadystatechange = function stateChangeHandler() {
+      switch (xhr.readyState) {
+        case XMLHttpRequest.UNSENT:
+        case XMLHttpRequest.OPENED:
+        case XMLHttpRequest.HEADERS_RECEIVED:
+        case XMLHttpRequest.LOADING:
+          break;
+        case XMLHttpRequest.DONE:
+          break;
+      }
+    };
+
+    if (Fluent.isNumber(options.timeout)) {
+      win.setTimeout(function () {
+        xhr.abort();
+      }, options.timeout);
+    }
+    
+    // String, ArrayBuffer, Blob, HTMLDocument, FormData
+    xhr.send(options.data);
     
     return promise;
   };

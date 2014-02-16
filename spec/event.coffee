@@ -111,7 +111,7 @@ describe "Fluent Event", ->
       $button.trigger "click"
       $button.trigger "click"
       expect(spy.callCount).to.equal 2
-      $element.off
+      $element.off()
       $button.trigger "click"
       $button.trigger "click"
       expect(spy.callCount).to.equal 2

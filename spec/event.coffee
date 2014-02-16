@@ -2,33 +2,33 @@ expect = chai.expect
 
 describe "Fluent Event", ->
 
-  describe "#bind", ->
+  describe "#on (bind)", ->
 
-    it "bind function", ->
+    it "bind with 2 arguments", ->
       spy = sinon.spy()
       $element = $("#id3")
-      $element.bind "click", spy
+      $element.on "click", spy
       $element.trigger "click"
       $element.trigger "click"
       expect(spy.callCount).to.equal 2
 
-  describe "#unbind", ->
+  describe "#off (unbind)", ->
 
-    it "unbind function", ->
+    it "unbind with 2 arguments", ->
       spy = sinon.spy()
       $element = $("#id3")
-      $element.bind "click", spy
+      $element.on "click", spy
       $element.trigger "click"
       $element.trigger "click"
       expect(spy.callCount).to.equal 2
-      $element.unbind "click", spy
+      $element.off "click", spy
       $element.trigger "click"
       $element.trigger "click"
       expect(spy.callCount).to.equal 2
 
   describe "#once", ->
 
-    it "bind function which will called once", ->
+    it "bind callback which will called once", ->
       spy = sinon.spy()
       $element = $("#id3")
       $element.once "click", spy
@@ -36,7 +36,7 @@ describe "Fluent Event", ->
       $element.trigger "click"
       expect(spy.callCount).to.equal 1
 
-  describe "#delegate", ->
+  describe "#on (delegate)", ->
 
     spy = null
     $element = null
@@ -48,21 +48,21 @@ describe "Fluent Event", ->
       $button = $(document.querySelector "button")
 
     afterEach ->
-      $element.undelegate()
+      $element.off()
 
     it "delegate function 1", ->
-      $element.delegate "click", "button", spy
+      $element.on "click", "button", spy
       $button.trigger "click"
       $button.trigger "click"
       expect(spy.callCount).to.equal 2
 
     it "delegate function 2", ->
-      $element.delegate "click", ".class1", spy
+      $element.on "click", ".class1", spy
       $button.trigger "click"
       $button.trigger "click"
       expect(spy.callCount).to.equal 2
 
-  describe "#undelegate", ->
+  describe "#off (undelegate)", ->
 
     spy = null
     $element = null
@@ -74,44 +74,44 @@ describe "Fluent Event", ->
       $button = $(document.querySelector "button")
 
     afterEach ->
-      $element.undelegate()
+      $element.off()
 
     it "undelegate function 1", ->
-      $element.delegate "click", "button", spy
+      $element.on "click", "button", spy
       $button.trigger "click"
       $button.trigger "click"
       expect(spy.callCount).to.equal 2
-      $element.undelegate "click", "button", spy
+      $element.off "click", "button", spy
       $button.trigger "click"
       $button.trigger "click"
       expect(spy.callCount).to.equal 2
 
     it "undelegate function 2", ->
-      $element.delegate "click", "button", spy
+      $element.on "click", "button", spy
       $button.trigger "click"
       $button.trigger "click"
       expect(spy.callCount).to.equal 2
-      $element.undelegate "click", "button"
+      $element.off "click", "button"
       $button.trigger "click"
       $button.trigger "click"
       expect(spy.callCount).to.equal 2
 
     it "undelegate function 3", ->
-      $element.delegate "click", "button", spy
+      $element.on "click", "button", spy
       $button.trigger "click"
       $button.trigger "click"
       expect(spy.callCount).to.equal 2
-      $element.undelegate "click"
+      $element.off "click"
       $button.trigger "click"
       $button.trigger "click"
       expect(spy.callCount).to.equal 2
 
     it "undelegate function 4", ->
-      $element.delegate "click", "button", spy
+      $element.on "click", "button", spy
       $button.trigger "click"
       $button.trigger "click"
       expect(spy.callCount).to.equal 2
-      $element.undelegate()
+      $element.off()
       $button.trigger "click"
       $button.trigger "click"
       expect(spy.callCount).to.equal 2

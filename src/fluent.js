@@ -163,7 +163,7 @@
    * @param {Object} value
    * @return {Boolean}
    */
-  Fluent.isNumber = function () {
+  Fluent.isNumber = function (value) {
     return Fluent.isType("Number", value);
   };
   /**
@@ -559,7 +559,7 @@
         });
         delete targetNode.eventStore[type];
       } else {
-        Object.keys(targetNode.eventStore).forEach(function (key) {console.log(key);
+        Object.keys(targetNode.eventStore).forEach(function (key) {
           storedData = targetNode.eventStore[key];
           arrayForEach.call(storedData, function (item) {
             targetNode.removeEventListener(key, item.closure);
@@ -828,17 +828,14 @@
      * @returns {Fluent}
      */
     off: function (type, callbackOrSelector, delegateCallback) {
-      if (!Fluent.isString(type)) {
-        return this;
-      }
       var callback;
       var selector;
-      if (Fluent.isFunction(callbackOrSelector)) {
+      if (Fluent.isString(type) && Fluent.isFunction(callbackOrSelector)) {
         callback = callbackOrSelector;
         return this.each(function (element, index) {
           element.removeEventListener(type, callback);
         });
-      } else if (Fluent.isString(callbackOrSelector) && Fluent.isFunction(delegateCallback)) {
+      } else if (Fluent.isString(type) && Fluent.isString(callbackOrSelector) && Fluent.isFunction(delegateCallback)) {
         selector = callbackOrSelector;
         callback = delegateCallback;
         return this.each(function (element, index) {
@@ -1300,31 +1297,31 @@
   };
   
   Fluent.Ajax = {};
-  Fluent.Ajax.defaultHeaders = {
-    contentType: 'application/x-www-form-urlencoded',
-    requestedWith: 'XMLHttpRequest',
-    accept: {
-      '*':  'text/javascript, text/html, application/xml, text/xml, */*',
-      xml:  'application/xml, text/xml',
-      html: 'text/html',
-      text: 'text/plain',
-      json: 'application/json, text/javascript',
-      js:   'application/javascript, text/javascript'
-    }
+
+  Fluent.Ajax.contents = {
+    text: 'text/plain',
+    xml:  'application/xml, text/xml',
+    html: 'text/html',
+    json: 'application/json, text/javascript',
+    js:   'application/javascript, text/javascript'
   };
-  
+
   Fluent.Ajax.responseConverters = {
-    "* text": String,
-    "text html": true,
-    "text json": JSON.parse,
-    "text xml": Fluent.XML.parse
+    text: String,
+    html: false,
+    xml: Fluent.XML.parse,
+    json: JSON.parse
   };
+
   Fluent.Ajax.responseFields = {
-    xml: 'responseXML',
     text: 'responseText',
+    html: 'responseText',
+    xml: 'responseXML',
     json: 'responseJSON'
   };
+
   Fluent.Ajax.defaultParameters = {};
+
   Fluent.Ajax.methodTypes = {
     GET: 'get',
     POST: 'post',
@@ -1361,10 +1358,32 @@
       options.password || ''
     );
     
-    xhr.onerror = options.error;
+    xhr.onerror = function (error) {
+      if (options.error) {
+        options.error(xhr, xhr.status, error);
+      }
+    };
     
-    function processCallback(fn, text) {
-      
+    function processCallback(text, xhr) {
+      var contentType = xhr.getResponseHeader('Content-Type');
+      var converter = Fluent.Ajax.responseConverters[options.dataType];
+
+      if (!converter) {
+        var type;
+        var types = Object.keys(Fluent.Ajax.contents);
+        for (var i = 0, l = types.length;i < l;i++ ) {
+          type = types[i];
+          if (Fluent.Ajax.contents[type].indexOf(contentType)) {
+            converter = Fluent.Ajax.responseConverters[type];
+            break;
+          }
+        }
+      }
+
+      var data = converter ? converter(text) : text;
+      if (options.success) {
+        options.success(data, xhr.status, xhr);
+      }
     }
     
     xhr.onreadystatechange = function stateChangeHandler() {
@@ -1375,6 +1394,7 @@
         case XMLHttpRequest.LOADING:
           break;
         case XMLHttpRequest.DONE:
+          processCallback(xhr.responseText, xhr);
           break;
       }
     };
@@ -1386,8 +1406,8 @@
     }
     
     // String, ArrayBuffer, Blob, HTMLDocument, FormData
-    xhr.send(options.data);
-    
+    xhr.send(options.data || null);
+
     return promise;
   };
 

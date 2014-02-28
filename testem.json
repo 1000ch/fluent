@@ -2,7 +2,9 @@
   "framework": "/lib/mocha/mocha.js",
   "dev_dependencies": [
     "lib/chai/chai.js",
-    "lib/sinon/index.js"
+    "lib/sinon/index.js",
+    "lib/blanket/dist/qunit/blanket.min.js",
+    "lib/blanket/src/adapters/mocha-blanket.js"
   ],
   "test_page": "./spec/runner.mustache",
   "before_tests": "./node_modules/coffee-script/bin/coffee -c ./spec/*.coffee",

@@ -1,5 +1,5 @@
 {
-  "name": "fluent",
+  "name": "fluent.js",
   "version": "0.4.0",
   "description": "Lightweight DOM library.",
   "main": "fluent.js",
@@ -11,7 +11,8 @@
     "grunt-contrib-jshint": "~0.7.2",
     "testem": "~0.6.2",
     "coffee-script": "~1.6.3",
-    "grunt-jsvalidate": "~0.2.2"
+    "grunt-jsvalidate": "~0.2.2",
+    "falafel": "~0.3.1"
   },
   "scripts": {
     "test": "./node_modules/testem/testem.js -l PhantomJS ci"

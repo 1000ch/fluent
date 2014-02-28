@@ -1,50 +1,53 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="UTF-8">
-		<title>Testem Test Page</title>
-		<link rel="stylesheet" href="/lib/mocha/mocha.css">
-		<script src="/lib/mocha/mocha.js"></script>
-		<script src="/lib/chai/chai.js"></script>
-		<script src="/lib/sinon/index.js"></script>
-		<script src="/testem.js"></script>
-		<script>mocha.setup('bdd')</script>
-		{{#serve_files}}<script src="/{{src}}"></script>{{/serve_files}}
-	</head>
-	<body id="container">
-		<div id="mocha"></div>
-		<div id="id1" class="class1" name="name1">
-			div#id1.class1
-		</div>
-		<section id="id2" class="class1">
-			section#id2.class1
-		</section>
-		<button id="id3" class="class1">
-			button#id3.class1
-		</button>
-		<div id="id4" class="class1" name="name1">
-			div#id4.class1
-		</div>
-		<div id="id5" class="class1">
-			div#id5.class1
-		</div>
-		<span id="id6" class="class1">
-			span#id6.class1
-		</span>
-		<div id="id7" class="class2" name="name1">
-			div#id7.class2
-		</div>
-		<div id="id8" class="class2">
-			div#id8.class2
-		</div>
-		<section id="id9" class="class2" name="name1">
-			section#id9.class2
-		</section>
-		<div id="id10" class="class2">
-			div#id10.class2
-		</div>
-		<script>
-			mocha.run();
-		</script>
-	</body>
+  <head>
+    <meta charset="UTF-8">
+    <title>Testem Test Page</title>
+    <link rel="stylesheet" href="/lib/mocha/mocha.css">
+    <script src="/lib/mocha/mocha.js"></script>
+    <script src="/lib/chai/chai.js"></script>
+    <script src="/lib/sinon/index.js"></script>
+    <script src="/lib/blanket/dist/qunit/blanket.min.js" data-cover-only="/src/"></script>
+    <script src="/lib/blanket/src/adapters/mocha-blanket.js"></script>
+    <script src="/testem.js"></script>
+    <script>mocha.setup('bdd')</script>
+    {{#serve_files}}<script src="/{{src}}"></script>{{/serve_files}}
+  </head>
+  <body id="container">
+    <div id="mocha"></div>
+    <div id="blanket-main"></div>
+    <div id="id1" class="class1" name="name1">
+      div#id1.class1
+    </div>
+    <section id="id2" class="class1">
+      section#id2.class1
+    </section>
+    <button id="id3" class="class1">
+      button#id3.class1
+    </button>
+    <div id="id4" class="class1" name="name1">
+      div#id4.class1
+    </div>
+    <div id="id5" class="class1">
+      div#id5.class1
+    </div>
+    <span id="id6" class="class1">
+      span#id6.class1
+    </span>
+    <div id="id7" class="class2" name="name1">
+      div#id7.class2
+    </div>
+    <div id="id8" class="class2">
+      div#id8.class2
+    </div>
+    <section id="id9" class="class2" name="name1">
+      section#id9.class2
+    </section>
+    <div id="id10" class="class2">
+      div#id10.class2
+    </div>
+    <script>
+      mocha.run();
+    </script>
+  </body>
 </html>

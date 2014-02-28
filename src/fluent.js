@@ -1063,7 +1063,7 @@
   };
 
   /**
-   * Fluent.Promise object
+   * Fluent.Promise
    * @constructor
    */
   Fluent.Promise = function () {
@@ -1079,7 +1079,7 @@
   Fluent.Promise.REJECTED = 2;
 
   /**
-   * 
+   * Fluent.Deferred
    * @returns {Object}
    *   {
    *     promise: Fluent.Promise,
@@ -1088,7 +1088,7 @@
    *   }
    * @constructor
    */
-  Fluent.Promise.Deferred = function () {
+  Fluent.Deferred = function () {
     var promise = new Fluent.Promise();
     var deferred = {
       promise: promise,

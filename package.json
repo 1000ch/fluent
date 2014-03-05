@@ -6,11 +6,11 @@
   "dependencies": {},
   "devDependencies": {
     "grunt": "~0.4.2",
-    "grunt-contrib-uglify": "~0.2.7",
+    "grunt-contrib-uglify": "~0.4.0",
     "grunt-contrib-watch": "~0.5.3",
-    "grunt-contrib-jshint": "~0.7.2",
-    "testem": "~0.6.2",
-    "coffee-script": "~1.6.3",
+    "grunt-contrib-jshint": "~0.8.0",
+    "testem": "~0.6.8",
+    "coffee-script": "~1.7.1",
     "grunt-jsvalidate": "~0.2.2",
     "falafel": "~0.3.1"
   },

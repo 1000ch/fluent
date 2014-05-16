@@ -746,7 +746,7 @@
         callback();
       }
     };
-    doc.querySelector("head").appendChild(script);
+    doc.head.appendChild(script);
   };
   var escapeMap = {
     '&': '&amp;',
